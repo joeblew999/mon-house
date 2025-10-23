@@ -1,118 +1,72 @@
 # House Renovation Drawings
 
-## Design Intent
+This folder contains bilingual architectural drawings for the house renovation project.
 
-**Renovation Goal**: Convert existing 2-bedroom house into open-plan design with loft bedroom
+## Folder Structure
 
-**Key Changes**:
-- Remove existing Bedroom 1 and Bedroom 2 **interior** walls:
-  - Remove wall between Bedroom 1 and Bedroom 2 (y=440, INTERIOR)
-  - Remove wall between Bedroom 2 and Bathroom (y=740, x=100 to x=290, INTERIOR)
-  - Remove interior portion of right wall shared with Living Room (x=400, y=200 to y=440, INTERIOR)
-  - Remove interior portion of right wall shared with Corridor (x=400, y=440 to y=740, INTERIOR)
-  - **KEEP** 1.0m exterior wall section (x=400, y=100 to y=200, EXTERIOR - building perimeter)
-- Keep all **exterior** walls:
-  - Top wall (y=100, EXTERIOR)
-  - Left wall (x=100, EXTERIOR)
-  - South wall including 1.1m corridor section (y=840, EXTERIOR)
-- Create open-plan living space (3.0m × 7.4m total height)
-- Add loft bedroom above at 3.0m level (on beam)
-- Loft provides sleeping area while maximizing ground floor space
-- **MAINTAIN existing bathroom** (1.9m × 1.0m) - all walls kept
-- Remove corridor walls (now open to living room and open living space)
+```
+drawings/
+├── en/              # English documentation and drawings
+│   ├── README.md    # Complete English documentation
+│   ├── existing/    # Current house layout
+│   │   ├── plan.svg     # Floor plan with semantic walls
+│   │   └── section.svg  # Section A-A through building
+│   └── proposed/    # Proposed renovation
+│       ├── plan.svg     # Open-plan layout with loft
+│       └── section.svg  # Section showing loft bedroom
+│
+└── th/              # Thai documentation and drawings (ภาษาไทย)
+    ├── README.th.md # Complete Thai documentation
+    ├── existing/    # Current house layout (ผังปัจจุบัน)
+    │   ├── plan.svg     # Floor plan with Thai labels
+    │   └── section.svg  # Section with Thai labels
+    └── proposed/    # Proposed renovation (ผังที่เสนอ)
+        ├── plan.svg     # Open-plan with Thai labels
+        └── section.svg  # Section with Thai labels
+```
 
-## Assumptions
+## For Builders / สำหรับช่างก่อสร้าง
 
-### Building Structure
-- Single floor house with loft potential
-- Floor to ceiling height: 3.0 m
-- Gable ridge line runs top to bottom (north-south direction based on plan)
-- Ridge height from floor: 5.0 m
-- Eaves overhang: 0.6 m (600 mm)
+### English Speakers
+👉 Go to [en/](en/) folder
+- Read [en/README.md](en/README.md) for complete documentation
+- View drawings in [en/existing/](en/existing/) and [en/proposed/](en/proposed/)
 
-### Floor Plan Dimensions
-- Total width (east-west): 7.9 m
-  - Bedroom 1: 3.0 m width
-  - Living Room: 2.9 m width
-  - Kitchen: 2.0 m width
-- Total depth (north-south): 7.4 m
-  - Bedroom 1: 3.4 m depth
-  - Bedroom 2: 3.0 m depth
-  - Bathroom: 1.0 m depth
-- Corridor: 1.1 m width
-- Bathroom: 1.9 m depth
-- Living Room height: 6.4 m (spans from Bedroom 1 level to bottom)
-- Kitchen height: 3.0 m
-- Opening between Living Room and Kitchen: 3.0 m
+### Thai Speakers / ผู้พูดภาษาไทย
+👉 ไปที่โฟลเดอร์ [th/](th/)
+- อ่าน [th/README.th.md](th/README.th.md) สำหรับเอกสารฉบับสมบูรณ์
+- ดูแบบวาดใน [th/existing/](th/existing/) และ [th/proposed/](th/proposed/)
 
-### Structural Elements
-- Beam height: 3.0 m (at ceiling level, spans full width)
-- Beam depth: 100 mm (0.1 m)
-- Foundation: Concrete slab
+## Key Information / ข้อมูลสำคัญ
 
-### Reference Elements (for scale)
-- Bed size: 1.0 m x 2.0 m (single bed)
-- Bed height: ~0.5 m
-- Person height: 1.7 m (standing adult)
+### Design Intent / เป้าหมายการออกแบบ
+- **English**: Convert 2-bedroom house to open-plan living space with loft bedroom above
+- **ไทย**: เปลี่ยนบ้าน 2 ห้องนอนเป็นพื้นที่นั่งเล่นแบบเปิดพร้อมห้องนอนลอฟท์ด้านบน
 
-### Drawing Standards
-- Scale: 1 meter = 100 pixels in SVG
-- Centerline dimensions used throughout
-- Chained dimensions on all exterior walls
-- Section cut labeled as "SECTION A-A" at y=620 (moved 1m south from original position)
+### Important / สำคัญ
+- **REMOVE**: Interior bedroom walls (red dashed lines / เส้นประสีแดง)
+- **KEEP**: All exterior walls (black solid lines / เส้นทึบสีดำ)
+- **KEEP**: Bathroom unchanged (ห้องน้ำไม่เปลี่ยนแปลง)
 
-### Wall Types (Semantic Markup)
-**EXTERIOR walls** (black, 8px solid):
-- Building perimeter / envelope
-- Must be maintained in renovation
-- Examples: north wall (y=100), west wall (x=100), south wall (y=840)
+### Wall Types / ประเภทผนัง
+- **EXTERIOR / ภายนอก**: Black solid (8px) / ทึบสีดำ - Building perimeter, must maintain
+- **INTERIOR / ภายใน**: Red dashed (4px) / เส้นประสีแดง - Can be removed
 
-**INTERIOR walls** (red, 4px dashed):
-- Internal partitions
-- Can be removed in renovation
-- Examples: wall between bedrooms (y=440), bedroom/bathroom wall (y=740)
+## Technical Details / รายละเอียดทางเทคนิค
 
-## Drawings
+- **Scale / มาตราส่วน**: 1 meter = 100 pixels in SVG
+- **Wall height / ความสูงผนัง**: 3.0 m / ม.
+- **Ridge height / ความสูงสันหลังคา**: 5.0 m / ม.
+- **Loft beam / คานลอฟท์**: At 3.0 m height, 100mm deep / ที่ความสูง 3.0 ม., ลึก 100 มม.
 
-### existing/
-Contains drawings of the current house layout:
+## Viewing the Drawings / การดูแบบวาด
 
-**plan.svg** - Existing floor plan showing:
-- 2 bedrooms, bathroom, corridor, living room, kitchen
-- **Semantic wall markup**: EXTERIOR walls (black solid), INTERIOR walls (red dashed)
-- All rooms with dimensions
-- Doors and windows
-- Section cut line at y=620 (red dashed line showing where section is taken)
-- Chained dimensions on all four exterior walls
+All drawings are in SVG format and can be:
+- Opened in any web browser
+- Edited in Inkscape, Adobe Illustrator, or any SVG editor
+- Printed at any scale
 
-**section.svg** - Section A-A showing existing structure:
-- 3.0 m wall height
-- 5.0 m ridge height
-- Gable roof with 0.6 m eaves overhang
-- Beam at 3.0 m ceiling level (100mm deep)
-- Ground floor level with bed and person for scale
-- Concrete slab foundation
-- All vertical and horizontal dimensions
-
-### proposed/
-Contains drawings of the proposed renovation:
-
-**plan.svg** - Proposed floor plan showing:
-- Open living space (3.0m × 7.4m) replacing Bedrooms 1 & 2
-- **Bathroom maintained** (1.9m × 1.0m) - all walls kept
-- Corridor walls removed - now open plan
-- Only EXTERIOR walls kept from bedroom area:
-  - Top wall (y=100)
-  - Left wall (x=100, full height)
-  - 1.0m wall section (x=400, y=100 to y=200) - building perimeter
-  - South wall (y=840) including 1.1m corridor section
-- All INTERIOR walls removed
-- Living room and kitchen unchanged
-- Section cut line at y=620
-- Note: "(Loft Bedroom Above)" indicating vertical space usage
-
-**section.svg** - Proposed Section A-A showing:
-- Same structure as existing
-- Open living space at ground level
-- Loft bedroom above at 3.0m level on beam
-- Labels updated to show "OPEN LIVING SPACE" and "LOFT BEDROOM"
+แบบวาดทั้งหมดเป็นรูปแบบ SVG และสามารถ:
+- เปิดในเว็บเบราว์เซอร์ใดก็ได้
+- แก้ไขใน Inkscape, Adobe Illustrator หรือโปรแกรมแก้ไข SVG ใดก็ได้
+- พิมพ์ในขนาดใดก็ได้

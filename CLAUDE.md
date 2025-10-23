@@ -8,36 +8,14 @@ wil need to be in English and translated to Thai, because the builder is Thai.
 ## Project Structure
 This is a project located at `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`.
 
-### Directory Structure
-```
-mon-house/
-├── photos/
-│   ├── before/      # Photos before renovation starts
-│   ├── during/      # Progress photos during renovation
-│   ├── after/       # Completed renovation photos
-│   └── reference/   # Reference images for design ideas
-├── docs/            # Documentation files
-└── CLAUDE.md        # This file
-```
+
 
 ## Documentation Approach
-- **Visual Documentation**: Uses photos instead of CAD drawings
-- **Photo Organization**: Photos organized by renovation phase (before/during/after)
-- **Bilingual**: Documentation in English with Thai translations for the builder
-- **Claude can read photos**: Upload photos and Claude can analyze them to help with documentation
 
-## Photo Guidelines
-- Name photos descriptively (e.g., `kitchen-sink-area-2025-10-23.jpg`)
-- Include dates in filenames for tracking progress
-- Take multiple angles of each area
-- Include close-ups of specific issues or features
-- Keep reference photos separate for design inspiration
+- **Bilingual**: Documentation in English with Thai translations for the builder.
 
-## Documentation Guidelines
-- Create Markdown files in the `docs/` folder
-- Include both English and Thai versions
-- Reference photos in documentation using relative paths
-- Track timeline, budget, and contractor communications
+
+
 
 ## Floor Plan / SVG Schematic Guidelines
 
@@ -78,4 +56,101 @@ All four sides (top, bottom, left, right) should have chained dimensions showing
 - It's OK for doors to overlap walls - this is a schematic
 - All dimensions should be clearly visible and not overlapping
 - Use comments in SVG to label sections clearly
+
+## Bilingual Documentation Structure
+
+The project uses **language-specific folders** (`en/` and `th/`) to clearly separate English and Thai documentation for builders.
+
+### Folder Structure
+```
+drawings/
+├── README.md        # Bilingual index explaining structure
+├── en/              # English documentation
+│   ├── README.md    # English specs and assumptions
+│   ├── existing/    # Current layout (English labels)
+│   │   ├── plan.svg
+│   │   └── section.svg
+│   └── proposed/    # Renovation plan (English labels)
+│       ├── plan.svg
+│       └── section.svg
+└── th/              # Thai documentation (ภาษาไทย)
+    ├── README.th.md # Thai specs and assumptions
+    ├── existing/    # Current layout (Thai labels)
+    │   ├── plan.svg
+    │   └── section.svg
+    └── proposed/    # Renovation plan (Thai labels)
+        ├── plan.svg
+        └── section.svg
+```
+
+### Sources of Truth
+
+1. **English Documentation**: `drawings/en/README.md`
+   - Primary source of truth
+   - Contains all design intent, assumptions, and specifications
+   - Defines semantic wall types (EXTERIOR vs INTERIOR)
+   - Documents building dimensions and structural elements
+
+2. **Thai Documentation**: `drawings/th/README.th.md`
+   - Must mirror all content from `en/README.md`
+   - Same structure and detail level
+   - References same folder structure
+
+3. **English Drawings**: `drawings/en/existing/` and `drawings/en/proposed/`
+   - SVG files with English labels
+   - Uses semantic CSS classes: `.wall-exterior` (black, 8px solid) and `.wall-interior` (red, 4px dashed)
+
+4. **Thai Drawings**: `drawings/th/existing/` and `drawings/th/proposed/`
+   - **Same SVG structure** as English drawings
+   - **Only labels translated** to Thai
+   - Must maintain identical coordinates and styling
+
+### Semantic Wall Markup
+
+**CRITICAL**: All floor plans use semantic CSS classes to distinguish wall types:
+
+- **`.wall-exterior`** (black, 8px solid): Building perimeter/envelope - **MUST be maintained** in renovation
+- **`.wall-interior`** (red, 4px dashed): Internal partitions - **CAN be removed** in renovation
+
+Wall classification requires understanding of building structure, not just room adjacency.
+**Example**: A 1.0m wall with no room behind it is EXTERIOR even if between two interior rooms.
+
+### Translation Guidelines
+
+When updating drawings or documentation:
+
+1. **Always update BOTH** English (`en/`) and Thai (`th/`) versions
+2. Keep structure identical - only translate text labels
+3. Maintain same SVG coordinates and styling
+4. **Thai room labels**:
+   - ห้องนอน (bedroom)
+   - ห้องน้ำ (bathroom)
+   - ห้องนั่งเล่น (living room)
+   - ห้องครัว (kitchen)
+   - พื้นที่นั่งเล่นแบบเปิด (open living space)
+   - ห้องนอนลอฟท์ (loft bedroom)
+5. **Thai technical terms**:
+   - ผนัง (wall), ผนังภายนอก (exterior wall), ผนังภายใน (interior wall)
+   - หน้าต่าง (window), ประตู (door)
+   - คาน (beam), สันหลังคา (ridge), ชายคา (eave)
+   - หน้าตัด (section), แบบผัง (plan)
+   - มาตราส่วน (scale), ขนาด (dimension)
+
+### File Path Rules
+
+- **ALWAYS** use relative paths starting with `./`
+- Project root: `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
+- English drawings: `./drawings/en/`
+- Thai drawings: `./drawings/th/`
+- Never use absolute paths with username in them
+
+## Design Intent
+
+**Goal**: Convert 2-bedroom house to open-plan living space with loft bedroom
+
+**Key Changes**:
+- **REMOVE**: Interior bedroom walls (red dashed lines)
+- **KEEP**: All exterior walls (black solid lines)
+- **KEEP**: Bathroom unchanged
+- **ADD**: Loft bedroom above at 3.0m level on beam
 
