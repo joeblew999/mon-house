@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- Define styles -->
+  <defs>
+    <style>
+      .wall { stroke: black; stroke-width: 8; fill: none; }
+      .dimension-line { stroke: blue; stroke-width: 1; fill: none; stroke-dasharray: 5,5; }
+      .dimension-text { fill: blue; font-family: Arial; font-size: 16px; }
+      .roof { stroke: black; stroke-width: 6; fill: none; }
+      .foundation { fill: #cccccc; stroke: black; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="white"/>
+
+  <!-- Title -->
+  <text x="600" y="40" text-anchor="middle" font-size="20" font-weight="bold">Proposed Section - Open Living Space with Loft</text>
+
+  <!-- Scale: 1 meter = 100 pixels -->
+  <!-- Section width: 7.9m (bedroom 3.0m + living room 2.9m + kitchen 2.0m) = 790px -->
+  <!-- Floor level at y=600 -->
+  <!-- Wall height: 3.0m = 300px, so top of wall at y=300 -->
+  <!-- Ridge height: 5.0m = 500px, so ridge at y=100 -->
+
+  <!-- Start at x=200 for left edge -->
+
+  <!-- Concrete slab foundation -->
+  <rect x="200" y="600" width="790" height="30" class="foundation"/>
+  <text x="595" y="655" font-size="12" text-anchor="middle">Concrete Slab Foundation</text>
+
+  <!-- Left exterior wall (3.0m high) -->
+  <line x1="200" y1="300" x2="200" y2="600" class="wall"/>
+
+  <!-- Right exterior wall (3.0m high) -->
+  <line x1="990" y1="300" x2="990" y2="600" class="wall"/>
+
+  <!-- Interior floor line -->
+  <line x1="200" y1="600" x2="990" y2="600" stroke="black" stroke-width="2"/>
+
+  <!-- Gable roof -->
+  <!-- Ridge at center: x = 200 + 790/2 = 595 -->
+  <!-- Ridge at y=100 (5.0m above floor) -->
+
+  <!-- Left roof slope (with 0.6m overhang = 60px) -->
+  <line x1="140" y1="300" x2="595" y2="100" class="roof"/>
+
+  <!-- Right roof slope (with 0.6m overhang = 60px) -->
+  <line x1="595" y1="100" x2="1050" y2="300" class="roof"/>
+
+  <!-- Eaves detail lines -->
+  <line x1="200" y1="300" x2="140" y2="300" stroke="black" stroke-width="4"/>
+  <line x1="990" y1="300" x2="1050" y2="300" stroke="black" stroke-width="4"/>
+
+  <!-- Beam at ceiling level (3.0m height, 100mm = 0.1m = 10px depth) -->
+  <!-- Beam runs across the full width -->
+  <rect x="200" y="290" width="790" height="10" fill="#8B4513" stroke="black" stroke-width="2"/>
+  <text x="595" y="285" font-size="10" text-anchor="middle">Beam (100mm)</text>
+
+  <!-- Bed in Bedroom 1 (1.0m x 2.0m, showing side view) -->
+  <!-- Bed positioned at x=250, bed height ~0.5m = 50px -->
+  <rect x="250" y="550" width="200" height="50" fill="#D2B48C" stroke="black" stroke-width="2"/>
+  <text x="350" y="575" font-size="10" text-anchor="middle">Bed</text>
+
+  <!-- Person standing on floor (1.7m = 170px tall) -->
+  <!-- Person at x=500, standing on floor at y=600 -->
+  <!-- Simple stick figure -->
+  <!-- Head (circle, radius 15px) -->
+  <circle cx="500" cy="445" r="15" fill="none" stroke="black" stroke-width="2"/>
+  <!-- Body (line from neck to hips) -->
+  <line x1="500" y1="460" x2="500" y2="540" stroke="black" stroke-width="2"/>
+  <!-- Arms -->
+  <line x1="500" y1="480" x2="470" y2="510" stroke="black" stroke-width="2"/>
+  <line x1="500" y1="480" x2="530" y2="510" stroke="black" stroke-width="2"/>
+  <!-- Legs -->
+  <line x1="500" y1="540" x2="480" y2="600" stroke="black" stroke-width="2"/>
+  <line x1="500" y1="540" x2="520" y2="600" stroke="black" stroke-width="2"/>
+
+  <!-- LOFT LEVEL - On top of beam -->
+  <!-- Loft floor at y=290 (top of beam) -->
+
+  <!-- Bed on loft (1.0m x 2.0m, showing side view) -->
+  <!-- Bed positioned at x=700, bed height ~0.5m = 50px -->
+  <rect x="700" y="240" width="200" height="50" fill="#D2B48C" stroke="black" stroke-width="2"/>
+  <text x="800" y="265" font-size="10" text-anchor="middle">Loft Bed</text>
+
+  <!-- Person standing on loft (1.7m = 170px tall) -->
+  <!-- Person at x=600, standing on loft beam at y=290 -->
+  <!-- Head at y = 290 - 170 + 15 = 135 (top of head at y=120) -->
+  <circle cx="600" cy="135" r="15" fill="none" stroke="black" stroke-width="2"/>
+  <!-- Body -->
+  <line x1="600" y1="150" x2="600" y2="230" stroke="black" stroke-width="2"/>
+  <!-- Arms -->
+  <line x1="600" y1="170" x2="570" y2="200" stroke="black" stroke-width="2"/>
+  <line x1="600" y1="170" x2="630" y2="200" stroke="black" stroke-width="2"/>
+  <!-- Legs -->
+  <line x1="600" y1="230" x2="580" y2="290" stroke="black" stroke-width="2"/>
+  <line x1="600" y1="230" x2="620" y2="290" stroke="black" stroke-width="2"/>
+
+  <!-- Dimensions -->
+
+  <!-- Wall height: 3.0m -->
+  <line x1="160" y1="300" x2="160" y2="600" class="dimension-line"/>
+  <line x1="150" y1="300" x2="170" y2="300" class="dimension-line"/>
+  <line x1="150" y1="600" x2="170" y2="600" class="dimension-line"/>
+  <text x="140" y="450" class="dimension-text">3.0m</text>
+
+  <!-- Ridge height: 5.0m -->
+  <line x1="110" y1="100" x2="110" y2="600" class="dimension-line"/>
+  <line x1="100" y1="100" x2="120" y2="100" class="dimension-line"/>
+  <line x1="100" y1="600" x2="120" y2="600" class="dimension-line"/>
+  <text x="90" y="350" class="dimension-text">5.0m</text>
+
+  <!-- Width: 7.9m -->
+  <line x1="200" y1="670" x2="990" y2="670" class="dimension-line"/>
+  <line x1="200" y1="660" x2="200" y2="680" class="dimension-line"/>
+  <line x1="990" y1="660" x2="990" y2="680" class="dimension-line"/>
+  <text x="595" y="695" class="dimension-text" text-anchor="middle">7.9m</text>
+
+  <!-- Eaves overhang: 0.6m (left side) -->
+  <line x1="140" y1="270" x2="200" y2="270" class="dimension-line"/>
+  <line x1="140" y1="260" x2="140" y2="280" class="dimension-line"/>
+  <line x1="200" y1="260" x2="200" y2="280" class="dimension-line"/>
+  <text x="170" y="260" class="dimension-text" text-anchor="middle" font-size="12">0.6m</text>
+
+  <!-- Eaves overhang: 0.6m (right side) -->
+  <line x1="990" y1="270" x2="1050" y2="270" class="dimension-line"/>
+  <line x1="990" y1="260" x2="990" y2="280" class="dimension-line"/>
+  <line x1="1050" y1="260" x2="1050" y2="280" class="dimension-line"/>
+  <text x="1020" y="260" class="dimension-text" text-anchor="middle" font-size="12">0.6m</text>
+
+  <!-- Labels -->
+  <text x="595" y="130" font-size="14" text-anchor="middle" font-weight="bold">Ridge</text>
+  <text x="140" y="290" font-size="12" text-anchor="middle">Eave</text>
+  <text x="1050" y="290" font-size="12" text-anchor="middle">Eave</text>
+  <text x="300" y="450" font-size="16" text-anchor="middle">OPEN LIVING SPACE</text>
+  <text x="300" y="320" font-size="14" text-anchor="middle" fill="gray">LOFT BEDROOM</text>
+  <text x="595" y="450" font-size="16" text-anchor="middle">LIVING ROOM</text>
+  <text x="890" y="450" font-size="16" text-anchor="middle">KITCHEN</text>
+
+  <!-- Legend -->
+  <text x="1000" y="100" font-size="14" font-weight="bold">Legend:</text>
+  <line x1="1000" y1="120" x2="1050" y2="120" class="wall"/>
+  <text x="1060" y="125" font-size="12">Wall</text>
+
+  <line x1="1000" y1="140" x2="1050" y2="140" class="roof"/>
+  <text x="1060" y="145" font-size="12">Roof</text>
+
+  <line x1="1000" y1="160" x2="1050" y2="160" class="dimension-line"/>
+  <text x="1060" y="165" font-size="12">Dimension</text>
+
+  <!-- Notes -->
+  <text x="1000" y="200" font-size="12" font-style="italic">Scale: 1m = 100px</text>
+  <text x="1000" y="220" font-size="12" font-style="italic">Floor to ceiling: 3m</text>
+  <text x="1000" y="240" font-size="12" font-style="italic">Ridge height: 5m</text>
+
+</svg>
