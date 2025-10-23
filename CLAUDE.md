@@ -63,25 +63,45 @@ The project uses **language-specific folders** (`en/` and `th/`) to clearly sepa
 
 ### Folder Structure
 ```
-drawings/
-├── README.md        # Bilingual index explaining structure
-├── en/              # English documentation
-│   ├── README.md    # English specs and assumptions
-│   ├── existing/    # Current layout (English labels)
-│   │   ├── plan.svg
-│   │   └── section.svg
-│   └── proposed/    # Renovation plan (English labels)
-│       ├── plan.svg
-│       └── section.svg
-└── th/              # Thai documentation (ภาษาไทย)
-    ├── README.th.md # Thai specs and assumptions
-    ├── existing/    # Current layout (Thai labels)
-    │   ├── plan.svg
-    │   └── section.svg
-    └── proposed/    # Renovation plan (Thai labels)
-        ├── plan.svg
-        └── section.svg
+mon-house/
+├── README.md            # STABLE ENTRY POINT - never needs updates
+│                        # Simple language router to en/ or th/
+│
+└── drawings/
+    ├── en/              # English documentation (source of truth)
+    │   ├── README.md    # ALL English specs and assumptions
+    │   ├── existing/    # Current layout (English labels)
+    │   │   ├── plan.svg
+    │   │   └── section.svg
+    │   └── proposed/    # Renovation plan (English labels)
+    │       ├── plan.svg
+    │       └── section.svg
+    └── th/              # Thai documentation (ภาษาไทย)
+        ├── README.th.md # ALL Thai specs and assumptions
+        ├── existing/    # Current layout (Thai labels)
+        │   ├── plan.svg
+        │   └── section.svg
+        └── proposed/    # Renovation plan (Thai labels)
+            ├── plan.svg
+            └── section.svg
 ```
+
+### IMPORTANT: Root README Pattern
+
+**The root `README.md` is STABLE and should NEVER contain project details.**
+
+**Purpose**: Simple language router only
+- Links to `drawings/en/README.md` for English
+- Links to `drawings/th/README.th.md` for Thai
+- Contains NO specs, wall types, design intent, or technical details
+
+**Why**:
+- Root README never needs updates when project evolves
+- No duplicate content between root and language READMEs
+- Single source of truth for each language
+- Clear separation: root = routing, language folders = content
+
+**Rule**: ALL project content (specs, drawings, design intent) lives in `en/` or `th/` folders, NEVER in root README.
 
 ### Sources of Truth
 
