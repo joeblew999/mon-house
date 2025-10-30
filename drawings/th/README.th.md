@@ -1,118 +1,73 @@
-# แบบรีโนเวทบ้าน
+# House Renovation Drawings
 
-## เป้าหมายการออกแบบ
+## Design Intent
 
-**เป้าหมายการรีโนเวท**: เปลี่ยนบ้าน 2 ห้องนอนที่มีอยู่เป็นแบบเปิดโล่งพร้อมห้องนอนลอฟท์
+**Renovation Goal**: Convert existing 2-bedroom house into open-plan design with loft bedroom
 
-**การเปลี่ยนแปลงสำคัญ**:
-- รื้อผนัง**ภายใน**ห้องนอน 1 และห้องนอน 2 ที่มีอยู่:
-  - รื้อผนังระหว่างห้องนอน 1 และห้องนอน 2 (y=440, ผนังภายใน)
-  - รื้อผนังระหว่างห้องนอน 2 และห้องน้ำ (y=740, x=100 ถึง x=290, ผนังภายใน)
-  - รื้อส่วนผนังภายในที่ติดกับห้องนั่งเล่น (x=400, y=200 ถึง y=440, ผนังภายใน)
-  - รื้อส่วนผนังภายในที่ติดกับทางเดิน (x=400, y=440 ถึง y=740, ผนังภายใน)
-  - **เก็บไว้** ผนังภายนอกยาว 1.0 ม. (x=400, y=100 ถึง y=200, ผนังภายนอก - เส้นรอบตัวอาคาร)
-- เก็บผนัง**ภายนอก**ทั้งหมดไว้:
-  - ผนังด้านบน (y=100, ผนังภายนอก)
-  - ผนังด้านซ้าย (x=100, ผนังภายนอก)
-  - ผนังด้านใต้รวมส่วนทางเดิน 1.1 ม. (y=840, ผนังภายนอก)
-- สร้างพื้นที่นั่งเล่นแบบเปิดโล่ง (3.0 ม. × 7.4 ม. ความสูงรวม)
-- เพิ่มห้องนอนลอฟท์ด้านบนที่ระดับ 3.0 ม. (บนคาน)
-- ลอฟท์ให้พื้นที่นอนในขณะที่เพิ่มพื้นที่ชั้นล่างสูงสุด
-- **รักษาห้องน้ำที่มีอยู่** (1.9 ม. × 1.0 ม.) - เก็บผนังทั้งหมดไว้
-- รื้อผนังทางเดิน (ตอนนี้เปิดโล่งกับห้องนั่งเล่นและพื้นที่นั่งเล่นแบบเปิด)
+**Key Changes**:
+- Remove existing Bedroom 1 and Bedroom 2 **interior** walls:
+  - Remove wall between Bedroom 1 and Bedroom 2 (y=440, INTERIOR)
+  - Remove wall between Bedroom 2 and Bathroom (y=740, x=100 to x=290, INTERIOR)
+  - Remove interior portion of right wall shared with Living Room (x=400, y=200 to y=440, INTERIOR)
+  - Remove interior portion of right wall shared with Corridor (x=400, y=440 to y=740, INTERIOR)
+  - **KEEP** 1.0m exterior wall section (x=400, y=100 to y=200, EXTERIOR - building perimeter)
+- Keep all **exterior** walls:
+  - Top wall (y=100, EXTERIOR)
+  - Left wall (x=100, EXTERIOR)
+  - South wall including 1.1m corridor section (y=840, EXTERIOR)
+- Create open-plan living space (3.0m × 7.4m total height)
+- Add loft bedroom above at 3.0m level (on beam)
+- Loft provides sleeping area while maximizing ground floor space
+- **MAINTAIN existing bathroom** (1.9m × 1.0m) - all walls kept
+- Remove corridor walls (now open to living room and open living space)
 
-## สมมติฐาน
+## Building Overview
 
-### โครงสร้างอาคาร
-- บ้านชั้นเดียวที่มีศักยภาพสร้างลอฟท์
-- ความสูงพื้นถึงเพดาน: 3.0 ม.
-- เส้นสันหลังคาทรงจั่วทอดจากบนลงล่าง (ทิศเหนือ-ใต้ตามแบบ)
-- ความสูงสันหลังคาจากพื้น: 5.0 ม.
-- ชายคายาว: 0.6 ม. (600 มม.)
+The house is a single-story structure with gable roof and loft potential. For precise measurements and coordinates, see the SPEC.md files in each folder:
+- **[existing/SPEC.md](existing/SPEC.md)** - Current house dimensions and layout
+- **[proposed/SPEC.md](proposed/SPEC.md)** - Renovation design dimensions and changes
 
-### ขนาดแบบผังพื้น
-- ความกว้างรวม (ตะวันออก-ตะวันตก): 7.9 ม.
-  - ห้องนอน 1: กว้าง 3.0 ม.
-  - ห้องนั่งเล่น: กว้าง 2.9 ม.
-  - ห้องครัว: กว้าง 2.0 ม.
-- ความลึกรวม (เหนือ-ใต้): 7.4 ม.
-  - ห้องนอน 1: ลึก 3.4 ม.
-  - ห้องนอน 2: ลึก 3.0 ม.
-  - ห้องน้ำ: ลึก 1.0 ม.
-- ทางเดิน: กว้าง 1.1 ม.
-- ห้องน้ำ: ลึก 1.9 ม.
-- ความสูงห้องนั่งเล่น: 6.4 ม. (ทอดจากระดับห้องนอน 1 ถึงล่าง)
-- ความสูงห้องครัว: 3.0 ม.
-- ช่องเปิดระหว่างห้องนั่งเล่นและห้องครัว: 3.0 ม.
+### Key Concepts
 
-### องค์ประกอบโครงสร้าง
-- ความสูงคาน: 3.0 ม. (ที่ระดับเพดาน ทอดตลอดความกว้าง)
-- ความลึกคาน: 100 มม. (0.1 ม.)
-- ฐานราก: พื้นคอนกรีต
+**Building Envelope:** The exterior perimeter walls that define the building boundary - these are structural and must be maintained.
 
-### องค์ประกอบอ้างอิง (สำหรับมาตราส่วน)
-- ขนาดเตียง: 1.0 ม. × 2.0 ม. (เตียงเดี่ยว)
-- ความสูงเตียง: ~0.5 ม.
-- ความสูงคน: 1.7 ม. (ผู้ใหญ่ยืน)
+**Loft Potential:** The existing beam at ceiling level (3.0m height) can support a loft platform, creating a second level sleeping area while maintaining the open ground floor.
 
-### มาตรฐานการเขียนแบบ
-- มาตราส่วน: 1 เมตร = 100 พิกเซลใน SVG
-- ใช้ขนาดจากแนวเส้นกลางตลอด
-- ขนาดต่อเนื่องบนผนังภายนอกทั้งหมด
-- เส้นตัดหน้าตัดมีป้ายว่า "SECTION A-A" ที่ y=620 (เลื่อน 1 ม. ลงใต้จากตำแหน่งเดิม)
+### Wall Types (Semantic Markup)
+**EXTERIOR walls** (black, 8px solid):
+- Building perimeter / envelope
+- Must be maintained in renovation
+- Examples: north wall (y=100), west wall (x=100), south wall (y=840)
 
-### ประเภทผนัง (มาร์กอัปเชิงความหมาย)
-**ผนังภายนอก** (สีดำ, 8px ทึบ):
-- เส้นรอบ / เปลือกอาคาร
-- ต้องรักษาไว้ในการรีโนเวท
-- ตัวอย่าง: ผนังทิศเหนือ (y=100), ผนังทิศตะวันตก (x=100), ผนังทิศใต้ (y=840)
+**INTERIOR walls** (red, 4px dashed):
+- Internal partitions
+- Can be removed in renovation
+- Examples: wall between bedrooms (y=440), bedroom/bathroom wall (y=740)
 
-**ผนังภายใน** (สีแดง, 4px เส้นประ):
-- แผ่นกั้นภายใน
-- สามารถรื้อได้ในการรีโนเวท
-- ตัวอย่าง: ผนังระหว่างห้องนอน (y=440), ผนังห้องนอน/ห้องน้ำ (y=740)
-
-## แบบวาด
+## Drawings
 
 ### existing/
-มีแบบวาดของผังบ้านปัจจุบัน:
 
-**plan.svg** - แบบผังชั้นที่มีอยู่แสดง:
-- ห้องนอน 2 ห้อง, ห้องน้ำ, ทางเดิน, ห้องนั่งเล่น, ห้องครัว
-- **มาร์กอัปผนังเชิงความหมาย**: ผนังภายนอก (ทึบสีดำ), ผนังภายใน (เส้นประสีแดง)
-- ห้องทั้งหมดพร้อมขนาด
-- ประตูและหน้าต่าง
-- เส้นตัดหน้าตัดที่ y=620 (เส้นประสีแดงแสดงตำแหน่งที่ตัดหน้าตัด)
-- ขนาดต่อเนื่องบนผนังภายนอกทั้งสี่ด้าน
+**What it shows:** The current house layout with 2 bedrooms, bathroom, corridor, living room, and kitchen.
 
-**section.svg** - หน้าตัด A-A แสดงโครงสร้างที่มีอยู่:
-- ความสูงผนัง 3.0 ม.
-- ความสูงสันหลังคา 5.0 ม.
-- หลังคาจั่วพร้อมชายคายาว 0.6 ม.
-- คานที่ระดับเพดาน 3.0 ม. (ลึก 100 มม.)
-- ชั้นล่างพร้อมเตียงและคนสำหรับมาตราส่วน
-- ฐานรากพื้นคอนกรีต
-- ขนาดแนวตั้งและแนวนอนทั้งหมด
+**Files:**
+- **[plan.svg](existing/plan.svg)** - Floor plan with semantic wall markup (EXTERIOR vs INTERIOR)
+- **[section.svg](existing/section.svg)** - Vertical section showing roof, walls, beam, and foundation
+- **[SPEC.md](existing/SPEC.md)** - Complete technical specifications and measurements
+
+**Key features:** All walls are tagged to show which are structural (EXTERIOR - must keep) vs removable (INTERIOR - can demo).
 
 ### proposed/
-มีแบบวาดของการรีโนเวทที่เสนอ:
 
-**plan.svg** - แบบผังที่เสนอแสดง:
-- พื้นที่นั่งเล่นแบบเปิด (3.0 ม. × 7.4 ม.) แทนห้องนอน 1 และ 2
-- **รักษาห้องน้ำไว้** (1.9 ม. × 1.0 ม.) - เก็บผนังทั้งหมดไว้
-- รื้อผนังทางเดิน - ตอนนี้เป็นแบบเปิดโล่ง
-- เก็บเฉพาะผนังภายนอกจากพื้นที่ห้องนอน:
-  - ผนังด้านบน (y=100)
-  - ผนังด้านซ้าย (x=100, ความสูงเต็ม)
-  - ผนังส่วน 1.0 ม. (x=400, y=100 ถึง y=200) - เส้นรอบอาคาร
-  - ผนังด้านใต้ (y=840) รวมส่วนทางเดิน 1.1 ม.
-- รื้อผนังภายในทั้งหมด
-- ห้องนั่งเล่นและห้องครัวไม่เปลี่ยนแปลง
-- เส้นตัดหน้าตัดที่ y=620
-- หมายเหตุ: "(ห้องนอนลอฟท์ด้านบน)" แสดงการใช้พื้นที่แนวตั้ง
+**What it shows:** The renovation design with open living space and loft bedroom.
 
-**section.svg** - หน้าตัด A-A ที่เสนอแสดง:
-- โครงสร้างเดียวกับที่มีอยู่
-- พื้นที่นั่งเล่นแบบเปิดที่ระดับล่าง
-- ห้องนอนลอฟท์ด้านบนที่ระดับ 3.0 ม. บนคาน
-- ป้ายอัปเดตเป็น "พื้นที่นั่งเล่นแบบเปิด" และ "ห้องนอนลอฟท์"
+**Files:**
+- **[plan.svg](proposed/plan.svg)** - Floor plan with interior walls removed, bathroom maintained
+- **[section.svg](proposed/section.svg)** - Vertical section showing loft bedroom platform on beam
+- **[SPEC.md](proposed/SPEC.md)** - Complete specifications including what was removed vs maintained
+
+**Key changes:**
+- Ground floor: Open living space (former bedrooms with all interior walls removed)
+- Upper level: Loft bedroom platform supported by existing beam
+- Bathroom: Fully maintained for privacy
+- Living room & kitchen: Unchanged

@@ -1,176 +1,361 @@
 # Claude Context for mon-house
 
 ## Project Overview
-mon-house is docs for a house renovation project.
 
-wil need to be in English and translated to Thai, because the builder is Thai.
+**mon-house** is documentation for a house renovation project in Thailand.
 
-## Project Structure
-This is a project located at `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`.
+**Github repo**: https://github.com/joeblew999/mon-house
 
+**File path**: `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
 
+---
 
-## Documentation Approach
+## What This Project Contains
 
-- **Bilingual**: Documentation in English with Thai translations for the builder.
+This project documents:
+- **Existing house design** (current state)
+- **Proposed house design** (renovation plan)
+- **Technical specifications** (measurements, coordinates, materials)
+- **Bilingual documentation** (English and Thai)
 
+---
 
+## The Information Flow: How It All Works
 
-
-## Floor Plan / SVG Schematic Guidelines
-
-### Dimensioning Standards
-All floor plans should use **chained dimensions** on all exterior walls. This means:
-
-1. **Individual dimensions**: Show each room/segment dimension
-2. **Total dimensions**: Show the overall exterior wall length
-3. **Placement**: Dimensions should be placed outside the building perimeter
-4. **Format**: Use blue dashed lines with blue text for dimensions
-
-### Example of Chained Dimensions:
 ```
-LEFT SIDE (exterior wall):
-- Bedroom 1 height: 3.4m (individual)
-- Bedroom 2 height: 3.0m (individual)
-- Bathroom height: 1.0m (individual)
-- TOTAL: 7.4m (sum of all)
+1. code/drawing-standards.json
+   ↓ (defines vocabulary - what elements mean)
+
+2. SVG drawings (drawings/en/*.svg)
+   ↓ (SOURCE OF TRUTH - tagged geometry)
+
+3. AI reads SVG and generates SPEC.md
+   ↓ (technical parameters extracted)
+
+4. README.md references SPEC.md
+   ↓ (human-friendly explanation)
+
+5. Translation: EN → TH
+   ↓ (brute force copy + translate)
 ```
 
-All four sides (top, bottom, left, right) should have chained dimensions showing:
-- Each room's contribution to that wall
-- The total length of that exterior wall
+**Key principle**: SVG drawings are the source of truth. Everything else is derived or documented from them.
 
-### Scale
-- Use centerline dimensions (dimensions measured to wall centerlines)
-- Standard scale: 1 meter = 100 pixels in SVG
-- This is a schematic - accuracy to centerlines is acceptable
+---
 
-### Other SVG Elements
-- Walls: Black, 8px stroke width
-- Doors: Brown, with swing arc showing direction
-- Windows: Light blue fill, blue stroke
-- Dimension lines: Blue, dashed (5,5 pattern)
-- Dimension text: Blue, 16px Arial
+## File Structure
 
-### Notes
-- It's OK for doors to overlap walls - this is a schematic
-- All dimensions should be clearly visible and not overlapping
-- Use comments in SVG to label sections clearly
-
-## Bilingual Documentation Structure
-
-The project uses **language-specific folders** (`en/` and `th/`) to clearly separate English and Thai documentation for builders.
-
-### Folder Structure
 ```
 mon-house/
-├── README.md            # STABLE ENTRY POINT - never needs updates
-│                        # Simple language router to en/ or th/
-│
-└── drawings/
-    ├── en/              # English documentation (source of truth)
-    │   ├── README.md    # ALL English specs and assumptions
-    │   ├── existing/    # Current layout (English labels)
-    │   │   ├── plan.svg
-    │   │   └── section.svg
-    │   └── proposed/    # Renovation plan (English labels)
-    │       ├── plan.svg
-    │       └── section.svg
-    └── th/              # Thai documentation (ภาษาไทย)
-        ├── README.th.md # ALL Thai specs and assumptions
-        ├── existing/    # Current layout (Thai labels)
-        │   ├── plan.svg
-        │   └── section.svg
-        └── proposed/    # Renovation plan (Thai labels)
-            ├── plan.svg
-            └── section.svg
+├── README.md                           # Language router (links to en/ or th/)
+├── CLAUDE.md                           # This file (AI instructions)
+├── code/
+│   └── drawing-standards.json         # Vocabulary: what elements mean
+├── drawings/
+│   ├── en/                            # English documentation (SOURCE)
+│   │   ├── README.md                  # Human explanation
+│   │   ├── existing/
+│   │   │   ├── plan.svg               # Current floor plan
+│   │   │   ├── section.svg            # Current section view
+│   │   │   └── SPEC.md                # Technical specs (AI-generated)
+│   │   └── proposed/
+│   │       ├── plan.svg               # Proposed floor plan
+│   │       ├── section.svg            # Proposed section view
+│   │       └── SPEC.md                # Technical specs (AI-generated)
+│   └── th/                            # Thai translation (DERIVED from en/)
+│       └── (mirror of en/ structure with Thai text)
+└── .git/hooks/pre-commit              # Enforces EN→TH sync
 ```
 
-### IMPORTANT: Root README Pattern
+---
 
-**The root `README.md` is STABLE and should NEVER contain project details.**
+## The 4 Documentation Layers
 
-**Purpose**: Simple language router only
-- Links to `drawings/en/README.md` for English
-- Links to `drawings/th/README.th.md` for Thai
-- Contains NO specs, wall types, design intent, or technical details
+### 1. Root README.md (Language Router)
+**Purpose**: Language selection only
+**Content**: Links to `en/` or `th/` folders
+**Rule**: NEVER add project details here
 
-**Why**:
-- Root README never needs updates when project evolves
-- No duplicate content between root and language READMEs
-- Single source of truth for each language
-- Clear separation: root = routing, language folders = content
+### 2. code/drawing-standards.json (Design Vocabulary)
+**Purpose**: Define what building elements mean semantically
+**Content**: Element definitions, CSS classes, visual properties
+**Audience**: AI (for programmatic reference)
 
-**Rule**: ALL project content (specs, drawings, design intent) lives in `en/` or `th/` folders, NEVER in root README.
+**Key concepts:**
+- `wall-exterior` = building envelope (vertical)
+- `roof` = building envelope (top)
+- `foundation` = building envelope (bottom)
+- `wall-interior` = partition (non-structural)
+- **Building envelope** = complete boundary (exterior walls + roof + foundation)
 
-### Sources of Truth
+### 3. SVG Drawings (Source of Truth)
+**Location**: `drawings/en/existing/*.svg` and `drawings/en/proposed/*.svg`
+**Purpose**: Tagged building geometry
+**Audience**: AI reads to derive specs; humans view for visualization
 
-1. **English Documentation**: `drawings/en/README.md`
-   - Primary source of truth
-   - Contains all design intent, assumptions, and specifications
-   - Defines semantic wall types (EXTERIOR vs INTERIOR)
-   - Documents building dimensions and structural elements
+**Rule**: This is the SOURCE OF TRUTH. All measurements come from here.
 
-2. **Thai Documentation**: `drawings/th/README.th.md`
-   - Must mirror all content from `en/README.md`
-   - Same structure and detail level
-   - References same folder structure
+### 4. SPEC.md (AI-Generated Technical Specifications)
+**Location**: `drawings/en/existing/SPEC.md` and `drawings/en/proposed/SPEC.md`
+**Purpose**: Technical parameters extracted from SVG
+**Generation**: AI reads SVG tags → generates SPEC.md
+**Content**: Coordinates, dimensions, floor areas, materials
+**Header**: Must say "AUTO-GENERATED - DO NOT EDIT MANUALLY"
 
-3. **English Drawings**: `drawings/en/existing/` and `drawings/en/proposed/`
-   - SVG files with English labels
-   - Uses semantic CSS classes: `.wall-exterior` (black, 8px solid) and `.wall-interior` (red, 4px dashed)
+**Rule**: If SVG changes → regenerate SPEC.md
 
-4. **Thai Drawings**: `drawings/th/existing/` and `drawings/th/proposed/`
-   - **Same SVG structure** as English drawings
-   - **Only labels translated** to Thai
-   - Must maintain identical coordinates and styling
+### 5. README.md (Human Explanation)
+**Location**: `drawings/en/README.md`
+**Purpose**: Human-friendly explanation of the design
+**Audience**: Builders, contractors, stakeholders
+**Content**: Design intent (WHY and WHAT), references to SPEC.md for numbers
+**Rule**: NO coordinates, NO dimensions in README - just concepts and references
 
-### Semantic Wall Markup
+### 6. Thai Translations (TH)
+**Location**: `drawings/th/` (mirrors `drawings/en/`)
+**Purpose**: Thai translations for Thai builders
+**Generation**: Copy entire `en/` folder → translate all text
+**Rule**: Must maintain identical structure to EN files
 
-**CRITICAL**: All floor plans use semantic CSS classes to distinguish wall types:
+---
 
-- **`.wall-exterior`** (black, 8px solid): Building perimeter/envelope - **MUST be maintained** in renovation
-- **`.wall-interior`** (red, 4px dashed): Internal partitions - **CAN be removed** in renovation
+## Working with SVG Drawings
 
-Wall classification requires understanding of building structure, not just room adjacency.
-**Example**: A 1.0m wall with no room behind it is EXTERIOR even if between two interior rooms.
+### SVG Structure Requirements
 
-### Translation Guidelines
+**Every SVG element must:**
+1. Use a `class` attribute (from drawing-standards.json)
+2. Match a CSS class in the `<style>` section
+3. Match a definition in drawing-standards.json
 
-When updating drawings or documentation:
+**Example:**
+```svg
+<!-- In drawing-standards.json -->
+"wall-exterior": { "stroke": "black", "stroke-width": 8 }
 
-1. **Always update BOTH** English (`en/`) and Thai (`th/`) versions
-2. Keep structure identical - only translate text labels
-3. Maintain same SVG coordinates and styling
-4. **Thai room labels**:
-   - ห้องนอน (bedroom)
-   - ห้องน้ำ (bathroom)
-   - ห้องนั่งเล่น (living room)
-   - ห้องครัว (kitchen)
-   - พื้นที่นั่งเล่นแบบเปิด (open living space)
-   - ห้องนอนลอฟท์ (loft bedroom)
-5. **Thai technical terms**:
-   - ผนัง (wall), ผนังภายนอก (exterior wall), ผนังภายใน (interior wall)
-   - หน้าต่าง (window), ประตู (door)
-   - คาน (beam), สันหลังคา (ridge), ชายคา (eave)
-   - หน้าตัด (section), แบบผัง (plan)
-   - มาตราส่วน (scale), ขนาด (dimension)
+<!-- In SVG <style> section -->
+.wall-exterior { stroke: black; stroke-width: 8; }
 
-### File Path Rules
+<!-- In SVG elements -->
+<line class="wall-exterior" x1="100" y1="100" x2="400" y2="100"/>
+```
 
-- **ALWAYS** use relative paths starting with `./`
-- Project root: `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
-- English drawings: `./drawings/en/`
-- Thai drawings: `./drawings/th/`
-- Never use absolute paths with username in them
+**Rule**: NO inline styles (`stroke="black"`). Always use classes.
 
-## Design Intent
+### Keeping Standards and SVG in Sync
 
-**Goal**: Convert 2-bedroom house to open-plan living space with loft bedroom
+**These THREE must always match:**
+1. `code/drawing-standards.json` (definition)
+2. SVG `<style>` section (CSS classes)
+3. SVG elements (use the classes)
 
-**Key Changes**:
-- **REMOVE**: Interior bedroom walls (red dashed lines)
-- **KEEP**: All exterior walls (black solid lines)
-- **KEEP**: Bathroom unchanged
-- **ADD**: Loft bedroom above at 3.0m level on beam
+**If you add a new element type:**
+1. Add to `drawing-standards.json`
+2. Add CSS class to SVG `<style>`
+3. Use class in SVG elements
 
+### Building Envelope Semantic Rules
+
+**Building envelope** = complete boundary separating interior from exterior
+
+**Components:**
+- **Exterior walls** (vertical envelope) - `wall-exterior` class
+- **Roof** (top envelope) - `roof` class
+- **Foundation** (bottom envelope) - `foundation` class
+
+**Critical rule**: ALL interior elements (furniture, people, etc.) must be positioned **inside** the building envelope:
+- Between exterior walls (horizontal containment)
+- Below roof slope (vertical containment from top)
+- Above foundation (vertical containment from bottom)
+
+**Example check**: For loft bedroom in proposed section:
+- Person's head must be below roof slope at that x-coordinate
+- Bed must be between left/right exterior walls
+- All elements on platform above foundation level
+
+---
+
+## Translation Workflow (Brute Force)
+
+### The Simple 3-Step Process
+
+**Step 1: Delete TH folder, Copy EN folder**
+```bash
+# Delete entire TH folder
+rm -rf drawings/th/
+
+# Copy entire EN folder
+cp -r drawings/en/ drawings/th/
+```
+
+**Step 2: Translate ALL text in SVG files**
+- Open every `.svg` file in `drawings/th/`
+- Translate ALL `<text>` element content
+- **Don't change**: coordinates, CSS classes, structure
+
+**Step 3: Translate ALL text in Markdown files**
+- Rename `SPEC.md` → `SPEC.th.md`
+- Rename `README.md` → `README.th.md`
+- Translate ALL text
+- **Don't change**: numbers, coordinates, measurements
+
+### Thai Architectural Terminology
+
+**Rule**: Translate the SEMANTIC MEANING, not word-for-word.
+
+**Source of terminology**: See the `vocabulary` field in `code/drawing-standards.json` for standard architectural terms and their semantic meanings.
+
+**Translation approach:**
+- Read the element's semantic meaning in drawing-standards.json
+- Use proper Thai architectural terms that convey that concept
+- Prioritize semantic accuracy over literal word translation
+
+**Example**:
+- `wall-exterior` has semantic meaning "Forms the building boundary between conditioned interior and exterior environment"
+- Thai translation should convey "structural perimeter wall that separates inside from outside"
+- Not just literal "wall outside"
+
+---
+
+## Pre-Commit Hook (Automatic Enforcement)
+
+**Location**: `.git/hooks/pre-commit`
+
+### What It Does
+
+When you commit EN files, the hook automatically:
+1. Deletes entire `drawings/th/` folder
+2. Copies entire `drawings/en/` folder → `drawings/th/`
+3. Renames markdown files (`.md` → `.th.md`)
+4. Prompts you to translate
+5. Blocks commit until TH files are translated and staged
+6. Verifies structure matches (line count check)
+
+### How to Use
+
+```bash
+# 1. Edit EN files
+vim drawings/en/proposed/section.svg
+
+# 2. Stage and commit EN files
+git add drawings/en/
+git commit -m "Update proposed section"
+
+# Hook runs and blocks:
+#   🗑️  Deleting entire TH folder...
+#   📋 Copying entire EN folder to TH...
+#   ⚠️  TRANSLATION REQUIRED
+#   ❌ COMMIT BLOCKED
+
+# 3. Translate ALL TH files
+vim drawings/th/existing/plan.svg       # translate text
+vim drawings/th/existing/section.svg    # translate text
+vim drawings/th/existing/SPEC.th.md     # translate text
+vim drawings/th/proposed/plan.svg       # translate text
+vim drawings/th/proposed/section.svg    # translate text
+vim drawings/th/proposed/SPEC.th.md     # translate text
+
+# 4. Stage TH files and commit again
+git add drawings/th/
+git commit -m "Update proposed section"
+
+# Hook runs and passes:
+#   ✅ Structure verification passed
+#   ✅ EN→TH translation sync OK
+```
+
+**Why this works**: Guarantees EN and TH are always synchronized in version control.
+
+---
+
+## AI Workflow: Reading SVG and Generating SPEC
+
+When SVG drawings change, AI should:
+
+**Step 1: Read drawing-standards.json**
+- Learn what element classes mean semantically
+- Understand visual properties
+
+**Step 2: Read SVG drawings**
+- Find elements by class (e.g., `wall-exterior`)
+- Extract coordinates from attributes (x1, y1, x2, y2, etc.)
+- Calculate dimensions and areas
+- Identify building envelope, rooms, openings
+
+**Step 3: Generate SPEC.md**
+- Document building envelope coordinates
+- List all rooms with dimensions and floor areas
+- Document structural elements (beams, foundations)
+- Calculate totals
+- Mark file: "AUTO-GENERATED - DO NOT EDIT MANUALLY"
+
+**Step 4: Update README.md**
+- Reference SPEC.md for all numbers
+- Explain design intent (WHY and WHAT)
+- NO coordinates or dimensions in README
+
+---
+
+## Common Tasks
+
+### When you change an SVG drawing:
+
+1. Edit `drawings/en/existing/*.svg` or `drawings/en/proposed/*.svg`
+2. Verify elements use correct classes from drawing-standards.json
+3. Verify all interior elements are inside building envelope
+4. Regenerate corresponding SPEC.md (AI reads SVG)
+5. Run translation workflow (delete TH → copy EN → translate)
+
+### When you add a new element type:
+
+1. Add definition to `code/drawing-standards.json`
+2. Add CSS class to SVG `<style>` section
+3. Apply class to SVG elements
+4. Verify sync: JSON ↔ CSS ↔ elements
+
+### When committing changes:
+
+1. Edit EN files only
+2. Stage and commit: `git add drawings/en/ && git commit`
+3. Pre-commit hook will block and prompt for translation
+4. Translate all TH files
+5. Stage and commit again: `git add drawings/th/ && git commit`
+
+---
+
+## Design Vocabulary (Semantic Terms)
+
+From `code/drawing-standards.json`:
+
+**envelope**: The complete building boundary separating conditioned interior from exterior environment - includes exterior walls (vertical envelope), roof (top envelope), and foundation (bottom envelope)
+
+**perimeter**: The outer boundary of the building footprint
+
+**partition**: Interior wall dividing interior space (non-structural)
+
+**structural**: Element that carries loads and cannot be removed
+
+**load-bearing**: Element that supports structural loads (roof, floors, etc.)
+
+**weather barrier**: Element that separates interior from exterior environment
+
+**removable**: Element that can be removed without affecting building stability
+
+---
+
+## Critical Rules Summary
+
+1. **SVG is source of truth** - all measurements derive from SVG geometry
+2. **Building envelope** = exterior walls + roof + foundation (semantic concept)
+3. **All interior elements must be inside envelope** (below roof, between walls, above foundation)
+4. **EN is source, TH is derived** - always edit EN first, then translate to TH
+5. **Translation = brute force** - delete TH folder, copy EN, translate all text
+6. **Structure must match** - TH files must have identical coordinates/CSS/structure as EN
+7. **Use classes, not inline styles** - all SVG elements use classes from drawing-standards.json
+8. **SPEC.md is auto-generated** - regenerate when SVG changes
+9. **README.md references SPEC** - no numbers in README, only concepts
+10. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
+
+---
+
+**This file was simplified on 2025-10-23 to remove accumulated complexity.**

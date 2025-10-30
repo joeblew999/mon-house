@@ -10,6 +10,9 @@
       .window { stroke: blue; stroke-width: 4; fill: lightblue; opacity: 0.5; }
       .door { stroke: brown; stroke-width: 4; fill: none; }
       .door-arc { stroke: brown; stroke-width: 2; fill: none; }
+      .section-cut { stroke: red; stroke-width: 3; fill: none; stroke-dasharray: 15,10; }
+      .section-arrow { stroke: red; stroke-width: 3; fill: none; }
+      .section-label { fill: red; font-family: Arial; font-size: 14px; font-weight: bold; }
     </style>
   </defs>
 
@@ -17,29 +20,25 @@
   <rect width="1200" height="1000" fill="white"/>
 
   <!-- Title -->
-  <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold">แบบผังที่เสนอ</text>
+  <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold">Proposed Plan</text>
 
   <!-- Scale: 1 meter = 100 pixels -->
 
   <!-- Outer walls - Main structure -->
   <!-- Based on visible dimensions: 3.0m width, multiple sections vertically -->
 
-  <!-- OPEN LIVING SPACE (former Bedroom 1 and Bedroom 2) - 3.0m x 6.4m -->
-  <!-- INTERIOR walls REMOVED: wall at y=440, wall at y=740 (to bathroom), interior portion of right wall from y=200 to y=740 -->
-  <!-- EXTERIOR walls KEPT: top, left, and 1.0m right wall section -->
+  <!-- OPEN LIVING SPACE (former Bedroom 1 & 2) - 3.0m x 7.4m -->
+  <!-- ALL INTERIOR WALLS REMOVED -->
   <line x1="100" y1="100" x2="400" y2="100" class="wall-exterior"/> <!-- EXTERIOR: Top wall - 3.0m -->
-  <line x1="100" y1="100" x2="100" y2="840" class="wall-exterior"/> <!-- EXTERIOR: Left wall - 7.4m (full height to bathroom bottom) -->
+  <line x1="100" y1="100" x2="100" y2="740" class="wall-exterior"/> <!-- EXTERIOR: Left wall - 6.4m (to bathroom) -->
   <line x1="400" y1="100" x2="400" y2="200" class="wall-exterior"/> <!-- EXTERIOR: Right wall - 1.0m (building perimeter) -->
 
-  <!-- BATHROOM - 1.9m x 1.0m (KEPT in renovation) -->
-  <line x1="100" y1="740" x2="290" y2="740" class="wall-interior"/> <!-- INTERIOR: Top wall - 1.9m (bathroom stays enclosed) -->
+  <!-- BATHROOM - 1.9m x 1.0m (MAINTAINED) -->
+  <line x1="100" y1="740" x2="290" y2="740" class="wall-interior"/> <!-- INTERIOR: Top wall - bathroom maintained -->
   <line x1="100" y1="740" x2="100" y2="840" class="wall-exterior"/> <!-- EXTERIOR: Left wall - 1.0m -->
-  <line x1="290" y1="740" x2="290" y2="840" class="wall-interior"/> <!-- INTERIOR: Right wall - 1.0m (bathroom stays enclosed) -->
+  <line x1="290" y1="740" x2="290" y2="840" class="wall-interior"/> <!-- INTERIOR: Right wall - bathroom maintained -->
   <line x1="100" y1="840" x2="290" y2="840" class="wall-exterior"/> <!-- EXTERIOR: Bottom wall - 1.9m -->
   <line x1="290" y1="840" x2="400" y2="840" class="wall-exterior"/> <!-- EXTERIOR: Bottom wall - 1.1m (south perimeter) -->
-
-  <!-- CORRIDOR - now open to living room and open living space -->
-  <!-- All interior walls REMOVED -->
 
   <!-- LIVING ROOM (Right side) - 2.9m x 6.4m -->
   <line x1="400" y1="200" x2="690" y2="200" class="wall-exterior"/> <!-- EXTERIOR: Top wall - 2.9m -->
@@ -173,40 +172,40 @@
   <rect x="96" y="200" width="8" height="80" class="window"/>
   <text x="75" y="240" font-size="12" fill="blue" text-anchor="middle" transform="rotate(-90 75 240)">Window 2</text>
 
-  <!-- Bathroom Door - on right wall opening to corridor -->
-  <line x1="290" y1="760" x2="290" y2="820" class="door"/> <!-- Door opening (60 pixels = 0.6m) -->
-  <path d="M 290 760 Q 250 770 250 800" class="door-arc"/> <!-- Door swing arc (swings into bathroom) -->
+  <!-- Bathroom Door - maintained -->
+  <line x1="290" y1="760" x2="290" y2="820" class="door"/>
+  <path d="M 290 760 Q 250 770 250 800" class="door-arc"/>
   <text x="270" y="795" font-size="10" fill="brown">Door</text>
 
   <!-- Bedroom doors REMOVED - open plan -->
 
   <!-- Room labels -->
-  <text x="250" y="400" font-size="18" font-weight="bold" text-anchor="middle">พื้นที่นั่งเล่นแบบเปิด</text>
-  <text x="250" y="420" font-size="14" text-anchor="middle">3.0 ม. × 6.4 ม.</text>
-  <text x="250" y="440" font-size="12" fill="gray" text-anchor="middle">(ห้องนอนลอฟท์ด้านบน)</text>
+  <text x="250" y="400" font-size="18" font-weight="bold" text-anchor="middle">OPEN LIVING SPACE</text>
+  <text x="250" y="420" font-size="14" text-anchor="middle">3.0m × 7.4m</text>
+  <text x="250" y="440" font-size="12" text-anchor="middle" font-style="italic">(Loft Bedroom Above)</text>
 
-  <text x="195" y="785" font-size="18" font-weight="bold" text-anchor="middle">ห้องน้ำ</text>
-  <text x="195" y="805" font-size="14" text-anchor="middle">1.9 ม. × 1.0 ม.</text>
+  <text x="195" y="785" font-size="18" font-weight="bold" text-anchor="middle">BATHROOM</text>
+  <text x="195" y="805" font-size="14" text-anchor="middle">1.9m × 1.0m</text>
 
-  <text x="545" y="515" font-size="18" font-weight="bold" text-anchor="middle">ห้องนั่งเล่น</text>
-  <text x="545" y="535" font-size="14" text-anchor="middle">2.9 ม. × 6.4 ม.</text>
+  <text x="545" y="515" font-size="18" font-weight="bold" text-anchor="middle">LIVING ROOM</text>
+  <text x="545" y="535" font-size="14" text-anchor="middle">2.9m × 6.4m</text>
 
-  <text x="790" y="685" font-size="18" font-weight="bold" text-anchor="middle">ห้องครัว</text>
-  <text x="790" y="705" font-size="14" text-anchor="middle">2.0 ม. × 3.0 ม.</text>
+  <text x="790" y="685" font-size="18" font-weight="bold" text-anchor="middle">KITCHEN</text>
+  <text x="790" y="705" font-size="14" text-anchor="middle">2.0m × 3.0m</text>
 
   <!-- Legend -->
-  <text x="1000" y="100" font-size="14" font-weight="bold">สัญลักษณ์:</text>
-  <line x="1000" y1="120" x2="1050" y2="120" class="wall-exterior"/>
-  <text x="1060" y="125" font-size="12">ผนังภายนอก</text>
+  <text x="1000" y="100" font-size="14" font-weight="bold">Legend:</text>
+  <line x1="1000" y1="120" x2="1050" y2="120" class="wall-exterior"/>
+  <text x="1060" y="125" font-size="12">Exterior Wall</text>
 
   <line x1="1000" y1="140" x2="1050" y2="140" class="wall-interior"/>
-  <text x="1060" y="145" font-size="12">ผนังภายใน</text>
+  <text x="1060" y="145" font-size="12">Interior Wall</text>
 
   <rect x="1000" y="155" width="50" height="8" class="window"/>
-  <text x="1060" y="165" font-size="12">หน้าต่าง</text>
+  <text x="1060" y="165" font-size="12">Window</text>
 
   <line x1="1000" y1="180" x2="1050" y2="180" class="dimension-line"/>
-  <text x="1060" y="185" font-size="12">ขนาด</text>
+  <text x="1060" y="185" font-size="12">Dimension</text>
 
   <!-- Notes -->
   <text x="1000" y="200" font-size="12" font-style="italic">Scale: 1m = 100px</text>
@@ -215,17 +214,17 @@
   <!-- Section Cut Line -->
   <!-- Section cuts horizontally through living room and kitchen area -->
   <!-- Cut line at y=620 (moved 1m south from y=520) -->
-  <line x1="100" y1="620" x2="890" y2="620" stroke="red" stroke-width="3" stroke-dasharray="15,10"/>
+  <line x1="100" y1="620" x2="890" y2="620" class="section-cut"/>
 
   <!-- Section markers (arrows showing direction of view) -->
   <!-- Left arrow pointing down (we're looking from top to bottom) -->
-  <path d="M 100 620 L 85 605 M 100 620 L 85 635" stroke="red" stroke-width="3" fill="none"/>
+  <path d="M 100 620 L 85 605 M 100 620 L 85 635" class="section-arrow"/>
 
   <!-- Right arrow pointing down -->
-  <path d="M 890 620 L 905 605 M 890 620 L 905 635" stroke="red" stroke-width="3" fill="none"/>
+  <path d="M 890 620 L 905 605 M 890 620 L 905 635" class="section-arrow"/>
 
   <!-- Section label -->
-  <text x="495" y="610" font-size="14" fill="red" font-weight="bold" text-anchor="middle">หน้าตัด A-A</text>
+  <text x="495" y="610" class="section-label" text-anchor="middle">SECTION A-A</text>
 
 
 </svg>

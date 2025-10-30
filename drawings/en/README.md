@@ -21,45 +21,17 @@
 - **MAINTAIN existing bathroom** (1.9m × 1.0m) - all walls kept
 - Remove corridor walls (now open to living room and open living space)
 
-## Assumptions
+## Building Overview
 
-### Building Structure
-- Single floor house with loft potential
-- Floor to ceiling height: 3.0 m
-- Gable ridge line runs top to bottom (north-south direction based on plan)
-- Ridge height from floor: 5.0 m
-- Eaves overhang: 0.6 m (600 mm)
+The house is a single-story structure with gable roof and loft potential. For precise measurements and coordinates, see the SPEC.md files in each folder:
+- **[existing/SPEC.md](existing/SPEC.md)** - Current house dimensions and layout
+- **[proposed/SPEC.md](proposed/SPEC.md)** - Renovation design dimensions and changes
 
-### Floor Plan Dimensions
-- Total width (east-west): 7.9 m
-  - Bedroom 1: 3.0 m width
-  - Living Room: 2.9 m width
-  - Kitchen: 2.0 m width
-- Total depth (north-south): 7.4 m
-  - Bedroom 1: 3.4 m depth
-  - Bedroom 2: 3.0 m depth
-  - Bathroom: 1.0 m depth
-- Corridor: 1.1 m width
-- Bathroom: 1.9 m depth
-- Living Room height: 6.4 m (spans from Bedroom 1 level to bottom)
-- Kitchen height: 3.0 m
-- Opening between Living Room and Kitchen: 3.0 m
+### Key Concepts
 
-### Structural Elements
-- Beam height: 3.0 m (at ceiling level, spans full width)
-- Beam depth: 100 mm (0.1 m)
-- Foundation: Concrete slab
+**Building Envelope:** The exterior perimeter walls that define the building boundary - these are structural and must be maintained.
 
-### Reference Elements (for scale)
-- Bed size: 1.0 m x 2.0 m (single bed)
-- Bed height: ~0.5 m
-- Person height: 1.7 m (standing adult)
-
-### Drawing Standards
-- Scale: 1 meter = 100 pixels in SVG
-- Centerline dimensions used throughout
-- Chained dimensions on all exterior walls
-- Section cut labeled as "SECTION A-A" at y=620 (moved 1m south from original position)
+**Loft Potential:** The existing beam at ceiling level (3.0m height) can support a loft platform, creating a second level sleeping area while maintaining the open ground floor.
 
 ### Wall Types (Semantic Markup)
 **EXTERIOR walls** (black, 8px solid):
@@ -75,44 +47,27 @@
 ## Drawings
 
 ### existing/
-Contains drawings of the current house layout:
 
-**plan.svg** - Existing floor plan showing:
-- 2 bedrooms, bathroom, corridor, living room, kitchen
-- **Semantic wall markup**: EXTERIOR walls (black solid), INTERIOR walls (red dashed)
-- All rooms with dimensions
-- Doors and windows
-- Section cut line at y=620 (red dashed line showing where section is taken)
-- Chained dimensions on all four exterior walls
+**What it shows:** The current house layout with 2 bedrooms, bathroom, corridor, living room, and kitchen.
 
-**section.svg** - Section A-A showing existing structure:
-- 3.0 m wall height
-- 5.0 m ridge height
-- Gable roof with 0.6 m eaves overhang
-- Beam at 3.0 m ceiling level (100mm deep)
-- Ground floor level with bed and person for scale
-- Concrete slab foundation
-- All vertical and horizontal dimensions
+**Files:**
+- **[plan.svg](existing/plan.svg)** - Floor plan with semantic wall markup (EXTERIOR vs INTERIOR)
+- **[section.svg](existing/section.svg)** - Vertical section showing roof, walls, beam, and foundation
+- **[SPEC.md](existing/SPEC.md)** - Complete technical specifications and measurements
+
+**Key features:** All walls are tagged to show which are structural (EXTERIOR - must keep) vs removable (INTERIOR - can demo).
 
 ### proposed/
-Contains drawings of the proposed renovation:
 
-**plan.svg** - Proposed floor plan showing:
-- Open living space (3.0m × 7.4m) replacing Bedrooms 1 & 2
-- **Bathroom maintained** (1.9m × 1.0m) - all walls kept
-- Corridor walls removed - now open plan
-- Only EXTERIOR walls kept from bedroom area:
-  - Top wall (y=100)
-  - Left wall (x=100, full height)
-  - 1.0m wall section (x=400, y=100 to y=200) - building perimeter
-  - South wall (y=840) including 1.1m corridor section
-- All INTERIOR walls removed
-- Living room and kitchen unchanged
-- Section cut line at y=620
-- Note: "(Loft Bedroom Above)" indicating vertical space usage
+**What it shows:** The renovation design with open living space and loft bedroom.
 
-**section.svg** - Proposed Section A-A showing:
-- Same structure as existing
-- Open living space at ground level
-- Loft bedroom above at 3.0m level on beam
-- Labels updated to show "OPEN LIVING SPACE" and "LOFT BEDROOM"
+**Files:**
+- **[plan.svg](proposed/plan.svg)** - Floor plan with interior walls removed, bathroom maintained
+- **[section.svg](proposed/section.svg)** - Vertical section showing loft bedroom platform on beam
+- **[SPEC.md](proposed/SPEC.md)** - Complete specifications including what was removed vs maintained
+
+**Key changes:**
+- Ground floor: Open living space (former bedrooms with all interior walls removed)
+- Upper level: Loft bedroom platform supported by existing beam
+- Bathroom: Fully maintained for privacy
+- Living room & kitchen: Unchanged

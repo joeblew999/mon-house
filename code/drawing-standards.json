@@ -1,0 +1,308 @@
+{
+  "drawingStandards": {
+    "version": "1.0",
+    "description": "CAD standards for architectural drawings - defines how building elements are tagged and visually represented",
+    "scale": {
+      "unit": "meters",
+      "pixelsPerMeter": 100,
+      "description": "1 meter = 100 pixels in all SVG drawings"
+    },
+    "elements": {
+      "wall-exterior": {
+        "description": "Building perimeter/envelope walls - structural, load-bearing",
+        "semanticMeaning": "Forms the building boundary between conditioned interior and exterior environment",
+        "cssClass": "wall-exterior",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 8,
+          "fill": "none",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": true,
+          "loadBearing": true,
+          "removable": false,
+          "weatherBarrier": true
+        },
+        "appliesTo": ["plan", "section", "elevation"],
+        "vocabulary": "EXTERIOR wall, perimeter wall, envelope wall, structural wall"
+      },
+      "wall-interior": {
+        "description": "Interior partition walls - non-structural room dividers",
+        "semanticMeaning": "Divides interior space into rooms but does not define building envelope",
+        "cssClass": "wall-interior",
+        "visual": {
+          "stroke": "red",
+          "strokeWidth": 4,
+          "strokeDasharray": "10,5",
+          "fill": "none",
+          "style": "dashed"
+        },
+        "properties": {
+          "structural": false,
+          "loadBearing": false,
+          "removable": true,
+          "weatherBarrier": false
+        },
+        "appliesTo": ["plan", "section"],
+        "vocabulary": "INTERIOR wall, partition wall, non-structural wall, room divider"
+      },
+      "window": {
+        "description": "Window openings in walls",
+        "semanticMeaning": "Glazed opening providing light and views",
+        "cssClass": "window",
+        "visual": {
+          "stroke": "blue",
+          "strokeWidth": 4,
+          "fill": "lightblue",
+          "opacity": 0.5,
+          "style": "solid"
+        },
+        "properties": {
+          "structural": false,
+          "removable": true,
+          "weatherBarrier": true
+        },
+        "appliesTo": ["plan", "section", "elevation"]
+      },
+      "door": {
+        "description": "Door openings with swing direction",
+        "semanticMeaning": "Opening for passage between spaces",
+        "cssClass": "door",
+        "visual": {
+          "stroke": "brown",
+          "strokeWidth": 4,
+          "fill": "none",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": false,
+          "removable": true,
+          "weatherBarrier": false
+        },
+        "appliesTo": ["plan"],
+        "notes": "Show swing arc to indicate door operation direction"
+      },
+      "door-arc": {
+        "description": "Arc showing door swing direction",
+        "cssClass": "door-arc",
+        "visual": {
+          "stroke": "brown",
+          "strokeWidth": 2,
+          "fill": "none",
+          "style": "solid"
+        },
+        "appliesTo": ["plan"]
+      },
+      "beam": {
+        "description": "Structural beam elements",
+        "semanticMeaning": "Horizontal structural member carrying loads",
+        "cssClass": "beam",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 2,
+          "fill": "#8B4513",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": true,
+          "loadBearing": true,
+          "removable": false
+        },
+        "appliesTo": ["section", "plan"],
+        "vocabulary": "structural beam, loft beam, load-bearing beam"
+      },
+      "suspended-ceiling": {
+        "description": "Suspended ceiling hung from structural beam above",
+        "semanticMeaning": "Non-structural ceiling plane suspended below the structural beam at eave level",
+        "cssClass": "suspended-ceiling",
+        "visual": {
+          "stroke": "gray",
+          "strokeWidth": 2,
+          "strokeDasharray": "5,5",
+          "fill": "none",
+          "style": "dashed"
+        },
+        "properties": {
+          "structural": false,
+          "loadBearing": false,
+          "removable": true,
+          "attachedTo": "beam"
+        },
+        "appliesTo": ["section"],
+        "vocabulary": "suspended ceiling, drop ceiling, false ceiling",
+        "notes": "Hung from structural beam at eave level, creates lower ceiling height below beam"
+      },
+      "insulated-ceiling": {
+        "description": "Insulated cathedral ceiling attached to underside of roof",
+        "semanticMeaning": "Ceiling board with insulation attached directly to roof structure, following roof slope",
+        "cssClass": "insulated-ceiling",
+        "visual": {
+          "stroke": "#D2B48C",
+          "strokeWidth": 3,
+          "fill": "none",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": false,
+          "loadBearing": false,
+          "removable": true,
+          "attachedTo": "roof",
+          "insulated": true
+        },
+        "appliesTo": ["section"],
+        "vocabulary": "cathedral ceiling, insulated ceiling, vaulted ceiling",
+        "notes": "Follows roof slope, includes insulation layer between roof and ceiling board"
+      },
+      "roof": {
+        "description": "Roof structure and covering - top of building envelope",
+        "semanticMeaning": "Forms the top boundary of the building envelope between conditioned interior and exterior environment",
+        "cssClass": "roof",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 6,
+          "fill": "none",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": true,
+          "loadBearing": true,
+          "removable": false,
+          "weatherBarrier": true
+        },
+        "appliesTo": ["section", "elevation"],
+        "vocabulary": "roof envelope, building envelope top, weather barrier"
+      },
+      "foundation": {
+        "description": "Foundation and slab elements - bottom of building envelope",
+        "semanticMeaning": "Forms the bottom boundary of the building envelope between conditioned interior and ground/exterior environment",
+        "cssClass": "foundation",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 2,
+          "fill": "#cccccc",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": true,
+          "loadBearing": true,
+          "removable": false,
+          "weatherBarrier": true
+        },
+        "appliesTo": ["section"],
+        "vocabulary": "foundation envelope, building envelope bottom, slab, weather barrier"
+      },
+      "dimension-line": {
+        "description": "Dimension and measurement lines",
+        "cssClass": "dimension-line",
+        "visual": {
+          "stroke": "blue",
+          "strokeWidth": 1,
+          "strokeDasharray": "5,5",
+          "fill": "none",
+          "style": "dashed"
+        },
+        "appliesTo": ["plan", "section", "elevation"]
+      },
+      "dimension-text": {
+        "description": "Dimension text labels",
+        "cssClass": "dimension-text",
+        "visual": {
+          "fill": "blue",
+          "fontFamily": "Arial",
+          "fontSize": 16
+        },
+        "appliesTo": ["plan", "section", "elevation"]
+      },
+      "section-cut": {
+        "description": "Section cut line indicating where a section view is taken",
+        "semanticMeaning": "Shows the location and direction of a section view - where the building is 'cut' to show internal vertical relationships",
+        "cssClass": "section-cut",
+        "visual": {
+          "stroke": "red",
+          "strokeWidth": 3,
+          "strokeDasharray": "15,10",
+          "fill": "none",
+          "style": "dashed"
+        },
+        "properties": {
+          "showsViewDirection": true,
+          "requiresLabel": true,
+          "requiresArrows": true
+        },
+        "appliesTo": ["plan"],
+        "notes": "Section cut lines must have: (1) dashed line showing cut location, (2) arrows indicating view direction, (3) label identifying the section (e.g., 'SECTION A-A')"
+      },
+      "section-arrow": {
+        "description": "Arrow markers showing section view direction",
+        "semanticMeaning": "Indicates the direction from which the section is viewed",
+        "visual": {
+          "stroke": "red",
+          "strokeWidth": 3,
+          "fill": "none",
+          "style": "solid"
+        },
+        "appliesTo": ["plan"]
+      },
+      "section-label": {
+        "description": "Text label identifying the section",
+        "cssClass": "section-label",
+        "visual": {
+          "fill": "red",
+          "fontFamily": "Arial",
+          "fontSize": 14,
+          "fontWeight": "bold"
+        },
+        "appliesTo": ["plan"],
+        "notes": "Format: 'SECTION A-A', 'SECTION B-B', etc."
+      },
+      "furniture": {
+        "description": "Furniture elements shown for context and scale",
+        "semanticMeaning": "Non-structural furnishings that show how spaces will be used",
+        "cssClass": "furniture",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 2,
+          "fill": "#D2B48C",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": false,
+          "removable": true,
+          "contextual": true
+        },
+        "appliesTo": ["section", "plan"],
+        "notes": "Used to show spatial context - beds, tables, chairs, etc."
+      },
+      "human-scale": {
+        "description": "Human figure shown for scale reference",
+        "semanticMeaning": "Scale reference showing typical human dimensions (1.7m standing height)",
+        "cssClass": "human-scale",
+        "visual": {
+          "stroke": "black",
+          "strokeWidth": 2,
+          "fill": "none",
+          "style": "solid"
+        },
+        "properties": {
+          "structural": false,
+          "scaleReference": true,
+          "standardHeight": "1.7m"
+        },
+        "appliesTo": ["section"],
+        "notes": "Stick figure or simple representation - helps viewers understand scale of spaces"
+      }
+    },
+    "designVocabulary": {
+      "description": "Common terms for discussing the design",
+      "terms": {
+        "envelope": "The complete building boundary separating conditioned interior from exterior environment - includes exterior walls (vertical envelope), roof (top envelope), and foundation (bottom envelope)",
+        "perimeter": "The outer boundary of the building footprint",
+        "partition": "INTERIOR wall dividing interior space",
+        "loadPath": "Route that structural loads travel from roof to foundation",
+        "structural": "Element that carries loads and cannot be removed",
+        "non-structural": "Element that can be removed without affecting building stability"
+      }
+    }
+  }
+}
