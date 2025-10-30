@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="600" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+
+<!--
+  FILE: code/svg-comment-example.svg
+  TYPE: floor-plan-example
+  SCALE: 1m = 100px
+  PURPOSE: Demonstrates rich comment schema for architectural SVG files
+
+  DESIGN-INTENT:
+  - Show how to embed structured metadata in SVG comments
+  - Demonstrate different comment types and patterns
+  - Provide template for actual drawing files
+
+  KEY CONCEPTS:
+  - Comments capture WHY not just WHAT
+  - Enable informed merge decisions
+  - Document constraints and relationships
+  - Support bilingual consistency checking
+-->
+
+  <defs>
+    <style>
+      .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
+      .wall-interior { stroke: red; stroke-width: 4; fill: none; stroke-dasharray: 5,5; }
+      .dimension-line { stroke: blue; stroke-width: 1; fill: none; stroke-dasharray: 5,5; }
+      .dimension-text { fill: blue; font-family: Arial; font-size: 14px; }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="400" fill="white"/>
+
+  <!-- Title -->
+  <text x="300" y="30" text-anchor="middle" font-size="16" font-weight="bold">
+    SVG Comment Example - Annotated Room
+  </text>
+
+  <!-- ========== EXTERIOR WALLS ========== -->
+
+  <!-- WALL: north-exterior
+       ID: wall-north
+       TYPE: exterior
+       SEMANTIC: building-envelope
+       CONSTRAINT: load-bearing, must-keep
+       COORDINATES: y=100, x=100 to x=500
+       LENGTH: 4.0m (400px)
+       THICKNESS: ~200mm (not shown, centerline dimension)
+       MATERIAL: concrete block
+       STRUCTURAL: yes - supports roof
+       ADJACENT-SPACES:
+         - South: Room interior
+         - North: Exterior
+       CSS-CLASS: wall-exterior
+       VISUAL: black solid, 8px stroke
+       BILINGUAL-PAIR: th#wall-north
+       DESIGN-NOTE: Part of building perimeter, cannot be removed
+  -->
+  <line id="wall-north" class="wall-exterior"
+        x1="100" y1="100" x2="500" y2="100"/>
+
+  <!-- WALL: south-exterior
+       ID: wall-south
+       TYPE: exterior
+       SEMANTIC: building-envelope
+       CONSTRAINT: must-keep
+       COORDINATES: y=300, x=100 to x=500
+       LENGTH: 4.0m (400px)
+  -->
+  <line id="wall-south" class="wall-exterior"
+        x1="100" y1="300" x2="500" y2="300"/>
+
+  <!-- WALL: west-exterior
+       ID: wall-west
+       TYPE: exterior
+       SEMANTIC: building-envelope
+       CONSTRAINT: must-keep
+       COORDINATES: x=100, y=100 to y=300
+       LENGTH: 2.0m (200px)
+  -->
+  <line id="wall-west" class="wall-exterior"
+        x1="100" y1="100" x2="100" y2="300"/>
+
+  <!-- WALL: east-exterior
+       ID: wall-east
+       TYPE: exterior
+       SEMANTIC: building-envelope
+       CONSTRAINT: must-keep
+       COORDINATES: x=500, y=100 to y=300
+       LENGTH: 2.0m (200px)
+  -->
+  <line id="wall-east" class="wall-exterior"
+        x1="500" y1="100" x2="500" y2="300"/>
+
+  <!-- ========== INTERIOR WALL ========== -->
+
+  <!-- WALL: interior-partition
+       ID: wall-partition
+       TYPE: interior
+       SEMANTIC: partition (non-load-bearing)
+       CONSTRAINT: can-remove
+       COORDINATES: x=300, y=100 to y=300
+       LENGTH: 2.0m (200px)
+       THICKNESS: ~100mm (lighter than exterior)
+       STRUCTURAL: no - non-load-bearing partition
+       PURPOSE: Divides room into two spaces
+       CSS-CLASS: wall-interior
+       VISUAL: red dashed, 4px stroke
+       REMOVAL-IMPACT: Would create single 4.0m × 2.0m space
+       BILINGUAL-PAIR: th#wall-partition
+       DESIGN-NOTE: Can be removed to create open plan
+  -->
+  <line id="wall-partition" class="wall-interior"
+        x1="300" y1="100" x2="300" y2="300"/>
+
+  <!-- ========== ROOM LABELS ========== -->
+
+  <!-- ROOM: west-room
+       ID: room-west
+       NAME-EN: West Room
+       NAME-TH: ห้องตะวันตก
+       DIMENSIONS: 2.0m × 2.0m
+       AREA: 4.0 m²
+       COORDINATES:
+         - Top-left: (100, 100)
+         - Bottom-right: (300, 300)
+         - Centerpoint: (200, 200)
+       ADJACENT-ROOMS:
+         - East: East Room (across partition wall)
+       BILINGUAL-PAIR: th#room-west
+  -->
+  <text id="room-west-label" x="200" y="200"
+        text-anchor="middle" font-size="12">
+    West Room
+  </text>
+  <text x="200" y="215" text-anchor="middle" font-size="10" fill="gray">
+    2.0m × 2.0m
+  </text>
+
+  <!-- ROOM: east-room
+       ID: room-east
+       NAME-EN: East Room
+       NAME-TH: ห้องตะวันออก
+       DIMENSIONS: 2.0m × 2.0m
+       AREA: 4.0 m²
+       COORDINATES:
+         - Top-left: (300, 100)
+         - Bottom-right: (500, 300)
+         - Centerpoint: (400, 200)
+       ADJACENT-ROOMS:
+         - West: West Room (across partition wall)
+       BILINGUAL-PAIR: th#room-east
+  -->
+  <text id="room-east-label" x="400" y="200"
+        text-anchor="middle" font-size="12">
+    East Room
+  </text>
+  <text x="400" y="215" text-anchor="middle" font-size="10" fill="gray">
+    2.0m × 2.0m
+  </text>
+
+  <!-- ========== DIMENSIONS ========== -->
+
+  <!-- DIMENSION: total-width
+       ID: dim-width-total
+       VALUE: 4.0m
+       TYPE: chained-total
+       CALCULATION: 2.0m + 2.0m
+       COMPONENTS:
+         - west-room-width: 2.0m
+         - east-room-width: 2.0m
+       PLACEMENT: outside building (north side)
+       CONSTRAINT: must-equal sum of components
+       BILINGUAL-PAIR: th#dim-width-total
+       VISUAL: blue dashed line with text above
+  -->
+  <line class="dimension-line" x1="100" y1="70" x2="500" y2="70"/>
+  <line class="dimension-line" x1="100" y1="65" x2="100" y2="75"/>
+  <line class="dimension-line" x1="500" y1="65" x2="500" y2="75"/>
+  <text class="dimension-text" x="300" y="65" text-anchor="middle">4.0m</text>
+
+  <!-- DIMENSION: component widths
+       Shows individual room widths that sum to total
+  -->
+  <!-- DIMENSION: west-room-width
+       ID: dim-width-west
+       VALUE: 2.0m
+       TYPE: chained-component
+       PART-OF: dim-width-total
+       PLACEMENT: below total dimension
+  -->
+  <line class="dimension-line" x1="100" y1="85" x2="300" y2="85"/>
+  <text class="dimension-text" x="200" y="82" text-anchor="middle" font-size="10">2.0m</text>
+
+  <!-- DIMENSION: east-room-width
+       ID: dim-width-east
+       VALUE: 2.0m
+       TYPE: chained-component
+       PART-OF: dim-width-total
+       PLACEMENT: below total dimension
+  -->
+  <line class="dimension-line" x1="300" y1="85" x2="500" y2="85"/>
+  <text class="dimension-text" x="400" y="82" text-anchor="middle" font-size="10">2.0m</text>
+
+  <!-- ========== NOTES ========== -->
+
+  <!-- DESIGN-NOTE section showing semantic wall types -->
+  <text x="50" y="350" font-size="10" font-weight="bold">Legend:</text>
+  <line x1="50" y1="360" x2="100" y2="360" class="wall-exterior"/>
+  <text x="110" y="365" font-size="9">Exterior (keep)</text>
+
+  <line x1="50" y1="375" x2="100" y2="375" class="wall-interior"/>
+  <text x="110" y="380" font-size="9">Interior (can remove)</text>
+
+  <!-- CHANGE-LOG:
+       2025-10-30: Created example file
+                   - Demonstrates comment schema
+                   - Shows wall types and room layout
+                   - Includes dimensions with calculations
+  -->
+
+</svg>
