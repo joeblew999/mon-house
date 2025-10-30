@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
-  <!-- Define styles -->
+  <!-- Styles defined in: code/drawing-standards.css -->
   <defs>
     <style>
-      .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
-      .wall-interior { stroke: red; stroke-width: 4; fill: none; stroke-dasharray: 10,5; }
-      .dimension-line { stroke: blue; stroke-width: 1; fill: none; stroke-dasharray: 5,5; }
-      .dimension-text { fill: blue; font-family: Arial; font-size: 16px; }
-      .roof { stroke: black; stroke-width: 6; fill: none; }
-      .foundation { fill: #cccccc; stroke: black; stroke-width: 2; }
-      .beam { fill: #8B4513; stroke: black; stroke-width: 2; }
-      .suspended-ceiling { stroke: gray; stroke-width: 2; fill: none; stroke-dasharray: 5,5; }
-      .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
-      .human-scale { stroke: black; stroke-width: 2; fill: none; }
+      /* Generated from drawing-standards.json */
+
+      /* Element visual styles */
+            .beam { stroke: black; stroke-width: 2; fill: #8B4513; }
+            .dimension-line { stroke: blue; stroke-width: 1; stroke-dasharray: 5,5; fill: none; }
+            .dimension-text { fill: blue; font-size: 16px; font-family: Arial; }
+            .door { stroke: brown; stroke-width: 4; fill: none; }
+            .door-arc { stroke: brown; stroke-width: 2; fill: none; }
+            .door-sliding { stroke: brown; stroke-width: 4; fill: lightblue; opacity: 0.3; }
+            .foundation { stroke: black; stroke-width: 2; fill: #cccccc; }
+            .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
+            .human-scale { stroke: black; stroke-width: 2; fill: none; }
+            .insulated-ceiling { stroke: #D2B48C; stroke-width: 3; fill: none; }
+            .kitchen-bench { stroke: black; stroke-width: 2; fill: #8B7355; }
+            .kitchen-cupboard { stroke: black; stroke-width: 1; fill: #A0826D; }
+            .roof { stroke: black; stroke-width: 6; fill: none; }
+            .section-arrow { stroke: red; stroke-width: 3; fill: none; }
+            .section-cut { stroke: red; stroke-width: 3; stroke-dasharray: 15,10; fill: none; }
+            .section-label { fill: red; font-size: 14px; font-family: Arial; font-weight: bold; }
+            .suspended-ceiling { stroke: gray; stroke-width: 2; stroke-dasharray: 5,5; fill: none; }
+            .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
+            .wall-interior { stroke: gray; stroke-width: 4; stroke-dasharray: 10,5; fill: none; }
+            .window { stroke: blue; stroke-width: 4; fill: lightblue; opacity: 0.5; }
+
+      /* Label styles */
+            .door-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .door-sliding-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .window-label { fill: blue; font-size: 16px; font-family: Arial; }
+
     </style>
   </defs>
 
@@ -20,7 +39,8 @@
   <rect width="1200" height="800" fill="white"/>
 
   <!-- Title -->
-  <text x="600" y="40" text-anchor="middle" font-size="20" font-weight="bold">Section - Through Living Room &amp; Kitchen</text>
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">Existing Section A-A</text>
+  <text x="600" y="50" text-anchor="middle" font-size="14" font-style="italic">Through Living Room &amp; Kitchen</text>
 
   <!-- Scale: 1 meter = 100 pixels -->
   <!-- Section width: 7.9m (bedroom 3.0m + living room 2.9m + kitchen 2.0m) = 790px -->
@@ -41,8 +61,27 @@
   <!-- Right exterior wall (3.4m high to eave) -->
   <line x1="990" y1="260" x2="990" y2="600" class="wall-exterior"/>
 
-  <!-- Interior floor line -->
-  <line x1="200" y1="600" x2="990" y2="600" class="foundation"/>
+  <!-- Interior floor line with door opening on south wall -->
+  <!-- Door from plan: data-width="0.9" data-height="2.1" at plan x=450-540 (center x=495) -->
+  <!-- Plan coordinates x=450-540 map to section x=550-640 -->
+  <!-- Door height: 2.1m = 210px, so top at y=600-210=390 -->
+  <line x1="200" y1="600" x2="550" y2="600" class="foundation"/>
+  <line x1="640" y1="600" x2="990" y2="600" class="foundation"/>
+
+  <!-- South wall door opening: 0.9m wide × 2.1m high -->
+  <g id="door-south-wall-section" 
+     data-source="plan:door-south-wall"
+     data-width="0.9"
+     data-height="2.1">
+    <title>South Wall Door (from plan): 0.9m × 2.1m</title>
+    <!-- Door frame -->
+    <line x1="550" y1="600" x2="550" y2="390" stroke="brown" stroke-width="4"/>
+    <line x1="640" y1="600" x2="640" y2="390" stroke="brown" stroke-width="4"/>
+    <line x1="550" y1="390" x2="640" y2="390" stroke="brown" stroke-width="4"/>
+    <!-- Door panel (shown partially open) -->
+    <rect x="555" y="400" width="80" height="200" fill="brown" fill-opacity="0.3" stroke="brown" stroke-width="2"/>
+    <text x="595" y="380" font-size="16" font-family="Arial" fill="pink" text-anchor="middle">Door 0.9×2.1m</text>
+  </g>
 
   <!-- Gable roof -->
   <!-- Ridge at center: x = 200 + 790/2 = 595 -->
@@ -68,11 +107,6 @@
   <!-- Ceiling is suspended from the beam at eave level -->
   <line x1="200" y1="320" x2="990" y2="320" class="suspended-ceiling"/>
   <text x="595" y="315" font-size="10" text-anchor="middle" fill="gray">Suspended Ceiling</text>
-
-  <!-- Bed in Bedroom 1 (1.0m x 2.0m, showing side view) -->
-  <!-- Bed positioned at x=250, bed height ~0.5m = 50px -->
-  <rect x="250" y="550" width="200" height="50" class="furniture"/>
-  <text x="350" y="575" font-size="10" text-anchor="middle">Bed</text>
 
   <!-- Person standing on floor (1.7m = 170px tall) -->
   <!-- Person at x=500, standing on floor at y=600 -->

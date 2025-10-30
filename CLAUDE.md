@@ -20,26 +20,70 @@ This project documents:
 
 ---
 
+## Critical Synchronization Rules
+
+**Four types of sync MUST be maintained:**
+
+### 1. JSON → CSS Generation
+`code/drawing-standards.json` is the source of truth for all visual styles.
+- When JSON changes, `code/drawing-standards.css` MUST be regenerated
+- Use `code/generate-css.sh` to regenerate CSS from JSON
+- CSS file is referenced by all SVG files via `<?xml-stylesheet?>` directive
+- **Rule**: NEVER edit CSS file manually - always regenerate from JSON
+- Details: See [ADR 002: Global CSS Stylesheet](code/adr/002-global-css-stylesheet.md)
+
+### 2. JSON ↔ SVG Schema Sync
+`code/drawing-standards.json` defines requirements that SVG files must follow.
+- JSON defines `requiredMetadata`, visual properties, and CSS classes
+- SVG files must implement these requirements
+- SVG files reference external CSS: `<?xml-stylesheet href="../../../code/drawing-standards.css"?>`
+- **Rule**: NO inline styles in SVG - use CSS classes only
+- Details: See "Keeping Standards and SVG in Sync" section below
+
+### 3. Plan ↔ Section Sync
+Plans and sections are linked drawings - changes in one affect the other.
+- Section cut line on plan defines what appears in section view
+- X-coordinates must match between plan and section
+- Section elements reference plan elements via `data-source="plan:{id}"`
+- Details: See "Critical Synchronization Rules" at top of "Information Flow"
+
+### 4. EN → TH Translation Sync
+EN files are SOURCE, TH files are DERIVED translations.
+- Delete `drawings/th/`, copy `drawings/en/`, translate all text
+- Pre-commit hook enforces this automatically
+- Details: See "Translation Workflow" section below
+
+---
+
 ## The Information Flow: How It All Works
 
 ```
 1. code/drawing-standards.json
    ↓ (defines vocabulary - what elements mean)
 
-2. SVG drawings (drawings/en/*.svg)
-   ↓ (SOURCE OF TRUTH - tagged geometry)
+2. code/drawing-standards.css
+   ↓ (GENERATED from JSON - visual styles)
 
-3. AI reads SVG and generates SPEC.md
+3. SVG drawings (drawings/en/*.svg)
+   ↓ (SOURCE OF TRUTH - tagged geometry, references CSS)
+
+4. AI reads SVG and generates SPEC.md
    ↓ (technical parameters extracted)
 
-4. README.md references SPEC.md
+5. README.md references SPEC.md
    ↓ (human-friendly explanation)
 
-5. Translation: EN → TH
+6. Translation: EN → TH
    ↓ (brute force copy + translate)
+
+7. Plan ↔ Section consistency maintained
+   ↓ (linked drawings must stay synchronized)
 ```
 
-**Key principle**: SVG drawings are the source of truth. Everything else is derived or documented from them.
+**Key principles**:
+- **SVG drawings are the source of truth** for geometry
+- **JSON is the source of truth** for visual styles (generates CSS)
+- Everything else is derived or documented from these sources
 
 ---
 
@@ -50,17 +94,21 @@ mon-house/
 ├── README.md                           # Language router (links to en/ or th/)
 ├── CLAUDE.md                           # This file (AI instructions)
 ├── code/
-│   └── drawing-standards.json         # Vocabulary: what elements mean
+│   ├── drawing-standards.json         # Vocabulary: what elements mean (SOURCE)
+│   ├── drawing-standards.css          # Visual styles (GENERATED from JSON)
+│   └── adr/
+│       ├── 001-json-reference-resolution.md
+│       └── 002-global-css-stylesheet.md
 ├── drawings/
 │   ├── en/                            # English documentation (SOURCE)
 │   │   ├── README.md                  # Human explanation
 │   │   ├── existing/
-│   │   │   ├── plan.svg               # Current floor plan
-│   │   │   ├── section.svg            # Current section view
+│   │   │   ├── plan.svg               # Current floor plan (references CSS)
+│   │   │   ├── section.svg            # Current section view (references CSS)
 │   │   │   └── SPEC.md                # Technical specs (AI-generated)
 │   │   └── proposed/
-│   │       ├── plan.svg               # Proposed floor plan
-│   │       ├── section.svg            # Proposed section view
+│   │       ├── plan.svg               # Proposed floor plan (references CSS)
+│   │       ├── section.svg            # Proposed section view (references CSS)
 │   │       └── SPEC.md                # Technical specs (AI-generated)
 │   └── th/                            # Thai translation (DERIVED from en/)
 │       └── (mirror of en/ structure with Thai text)
@@ -142,6 +190,113 @@ mon-house/
 
 **Rule**: NO inline styles (`stroke="black"`). Always use classes.
 
+### Semantic Metadata in SVG Elements
+
+SVG elements should include **semantic metadata** using SVG's built-in features: `<g>` grouping, `id` attributes, `data-*` attributes, and `<title>` elements.
+
+**Source of truth**: The `requiredMetadata` field in `code/drawing-standards.json` defines what metadata each element type needs. Always check the JSON first.
+
+**Why semantic metadata?**
+- Enables Plan ↔ Section synchronization (section can reference plan data)
+- Makes SVG machine-readable for automation
+- Documents design intent within the drawing itself
+- Allows AI to understand relationships between elements
+
+**Three levels of semantic metadata:**
+
+#### Level 1: Simple Elements (walls, windows, furniture)
+Use **CSS class only** - semantics come from drawing-standards.json:
+```svg
+<line x1="100" y1="100" x2="400" y2="100" class="wall-exterior"/>
+<rect x="150" y="100" width="80" height="8" class="window"/>
+<rect x="200" y="200" width="200" height="200" class="furniture"/>
+```
+**When to use**: Walls, windows, simple furniture, structural elements
+
+#### Level 2: Grouped Elements (dining sets, section cuts)
+Use **`<g>` with `id`** to group related elements:
+```svg
+<g id="dining-set">
+  <rect x="485" y="525" width="120" height="75" class="furniture"/> <!-- table -->
+  <rect x="430" y="555" width="50" height="45" class="furniture"/> <!-- chair -->
+  <rect x="610" y="555" width="50" height="45" class="furniture"/> <!-- chair -->
+</g>
+
+<g id="section-cut-aa">
+  <line x1="100" y1="620" x2="890" y2="620" class="section-cut"/>
+  <path d="M 100 620 L 90 640 M 100 620 L 110 640" class="section-arrow"/>
+  <text x="495" y="610" class="section-label">SECTION A-A</text>
+</g>
+```
+**When to use**: Multiple elements that move together, section cuts, furniture sets
+
+#### Level 3: Parametric Elements (doors, complex objects)
+Use **`<g>` + `data-*` attributes + `<title>`** for elements with dimensions and behavior:
+```svg
+<g id="door-south-wall" class="door"
+   data-width="0.9"
+   data-height="2.1"
+   data-swing-direction="inward-left"
+   data-hinge-side="left"
+   data-type="swinging">
+  <title>South Wall Door: 0.9m × 2.1m, swinging inward to the left</title>
+  <line x1="450" y1="840" x2="540" y2="840" class="door"/>
+  <path d="M 450 840 Q 460 850 490 870" class="door-arc"/>
+  <text x="495" y="860" font-size="10" fill="brown" text-anchor="middle">Door (0.9×2.1m)</text>
+</g>
+```
+**When to use**: Doors, windows with specific dimensions, stairs, equipment
+
+**Common data-* attributes:**
+
+**IMPORTANT**: See `code/drawing-standards.json` under `elements.<element-name>.requiredMetadata` for the complete, authoritative list of required and optional attributes for each element type.
+
+**Quick reference** (check JSON for current requirements):
+
+For doors (see `elements.door.requiredMetadata`):
+- `data-width` - door width in meters (required)
+- `data-height` - door height in meters (required)
+- `data-type` - "swinging" or "sliding" (required)
+- `data-swing-direction` - swing direction (required if swinging)
+- `data-hinge-side` - "left" or "right" (required if swinging)
+
+For sliding doors (see `elements.door-sliding.requiredMetadata`):
+- `data-width` - door width in meters (required)
+- `data-height` - door height in meters (required)
+- `data-type` - "sliding" (required)
+- `data-panels` - number of panels (optional, default 2)
+
+For windows (see `elements.window.requiredMetadata`):
+- `data-width` - window width in meters (required)
+- `data-height` - window height in meters (required)
+- `data-sill-height` - sill height above floor (required for sections)
+
+For furniture (optional metadata, not yet in JSON):
+- `data-width`, `data-depth`, `data-height` - dimensions in meters
+- `data-type` - "bed", "table", "chair", "bench", etc.
+
+For rooms (optional metadata, not yet in JSON):
+- `data-name` - room name (e.g., "bedroom-1", "living-room")
+- `data-floor-area` - area in square meters
+
+**Plan ↔ Section linking:**
+In section drawings, reference plan elements using `data-source`:
+```svg
+<!-- In section.svg -->
+<g id="door-south-wall-section" data-source="plan:door-south-wall">
+  <title>South Wall Door (from plan): 0.9m × 2.1m</title>
+  <line x1="550" y1="600" x2="550" y2="390" stroke="brown" stroke-width="4"/>
+  <!-- ... door frame geometry calculated from plan data -->
+</g>
+```
+
+**When editing SVGs:**
+1. **Check element type** - Does it need semantic metadata?
+2. **Determine level** - Simple (class only), Grouped (id), or Parametric (data-*)
+3. **Add metadata** - Use appropriate attributes for the level
+4. **Link drawings** - If element appears in section, add `data-source` reference
+5. **Verify sync** - Ensure Plan → Section dimensions match
+
 ### Keeping Standards and SVG in Sync
 
 **These THREE must always match:**
@@ -149,10 +304,65 @@ mon-house/
 2. SVG `<style>` section (CSS classes)
 3. SVG elements (use the classes)
 
+**Critical**: The SVG `<style>` section must be generated from the JSON to ensure sync!
+
+#### How to Sync JSON → SVG CSS
+
+**1. Element Visual Properties**
+JSON `elements.{type}.visual` → SVG CSS class `.{type}`:
+
+```json
+// JSON: elements.door.visual
+{
+  "stroke": "brown",
+  "strokeWidth": 4,
+  "fill": "none"
+}
+
+// SVG <style>:
+.door { stroke: brown; stroke-width: 4; fill: none; }
+```
+
+**2. Element Label Properties**  
+JSON `elements.{type}.requiredMetadata.childElements.label` → SVG CSS class `.{type}-label`:
+
+```json
+// JSON: elements.door.requiredMetadata.childElements.label
+{
+  "fontSize": "$ref:typography.fontSizes.standard",  // resolves to 16
+  "fontFamily": "$ref:typography.fontFamilies.primary",  // resolves to Arial
+  "fill": "pink"
+}
+
+// SVG <style>:
+.door-label { font-size: 16px; font-family: Arial; fill: pink; }
+```
+
+**3. Text Elements Must Use CSS Classes**
+❌ **WRONG** (inline styles):
+```svg
+<text x="100" y="100" font-size="16" font-family="Arial" fill="pink">Door</text>
+```
+
+✅ **CORRECT** (CSS class):
+```svg
+<text x="100" y="100" class="door-label">Door</text>
+```
+
+**Why?** CSS classes in `<style>` section are the source of truth. Inline styles can be overridden by parent element CSS, causing rendering issues.
+
+**Workflow when JSON changes:**
+1. Edit `code/drawing-standards.json` (change color, size, etc.)
+2. Regenerate SVG `<style>` section CSS classes from JSON
+3. Verify all `<text>` elements use `class="{type}-label"`, not inline styles
+4. Test rendering in SVG viewer
+
 **If you add a new element type:**
-1. Add to `drawing-standards.json`
-2. Add CSS class to SVG `<style>`
-3. Use class in SVG elements
+1. Add to `drawing-standards.json` with `visual` and `label` properties
+2. Generate CSS class `.{type}` from `visual` properties
+3. Generate CSS class `.{type}-label` from `label` properties
+4. Add both CSS classes to all SVG `<style>` sections
+5. Use classes in SVG elements
 
 ### Building Envelope Semantic Rules
 
@@ -351,11 +561,15 @@ From `code/drawing-standards.json`:
 4. **EN is source, TH is derived** - always edit EN first, then translate to TH
 5. **Translation = brute force** - delete TH folder, copy EN, translate all text
 6. **Structure must match** - TH files must have identical coordinates/CSS/structure as EN
-7. **Use classes, not inline styles** - all SVG elements use classes from drawing-standards.json
-8. **SPEC.md is auto-generated** - regenerate when SVG changes
-9. **README.md references SPEC** - no numbers in README, only concepts
-10. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
+7. **Use CSS classes, NEVER inline styles** - all SVG styling must use CSS classes from `<style>` section, which are generated from drawing-standards.json. Inline styles (`fill="pink"`, `font-size="16"`) can be overridden by parent CSS and cause rendering bugs. If you need a new style, add it to the JSON first, then generate the CSS class.
+8. **SVG `<style>` must match JSON** - CSS classes in SVG must be generated from drawing-standards.json. When JSON changes, regenerate SVG CSS.
+9. **SPEC.md is auto-generated** - regenerate when SVG changes
+10. **README.md references SPEC** - no numbers in README, only concepts
+11. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
 
+---
+
+**This file was simplified on 2025-10-23 to remove accumulated complexity.**
 ---
 
 **This file was simplified on 2025-10-23 to remove accumulated complexity.**

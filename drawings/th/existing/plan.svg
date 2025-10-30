@@ -20,7 +20,7 @@
   <rect width="1200" height="1000" fill="white"/>
 
   <!-- Title -->
-  <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold">Existing Plan</text>
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">Existing Plan</text>
 
   <!-- Scale: 1 meter = 100 pixels -->
 
@@ -107,12 +107,6 @@
   <line x1="400" y1="160" x2="400" y2="180" class="dimension-line"/>
   <line x1="690" y1="160" x2="690" y2="180" class="dimension-line"/>
   <text x="545" y="165" class="dimension-text" text-anchor="middle">2.9m</text>
-
-  <!-- Bedroom 2 height: 3.0m -->
-  <line x1="70" y1="440" x2="70" y2="740" class="dimension-line"/>
-  <line x1="60" y1="440" x2="80" y2="440" class="dimension-line"/>
-  <line x1="60" y1="740" x2="80" y2="740" class="dimension-line"/>
-  <text x="50" y="590" class="dimension-text">3.0m</text>
 
   <!-- Bathroom width: 1.9m -->
   <line x1="100" y1="870" x2="290" y2="870" class="dimension-line"/>
