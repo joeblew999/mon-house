@@ -1,19 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
-  <!-- Define styles -->
+  <!-- Styles defined in: code/drawing-standards.css -->
   <defs>
     <style>
-      .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
-      .wall-interior { stroke: red; stroke-width: 4; fill: none; stroke-dasharray: 10,5; }
-      .dimension-line { stroke: blue; stroke-width: 1; fill: none; stroke-dasharray: 5,5; }
-      .dimension-text { fill: blue; font-family: Arial; font-size: 16px; }
-      .roof { stroke: black; stroke-width: 6; fill: none; }
-      .foundation { fill: #cccccc; stroke: black; stroke-width: 2; }
-      .beam { fill: #8B4513; stroke: black; stroke-width: 2; }
-      .suspended-ceiling { stroke: gray; stroke-width: 2; fill: none; stroke-dasharray: 5,5; }
-      .insulated-ceiling { stroke: #D2B48C; stroke-width: 3; fill: none; }
-      .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
-      .human-scale { stroke: black; stroke-width: 2; fill: none; }
+      /* Generated from drawing-standards.json */
+
+      /* Element visual styles */
+            .beam { stroke: black; stroke-width: 2; fill: #8B4513; }
+            .dimension-line { stroke: blue; stroke-width: 1; stroke-dasharray: 5,5; fill: none; }
+            .dimension-text { fill: blue; font-size: 16px; font-family: Arial; }
+            .door { stroke: brown; stroke-width: 4; fill: none; }
+            .door-arc { stroke: brown; stroke-width: 2; fill: none; }
+            .door-sliding { stroke: brown; stroke-width: 4; fill: lightblue; opacity: 0.3; }
+            .foundation { stroke: black; stroke-width: 2; fill: #cccccc; }
+            .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
+            .human-scale { stroke: black; stroke-width: 2; fill: none; }
+            .insulated-ceiling { stroke: #D2B48C; stroke-width: 3; fill: none; }
+            .kitchen-bench { stroke: black; stroke-width: 2; fill: #8B7355; }
+            .kitchen-cupboard { stroke: black; stroke-width: 1; fill: #A0826D; }
+            .roof { stroke: black; stroke-width: 6; fill: none; }
+            .section-arrow { stroke: red; stroke-width: 3; fill: none; }
+            .section-cut { stroke: red; stroke-width: 3; stroke-dasharray: 15,10; fill: none; }
+            .section-label { fill: red; font-size: 14px; font-family: Arial; font-weight: bold; }
+            .suspended-ceiling { stroke: gray; stroke-width: 2; stroke-dasharray: 5,5; fill: none; }
+            .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
+            .wall-interior { stroke: gray; stroke-width: 4; stroke-dasharray: 10,5; fill: none; }
+            .window { stroke: blue; stroke-width: 4; fill: lightblue; opacity: 0.5; }
+
+      /* Label styles */
+            .door-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .door-sliding-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .window-label { fill: blue; font-size: 16px; font-family: Arial; }
+
     </style>
   </defs>
 
@@ -21,7 +39,8 @@
   <rect width="1200" height="800" fill="white"/>
 
   <!-- Title -->
-  <text x="600" y="40" text-anchor="middle" font-size="20" font-weight="bold">Proposed Section - Open Living Space with Cathedral Ceiling</text>
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">Proposed Section A-A</text>
+  <text x="600" y="50" text-anchor="middle" font-size="14" font-style="italic">Open Living Space with Cathedral Ceiling</text>
 
   <!-- Scale: 1 meter = 100 pixels -->
   <!-- Section width: 7.9m (bedroom 3.0m + living room 2.9m + kitchen 2.0m) = 790px -->
@@ -77,19 +96,33 @@
   <!-- Insulation annotation -->
   <text x="595" y="170" font-size="10" text-anchor="middle" fill="gray" font-style="italic">(Roof insulation + ceiling board)</text>
 
+  <!-- Dining table and chairs (from plan at y=610-690, crosses section at y=620) -->
+  <!-- Table: x=485-605 (1.2m wide), height 0.75m = 75px -->
+  <rect x="485" y="525" width="120" height="75" class="furniture"/>
+  <text x="545" y="565" font-size="10" text-anchor="middle">Dining Table</text>
+  
+  <!-- Left chair: x=430-480 (0.5m wide), height 0.45m = 45px -->
+  <rect x="430" y="555" width="50" height="45" class="furniture"/>
+  
+  <!-- Right chair: x=610-660 (0.5m wide), height 0.45m = 45px -->
+  <rect x="610" y="555" width="50" height="45" class="furniture"/>
+  
+  <!-- Bottom chair: x=515-565 (0.5m wide), height 0.45m = 45px -->
+  <rect x="515" y="555" width="50" height="45" class="furniture"/>
+
   <!-- Person standing on floor (1.7m = 170px tall) -->
-  <!-- Person at x=595 (center), showing full ceiling height at ridge -->
+  <!-- Person repositioned to x=750 (in kitchen area) to avoid furniture -->
   <!-- Simple stick figure -->
   <!-- Head (circle, radius 15px) -->
-  <circle cx="595" cy="445" r="15" class="human-scale"/>
+  <circle cx="750" cy="445" r="15" class="human-scale"/>
   <!-- Body (line from neck to hips) -->
-  <line x1="595" y1="460" x2="595" y2="540" class="human-scale"/>
+  <line x1="750" y1="460" x2="750" y2="540" class="human-scale"/>
   <!-- Arms -->
-  <line x1="595" y1="480" x2="565" y2="510" class="human-scale"/>
-  <line x1="595" y1="480" x2="625" y2="510" class="human-scale"/>
+  <line x1="750" y1="480" x2="720" y2="510" class="human-scale"/>
+  <line x1="750" y1="480" x2="780" y2="510" class="human-scale"/>
   <!-- Legs -->
-  <line x1="595" y1="540" x2="575" y2="600" class="human-scale"/>
-  <line x1="595" y1="540" x2="615" y2="600" class="human-scale"/>
+  <line x1="750" y1="540" x2="730" y2="600" class="human-scale"/>
+  <line x1="750" y1="540" x2="770" y2="600" class="human-scale"/>
 
   <!-- Dimensions -->
 

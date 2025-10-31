@@ -218,12 +218,23 @@
     <text x="380" y="795" class="door-label">Door (0.6×2.1m)</text>
   </g>
 
-  <!-- Bedroom Furniture -->
-  <!-- 2m x 2m bed along west exterior wall in open living space -->
-  <!-- West wall is at x=100, bed extends 2m (200px) east to x=300 -->
-  <!-- Aligned with TV center, now at y=295 to y=495 -->
-  <rect x="100" y="295" width="200" height="200" class="furniture"/>
-  <text x="200" y="400" font-size="10" text-anchor="middle">Bed (2m × 2m)</text>
+  <!-- Bedroom Furniture Group -->
+  <g id="bedroom-furniture-group">
+    <!-- 2m x 2m bed along west exterior wall in open living space -->
+    <!-- West wall is at x=100, bed extends 2m (200px) east to x=300 -->
+    <!-- Swapped position with sofa, now at y=420 to y=620 -->
+    <rect x="100" y="420" width="200" height="200" class="furniture"/>
+    <text x="200" y="525" font-size="10" text-anchor="middle">Bed (2m × 2m)</text>
+
+    <!-- Side tables for bed: 0.5m × 0.4m each -->
+    <!-- North side table: positioned at head of bed (north side) -->
+    <rect x="100" y="370" width="50" height="40" class="furniture"/>
+    <text x="125" y="393" font-size="8" text-anchor="middle">Side Table</text>
+
+    <!-- South side table: positioned at foot of bed (south side) -->
+    <rect x="100" y="630" width="50" height="40" class="furniture"/>
+    <text x="125" y="653" font-size="8" text-anchor="middle">Side Table</text>
+  </g>
 
   <!-- Kitchen Furniture -->
   <!-- Kitchen bench along east wall: 3.0m long × 0.6m deep -->
@@ -242,19 +253,40 @@
   <rect x="640" y="295" width="50" height="200" class="furniture"/>
   <text x="665" y="395" font-size="10" text-anchor="middle" transform="rotate(-90 665 395)">TV Bench</text>
 
-  <!-- 3-person sofa aligned with TV center -->
-  <!-- Now at x=390-470, y=295-495, facing east (toward living room) -->
-  <rect x="390" y="295" width="80" height="200" class="furniture"/>
-  <!-- Sofa orientation lines: back on west side, arms on north/south -->
-  <line x1="400" y1="295" x2="400" y2="495" stroke="black" stroke-width="2"/> <!-- Back -->
-  <line x1="400" y1="295" x2="470" y2="295" stroke="black" stroke-width="2"/> <!-- North arm -->
-  <line x1="400" y1="495" x2="470" y2="495" stroke="black" stroke-width="2"/> <!-- South arm -->
-  <text x="430" y="400" font-size="10" text-anchor="middle" transform="rotate(-90 430 400)">Sofa (3-person)</text>
+  <!-- Chaise Lounge in open living space -->
+  <!-- Dimensions: 0.65m wide × 1.65m long (reclined length) -->
+  <!-- Positioned east of bed, facing east toward living room/TV -->
+  <!-- Clear of all circulation paths and furniture -->
+  <rect x="320" y="470" width="65" height="165" class="furniture"/>
+  <!-- Orientation line showing headrest/back (south side) -->
+  <line x1="320" y1="630" x2="385" y2="630" stroke="black" stroke-width="2"/>
+  <text x="352" y="555" font-size="8" text-anchor="middle" transform="rotate(-90 352 555)">Chaise</text>
 
-  <!-- Coffee table aligned with TV center -->
-  <!-- Now at x=530-590, y=335-455, east of sofa -->
-  <rect x="530" y="335" width="60" height="120" class="furniture"/>
-  <text x="560" y="400" font-size="10" text-anchor="middle" transform="rotate(-90 560 400)">Coffee Table</text>
+  <!-- Corner sofa in northwest corner of open living space -->
+  <!-- L-shaped: one section along west wall, one along north wall -->
+  <!-- North exterior wall is at y=100 -->
+
+  <!-- West section: along west wall, 2.0m long × 0.8m deep -->
+  <!-- Starting at north wall (y=100) and extending south -->
+  <rect x="100" y="100" width="80" height="200" class="furniture"/>
+  <!-- West section orientation: back on west side -->
+  <line x1="110" y1="100" x2="110" y2="300" stroke="black" stroke-width="2"/> <!-- Back -->
+  <line x1="110" y1="300" x2="180" y2="300" stroke="black" stroke-width="2"/> <!-- South arm -->
+
+  <!-- North section: along north wall, 2.0m long × 0.8m deep -->
+  <!-- Starting at north wall (y=100), extends east from where west section ends (x=180) -->
+  <rect x="180" y="100" width="200" height="80" class="furniture"/>
+  <!-- North section orientation: back on north side -->
+  <line x1="180" y1="110" x2="380" y2="110" stroke="black" stroke-width="2"/> <!-- Back -->
+  <line x1="380" y1="110" x2="380" y2="180" stroke="black" stroke-width="2"/> <!-- East arm -->
+
+  <text x="240" y="140" font-size="10" text-anchor="middle">Corner Sofa</text>
+
+  <!-- Coffee table in front of corner sofa -->
+  <!-- Positioned southeast of the corner, accessible from both sofa sections -->
+  <!-- 1.2m × 0.6m table centered in the seating area -->
+  <rect x="200" y="200" width="120" height="60" class="furniture"/>
+  <text x="260" y="235" font-size="10" text-anchor="middle">Coffee Table</text>
 
   <!-- Wardrobe repositioned 5m south, full width of wall -->
   <!-- Now at y=680 to y=740, just above bathroom -->

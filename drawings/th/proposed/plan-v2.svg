@@ -39,7 +39,7 @@
   <rect width="1200" height="1000" fill="white"/>
 
   <!-- Title -->
-  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">Proposed Plan</text>
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">แบบผังที่เสนอ</text>
 
   <!-- Scale: 1 meter = 100 pixels -->
 
@@ -175,9 +175,9 @@
      data-width="0.8"
      data-height="1.2"
      data-sill-height="0.9">
-    <title>Bedroom North Window: 0.8m × 1.2m</title>
+    <title>หน้าต่างฝั่งเหนือห้องนอน: 0.8m × 1.2m</title>
     <rect x="150" y="96" width="80" height="8" class="window"/>
-    <text x="190" y="90" class="window-label" text-anchor="middle">Window (0.8×1.2m)</text>
+    <text x="190" y="90" class="window-label" text-anchor="middle">หน้าต่าง (0.8×1.2m)</text>
   </g>
   <!-- Sliding door - Living room north wall (centered on 2.9m wall) -->
   <!-- North wall from x=400 to x=690 (2.9m), center at x=545 -->
@@ -187,12 +187,12 @@
      data-height="2.1"
      data-type="sliding"
      data-panels="2">
-    <title>Living Room North Wall Sliding Door: 2.0m × 2.1m</title>
+    <title>ประตูบานเลื่อนฝั่งเหนือห้องนั่งเล่น: 2.0m × 2.1m</title>
     <rect x="445" y="196" width="200" height="8" class="door-sliding"/>
     <!-- Track indication lines -->
     <line x1="445" y1="200" x2="645" y2="200" stroke="brown" stroke-width="1"/>
     <line x1="545" y1="196" x2="545" y2="204" stroke="brown" stroke-width="1"/>
-    <text x="545" y="190" class="door-sliding-label" text-anchor="middle">Sliding Door (2.0×2.1m)</text>
+    <text x="545" y="190" class="door-sliding-label" text-anchor="middle">ประตูบานเลื่อน (2.0×2.1m)</text>
   </g>
 
   <!-- Window 2 - Left wall (west) -->
@@ -200,9 +200,9 @@
      data-width="0.8"
      data-height="1.2"
      data-sill-height="0.9">
-    <title>Bedroom West Window: 0.8m × 1.2m</title>
+    <title>หน้าต่างฝั่งตะวันตกห้องนอน: 0.8m × 1.2m</title>
     <rect x="96" y="200" width="8" height="80" class="window"/>
-    <text x="75" y="240" class="window-label" text-anchor="middle" transform="rotate(-90 75 240)">Window (0.8×1.2m)</text>
+    <text x="75" y="240" class="window-label" text-anchor="middle" transform="rotate(-90 75 240)">หน้าต่าง (0.8×1.2m)</text>
   </g>
 
   <!-- Bathroom Door - moved to expanded bathroom right wall -->
@@ -212,18 +212,29 @@
      data-type="swinging"
      data-swing-direction="inward-left"
      data-hinge-side="top">
-    <title>Bathroom East Door: 0.6m × 2.1m, swinging inward to the left</title>
+    <title>ประตูห้องน้ำฝั่งตะวันออก: 0.6m × 2.1m, เปิดเข้าด้านซ้าย</title>
     <line x1="400" y1="760" x2="400" y2="820" class="door"/>
     <path d="M 400 760 Q 360 770 360 800" class="door-arc"/>
-    <text x="380" y="795" class="door-label">Door (0.6×2.1m)</text>
+    <text x="380" y="795" class="door-label">ประตู (0.6×2.1m)</text>
   </g>
 
-  <!-- Bedroom Furniture -->
-  <!-- 2m x 2m bed along west exterior wall in open living space -->
-  <!-- West wall is at x=100, bed extends 2m (200px) east to x=300 -->
-  <!-- Aligned with TV center, now at y=295 to y=495 -->
-  <rect x="100" y="295" width="200" height="200" class="furniture"/>
-  <text x="200" y="400" font-size="10" text-anchor="middle">Bed (2m × 2m)</text>
+  <!-- Bedroom Furniture Group -->
+  <g id="bedroom-furniture-group">
+    <!-- 2m x 2m bed along west exterior wall in open living space -->
+    <!-- West wall is at x=100, bed extends 2m (200px) east to x=300 -->
+    <!-- Swapped position with sofa, now at y=420 to y=620 -->
+    <rect x="100" y="420" width="200" height="200" class="furniture"/>
+    <text x="200" y="525" font-size="10" text-anchor="middle">เตียง (2m × 2m)</text>
+
+    <!-- Side tables for bed: 0.5m × 0.4m each -->
+    <!-- North side table: positioned at head of bed (north side) -->
+    <rect x="100" y="370" width="50" height="40" class="furniture"/>
+    <text x="125" y="393" font-size="8" text-anchor="middle">โต๊ะข้างเตียง</text>
+
+    <!-- South side table: positioned at foot of bed (south side) -->
+    <rect x="100" y="630" width="50" height="40" class="furniture"/>
+    <text x="125" y="653" font-size="8" text-anchor="middle">โต๊ะข้างเตียง</text>
+  </g>
 
   <!-- Kitchen Furniture -->
   <!-- Kitchen bench along east wall: 3.0m long × 0.6m deep -->
@@ -234,33 +245,54 @@
   <!-- Kitchen cupboards adjacent to bench (narrower) -->
   <rect x="835" y="545" width="50" height="290" class="furniture"/>
 
-  <text x="860" y="690" font-size="10" text-anchor="middle" transform="rotate(-90 860 690)">Kitchen Bench</text>
+  <text x="860" y="690" font-size="10" text-anchor="middle" transform="rotate(-90 860 690)">ชั้นครัว</text>
 
   <!-- TV bench along east exterior wall of living room -->
   <!-- East wall is at x=690, TV bench is 0.5m deep × 2.0m long (rotated) -->
   <!-- Positioned 1m north from previous position, against east wall -->
   <rect x="640" y="295" width="50" height="200" class="furniture"/>
-  <text x="665" y="395" font-size="10" text-anchor="middle" transform="rotate(-90 665 395)">TV Bench</text>
+  <text x="665" y="395" font-size="10" text-anchor="middle" transform="rotate(-90 665 395)">ชั้นวางทีวี</text>
 
-  <!-- 3-person sofa aligned with TV center -->
-  <!-- Now at x=390-470, y=295-495, facing east (toward living room) -->
-  <rect x="390" y="295" width="80" height="200" class="furniture"/>
-  <!-- Sofa orientation lines: back on west side, arms on north/south -->
-  <line x1="400" y1="295" x2="400" y2="495" stroke="black" stroke-width="2"/> <!-- Back -->
-  <line x1="400" y1="295" x2="470" y2="295" stroke="black" stroke-width="2"/> <!-- North arm -->
-  <line x1="400" y1="495" x2="470" y2="495" stroke="black" stroke-width="2"/> <!-- South arm -->
-  <text x="430" y="400" font-size="10" text-anchor="middle" transform="rotate(-90 430 400)">Sofa (3-person)</text>
+  <!-- Chaise Lounge in open living space -->
+  <!-- Dimensions: 0.65m wide × 1.65m long (reclined length) -->
+  <!-- Positioned east of bed, facing east toward living room/TV -->
+  <!-- Clear of all circulation paths and furniture -->
+  <rect x="320" y="470" width="65" height="165" class="furniture"/>
+  <!-- Orientation line showing headrest/back (south side) -->
+  <line x1="320" y1="630" x2="385" y2="630" stroke="black" stroke-width="2"/>
+  <text x="352" y="555" font-size="8" text-anchor="middle" transform="rotate(-90 352 555)">เก้าอี้นอนยาว</text>
 
-  <!-- Coffee table aligned with TV center -->
-  <!-- Now at x=530-590, y=335-455, east of sofa -->
-  <rect x="530" y="335" width="60" height="120" class="furniture"/>
-  <text x="560" y="400" font-size="10" text-anchor="middle" transform="rotate(-90 560 400)">Coffee Table</text>
+  <!-- Corner sofa in northwest corner of open living space -->
+  <!-- L-shaped: one section along west wall, one along north wall -->
+  <!-- North exterior wall is at y=100 -->
+
+  <!-- West section: along west wall, 2.0m long × 0.8m deep -->
+  <!-- Starting at north wall (y=100) and extending south -->
+  <rect x="100" y="100" width="80" height="200" class="furniture"/>
+  <!-- West section orientation: back on west side -->
+  <line x1="110" y1="100" x2="110" y2="300" stroke="black" stroke-width="2"/> <!-- Back -->
+  <line x1="110" y1="300" x2="180" y2="300" stroke="black" stroke-width="2"/> <!-- South arm -->
+
+  <!-- North section: along north wall, 2.0m long × 0.8m deep -->
+  <!-- Starting at north wall (y=100), extends east from where west section ends (x=180) -->
+  <rect x="180" y="100" width="200" height="80" class="furniture"/>
+  <!-- North section orientation: back on north side -->
+  <line x1="180" y1="110" x2="380" y2="110" stroke="black" stroke-width="2"/> <!-- Back -->
+  <line x1="380" y1="110" x2="380" y2="180" stroke="black" stroke-width="2"/> <!-- East arm -->
+
+  <text x="240" y="140" font-size="10" text-anchor="middle">โซฟามุม</text>
+
+  <!-- Coffee table in front of corner sofa -->
+  <!-- Positioned southeast of the corner, accessible from both sofa sections -->
+  <!-- 1.2m × 0.6m table centered in the seating area -->
+  <rect x="200" y="200" width="120" height="60" class="furniture"/>
+  <text x="260" y="235" font-size="10" text-anchor="middle">โต๊ะกลาง</text>
 
   <!-- Wardrobe repositioned 5m south, full width of wall -->
   <!-- Now at y=680 to y=740, just above bathroom -->
   <!-- Full width: x=100 to x=400 (3.0m, matching the interior wall) -->
   <rect x="100" y="680" width="300" height="60" class="furniture"/>
-  <text x="250" y="715" font-size="10" text-anchor="middle">Wardrobe (3m)</text>
+  <text x="250" y="715" font-size="10" text-anchor="middle">ตู้เสื้อผ้า (3m)</text>
 
   <!-- Dining table and chairs in living room (grouped for easy movement) -->
   <!-- 4-person table: 1.2m × 0.8m positioned in living room -->
@@ -275,42 +307,42 @@
     <rect x="615" y="605" width="50" height="50" class="furniture"/> <!-- top chair -->
     <rect x="615" y="745" width="50" height="50" class="furniture"/> <!-- bottom chair -->
 
-    <text x="645" y="705" font-size="10" text-anchor="middle">Table</text>
+    <text x="645" y="705" font-size="10" text-anchor="middle">โต๊ะอาหาร</text>
   </g>
 
   <!-- Bedroom doors REMOVED - open plan -->
 
   <!-- Room labels -->
-  <text x="250" y="400" font-size="18" font-weight="bold" text-anchor="middle">OPEN LIVING SPACE</text>
+  <text x="250" y="400" font-size="18" font-weight="bold" text-anchor="middle">พื้นที่นั่งเล่นเปิด</text>
   <text x="250" y="420" font-size="14" text-anchor="middle">3.0m × 7.4m</text>
-  <text x="250" y="440" font-size="12" text-anchor="middle" font-style="italic">(Loft Bedroom Above)</text>
+  <text x="250" y="440" font-size="12" text-anchor="middle" font-style="italic">(ห้องนอนลอฟท์ด้านบน)</text>
 
-  <text x="250" y="785" font-size="18" font-weight="bold" text-anchor="middle">BATHROOM</text>
+  <text x="250" y="785" font-size="18" font-weight="bold" text-anchor="middle">ห้องน้ำ</text>
   <text x="250" y="805" font-size="14" text-anchor="middle">3.0m × 1.0m</text>
 
-  <text x="545" y="400" font-size="18" font-weight="bold" text-anchor="middle">LIVING ROOM</text>
+  <text x="545" y="400" font-size="18" font-weight="bold" text-anchor="middle">ห้องนั่งเล่น</text>
   <text x="545" y="420" font-size="14" text-anchor="middle">2.9m × 6.4m</text>
 
-  <text x="790" y="600" font-size="18" font-weight="bold" text-anchor="middle">KITCHEN</text>
+  <text x="790" y="600" font-size="18" font-weight="bold" text-anchor="middle">ห้องครัว</text>
   <text x="790" y="620" font-size="14" text-anchor="middle">2.0m × 3.0m</text>
 
   <!-- Legend -->
-  <text x="1000" y="100" font-size="14" font-weight="bold">Legend:</text>
+  <text x="1000" y="100" font-size="14" font-weight="bold">สัญลักษณ์:</text>
   <line x1="1000" y1="120" x2="1050" y2="120" class="wall-exterior"/>
-  <text x="1060" y="125" font-size="12">Exterior Wall</text>
+  <text x="1060" y="125" font-size="12">ผนังภายนอก</text>
 
   <line x1="1000" y1="140" x2="1050" y2="140" class="wall-interior"/>
-  <text x="1060" y="145" font-size="12">Interior Wall</text>
+  <text x="1060" y="145" font-size="12">ผนังภายใน</text>
 
   <rect x="1000" y="155" width="50" height="8" class="window"/>
-  <text x="1060" y="165" font-size="12">Window</text>
+  <text x="1060" y="165" font-size="12">หน้าต่าง</text>
 
   <line x1="1000" y1="180" x2="1050" y2="180" class="dimension-line"/>
-  <text x="1060" y="185" font-size="12">Dimension</text>
+  <text x="1060" y="185" font-size="12">ขนาด</text>
 
   <!-- Notes -->
-  <text x="1000" y="200" font-size="12" font-style="italic">Scale: 1m = 100px</text>
-  <text x="1000" y="220" font-size="12" font-style="italic">Editable in any SVG editor</text>
+  <text x="1000" y="200" font-size="12" font-style="italic">มาตราส่วน: 1m = 100px</text>
+  <text x="1000" y="220" font-size="12" font-style="italic">แก้ไขได้ในโปรแกรม SVG</text>
 
   <!-- Section Cut Line (grouped for easy movement) -->
   <!-- Section cuts horizontally through living room and kitchen area -->
@@ -327,7 +359,7 @@
     <path d="M 890 620 L 880 640 M 890 620 L 900 640" class="section-arrow"/>
 
     <!-- Section label with view direction indicator -->
-    <text x="495" y="610" class="section-label" text-anchor="middle">SECTION A-A</text>
+    <text x="495" y="610" class="section-label" text-anchor="middle">หน้าตัด A-A</text>
     <text x="50" y="620" font-size="12" font-weight="bold" fill="red">A</text>
     <text x="920" y="620" font-size="12" font-weight="bold" fill="red">A</text>
   </g>
