@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A4 paper: 595×842 pixels at 72 DPI -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 595 842" width="595" height="842">
+  <title>Test Floor Plan - Simple 2 Room House</title>
+
+  <defs>
+    <style>
+      /* Generated from drawing-standards.json */
+
+      /* Element visual styles */
+      .beam { stroke: black; stroke-width: 2; fill: #8B4513; }
+      .dimension-line { stroke: blue; stroke-width: 1; stroke-dasharray: 5,5; fill: none; }
+      .dimension-text { fill: blue; font-size: 12px; font-family: Arial; }
+      .door { stroke: brown; stroke-width: 4; fill: none; }
+      .door-arc { stroke: brown; stroke-width: 2; fill: none; }
+      .door-sliding { stroke: brown; stroke-width: 4; fill: lightblue; opacity: 0.3; }
+      .foundation { stroke: black; stroke-width: 2; fill: #cccccc; }
+      .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
+      .human-scale { stroke: black; stroke-width: 2; fill: none; }
+      .insulated-ceiling { stroke: #D2B48C; stroke-width: 3; fill: none; }
+      .kitchen-bench { stroke: black; stroke-width: 2; fill: #8B7355; }
+      .kitchen-cupboard { stroke: black; stroke-width: 1; fill: #A0826D; }
+      .roof { stroke: black; stroke-width: 6; fill: none; }
+      .section-arrow { stroke: red; stroke-width: 3; fill: none; }
+      .section-cut { stroke: red; stroke-width: 3; stroke-dasharray: 15,10; fill: none; }
+      .section-label { fill: red; font-size: 14px; font-family: Arial; font-weight: bold; }
+      .suspended-ceiling { stroke: gray; stroke-width: 2; stroke-dasharray: 5,5; fill: none; }
+      .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
+      .wall-interior { stroke: gray; stroke-width: 4; stroke-dasharray: 10,5; fill: none; }
+      .window { stroke: blue; stroke-width: 4; fill: lightblue; opacity: 0.5; }
+
+      /* Label styles */
+      .door-label { fill: brown; font-size: 14px; font-family: Arial; }
+      .door-sliding-label { fill: brown; font-size: 14px; font-family: Arial; }
+      .window-label { fill: blue; font-size: 14px; font-family: Arial; }
+      .room-label { fill: black; font-size: 16px; font-family: Arial; font-weight: bold; }
+      .title-text { fill: black; font-size: 20px; font-family: Arial; font-weight: bold; }
+      .scale-text { fill: black; font-size: 12px; font-family: Arial; }
+    </style>
+  </defs>
+
+  <!-- Title block -->
+  <g id="title-block">
+    <text class="title-text" x="50" y="50">TEST FLOOR PLAN</text>
+    <text class="scale-text" x="50" y="70">Scale: 1:100 (1m = 100px)</text>
+    <text class="scale-text" x="50" y="85">Simple 2-Room House - 6m × 4m</text>
+  </g>
+
+  <!-- Drawing starts at y=120 to leave room for title -->
+  <!-- House: 6m × 4m = 600px × 400px -->
+  <!-- Centered horizontally: (595-600)/2 ≈ centered at x=100 -->
+
+  <!-- Exterior walls (building envelope) -->
+  <g id="exterior-walls">
+    <!-- 6m wide × 4m deep -->
+    <rect class="wall-exterior" x="100" y="150" width="400" height="300" data-width="6.0" data-height="4.0"/>
+  </g>
+
+  <!-- Interior partition wall (divides into 2 rooms) -->
+  <g id="interior-walls">
+    <!-- Vertical wall at 3m (middle) -->
+    <line class="wall-interior" x1="300" y1="150" x2="300" y2="450"/>
+  </g>
+
+  <!-- Windows -->
+  <g id="windows">
+    <!-- Window in living room (north wall) - 1m wide -->
+    <rect class="window" x="150" y="150" width="100" height="8" data-width="1.0"/>
+    <text class="window-label" x="175" y="135">Window</text>
+
+    <!-- Window in bedroom (north wall) - 1m wide -->
+    <rect class="window" x="350" y="150" width="100" height="8" data-width="1.0"/>
+    <text class="window-label" x="375" y="135">Window</text>
+  </g>
+
+  <!-- Doors -->
+  <g id="doors">
+    <!-- Door in partition wall - 0.8m wide -->
+    <line class="door" x1="300" y1="250" x2="300" y2="330" data-width="0.8"/>
+    <text class="door-label" x="310" y="290">Door</text>
+  </g>
+
+  <!-- Furniture -->
+  <g id="furniture">
+    <!-- Living room furniture (left side) -->
+    <!-- Sofa: 2m × 0.8m -->
+    <rect class="furniture" x="120" y="300" width="150" height="60"/>
+
+    <!-- Bedroom furniture (right side) -->
+    <!-- Bed: 2m × 1.5m -->
+    <rect class="furniture" x="330" y="280" width="150" height="120"/>
+  </g>
+
+  <!-- Room labels -->
+  <g id="labels">
+    <text class="room-label" x="165" y="240">Living Room</text>
+    <text class="room-label" x="355" y="240">Bedroom</text>
+  </g>
+
+  <!-- Scale indicator at bottom -->
+  <g id="scale-indicator">
+    <line class="dimension-line" x1="100" y1="500" x2="200" y2="500"/>
+    <line class="dimension-line" x1="100" y1="495" x2="100" y2="505"/>
+    <line class="dimension-line" x1="200" y1="495" x2="200" y2="505"/>
+    <text class="dimension-text" x="130" y="520">1m = 100px</text>
+  </g>
+</svg>

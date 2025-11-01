@@ -1,0 +1,43 @@
+{
+  "source": {
+    "language": "en",
+    "folder": "drawings/en"
+  },
+  "targets": [
+    {
+      "language": "th",
+      "language_name": "Thai",
+      "folder": "drawings/th",
+      "rename_rules": {
+        ".md": ".th.md"
+      },
+      "translation_notes": [
+        "Use formal/technical Thai appropriate for construction documents",
+        "Architectural terms: envelope=แนวเปลือกอาคาร, wall-exterior=ผนังภายนอก, roof=หลังคา",
+        "Translate semantic meaning, not word-for-word"
+      ]
+    },
+    {
+      "language": "de",
+      "language_name": "German",
+      "folder": "drawings/de",
+      "rename_rules": {
+        ".md": ".de.md"
+      },
+      "translation_notes": [
+        "Use formal/technical German appropriate for construction documents",
+        "Use standard German architectural terminology"
+      ]
+    }
+  ],
+  "file_types": {
+    "translatable": [".svg", ".md"],
+    "copy_only": [".png", ".jpg", ".jpeg", ".webp", ".gif"]
+  },
+  "notes": [
+    "Source folder (EN) is the single source of truth",
+    "Target folders (TH, etc.) are always derived from source",
+    "Never manually edit target folders - they are always overwritten",
+    "Rename rules apply to target files (e.g., README.md � README.th.md)"
+  ]
+}

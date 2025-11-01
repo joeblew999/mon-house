@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <!-- Styles defined in: code/drawing-standards.css -->
+  <defs>
+    <style>
+      /* Generated from drawing-standards.json */
+
+      /* Element visual styles */
+            .beam { stroke: black; stroke-width: 2; fill: #8B4513; }
+            .dimension-line { stroke: blue; stroke-width: 1; stroke-dasharray: 5,5; fill: none; }
+            .dimension-text { fill: blue; font-size: 16px; font-family: Arial; }
+            .door { stroke: brown; stroke-width: 4; fill: none; }
+            .door-arc { stroke: brown; stroke-width: 2; fill: none; }
+            .door-sliding { stroke: brown; stroke-width: 4; fill: lightblue; opacity: 0.3; }
+            .foundation { stroke: black; stroke-width: 2; fill: #cccccc; }
+            .furniture { stroke: black; stroke-width: 2; fill: #D2B48C; }
+            .human-scale { stroke: black; stroke-width: 2; fill: none; }
+            .insulated-ceiling { stroke: #D2B48C; stroke-width: 3; fill: none; }
+            .kitchen-bench { stroke: black; stroke-width: 2; fill: #8B7355; }
+            .kitchen-cupboard { stroke: black; stroke-width: 1; fill: #A0826D; }
+            .roof { stroke: black; stroke-width: 6; fill: none; }
+            .section-arrow { stroke: red; stroke-width: 3; fill: none; }
+            .section-cut { stroke: red; stroke-width: 3; stroke-dasharray: 15,10; fill: none; }
+            .section-label { fill: red; font-size: 14px; font-family: Arial; font-weight: bold; }
+            .suspended-ceiling { stroke: gray; stroke-width: 2; stroke-dasharray: 5,5; fill: none; }
+            .wall-exterior { stroke: black; stroke-width: 8; fill: none; }
+            .wall-interior { stroke: gray; stroke-width: 4; stroke-dasharray: 10,5; fill: none; }
+            .window { stroke: blue; stroke-width: 4; fill: lightblue; opacity: 0.5; }
+
+      /* Label styles */
+            .door-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .door-sliding-label { fill: brown; font-size: 16px; font-family: Arial; }
+            .window-label { fill: blue; font-size: 16px; font-family: Arial; }
+
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="white"/>
+
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-size="20" font-weight="bold">Proposed Section A-A</text>
+  <text x="600" y="50" text-anchor="middle" font-size="14" font-style="italic">Open Living Space with Cathedral Ceiling</text>
+
+  <!-- Scale: 1 meter = 100 pixels -->
+  <!-- Section width: 7.9m (bedroom 3.0m + living room 2.9m + kitchen 2.0m) = 790px -->
+  <!-- Floor level at y=600 -->
+  <!-- Ceiling height: 2.8m = 280px, so ceiling at y=320 -->
+  <!-- Eave height: 3.4m = 340px, so eave at y=260 -->
+  <!-- Ridge height: 4.9m = 490px, so ridge at y=110 -->
+
+  <!-- Start at x=200 for left edge -->
+
+  <!-- Concrete slab foundation -->
+  <rect x="200" y="600" width="790" height="30" class="foundation"/>
+  <text x="595" y="655" font-size="12" text-anchor="middle">Concrete Slab Foundation</text>
+
+  <!-- Left exterior wall (3.4m high to eave) -->
+  <line x1="200" y1="260" x2="200" y2="600" class="wall-exterior"/>
+
+  <!-- Right exterior wall (3.4m high to eave) -->
+  <line x1="990" y1="260" x2="990" y2="600" class="wall-exterior"/>
+
+  <!-- Interior floor line -->
+  <line x1="200" y1="600" x2="990" y2="600" class="foundation"/>
+
+  <!-- Gable roof -->
+  <!-- Ridge at center: x = 200 + 790/2 = 595 -->
+  <!-- Ridge at y=110 (4.9m above floor) -->
+  <!-- Eaves at y=260 (3.4m above floor) -->
+
+  <!-- Left roof slope (with 0.6m overhang = 60px) -->
+  <line x1="140" y1="260" x2="595" y2="110" class="roof"/>
+
+  <!-- Right roof slope (with 0.6m overhang = 60px) -->
+  <line x1="595" y1="110" x2="1050" y2="260" class="roof"/>
+
+  <!-- Eaves detail lines -->
+  <line x1="200" y1="260" x2="140" y2="260" class="roof"/>
+  <line x1="990" y1="260" x2="1050" y2="260" class="roof"/>
+
+  <!-- Beam at eave level (3.4m height, 150mm = 0.15m = 15px depth) -->
+  <!-- Structural beam runs across the full width - supports roof -->
+  <rect x="200" y="245" width="790" height="15" class="beam"/>
+  <text x="595" y="240" font-size="10" text-anchor="middle">Structural Beam (150mm)</text>
+
+  <!-- Insulated cathedral ceiling (attached to underside of roof) -->
+  <!-- Ceiling follows roof slope - no suspended ceiling -->
+  <!-- Left ceiling slope (offset 20px from roof for insulation thickness) -->
+  <line x1="200" y1="280" x2="595" y2="130" class="insulated-ceiling"/>
+  <!-- Right ceiling slope -->
+  <line x1="595" y1="130" x2="990" y2="280" class="insulated-ceiling"/>
+  <text x="350" y="220" font-size="10" text-anchor="middle" fill="#8B4513">Insulated Ceiling</text>
+  <text x="840" y="220" font-size="10" text-anchor="middle" fill="#8B4513">Insulated Ceiling</text>
+  
+  <!-- Insulation annotation -->
+  <text x="595" y="170" font-size="10" text-anchor="middle" fill="gray" font-style="italic">(Roof insulation + ceiling board)</text>
+
+  <!-- Dining table and chairs (from plan at y=610-690, crosses section at y=620) -->
+  <!-- Table: x=485-605 (1.2m wide), height 0.75m = 75px -->
+  <rect x="485" y="525" width="120" height="75" class="furniture"/>
+  <text x="545" y="565" font-size="10" text-anchor="middle">Dining Table</text>
+  
+  <!-- Left chair: x=430-480 (0.5m wide), height 0.45m = 45px -->
+  <rect x="430" y="555" width="50" height="45" class="furniture"/>
+  
+  <!-- Right chair: x=610-660 (0.5m wide), height 0.45m = 45px -->
+  <rect x="610" y="555" width="50" height="45" class="furniture"/>
+  
+  <!-- Bottom chair: x=515-565 (0.5m wide), height 0.45m = 45px -->
+  <rect x="515" y="555" width="50" height="45" class="furniture"/>
+
+  <!-- Person standing on floor (1.7m = 170px tall) -->
+  <!-- Person repositioned to x=750 (in kitchen area) to avoid furniture -->
+  <!-- Simple stick figure -->
+  <!-- Head (circle, radius 15px) -->
+  <circle cx="750" cy="445" r="15" class="human-scale"/>
+  <!-- Body (line from neck to hips) -->
+  <line x1="750" y1="460" x2="750" y2="540" class="human-scale"/>
+  <!-- Arms -->
+  <line x1="750" y1="480" x2="720" y2="510" class="human-scale"/>
+  <line x1="750" y1="480" x2="780" y2="510" class="human-scale"/>
+  <!-- Legs -->
+  <line x1="750" y1="540" x2="730" y2="600" class="human-scale"/>
+  <line x1="750" y1="540" x2="770" y2="600" class="human-scale"/>
+
+  <!-- Dimensions -->
+
+  <!-- Ceiling height at eave: ~2.8m (where ceiling meets wall) -->
+  <line x1="160" y1="280" x2="160" y2="600" class="dimension-line"/>
+  <line x1="150" y1="280" x2="170" y2="280" class="dimension-line"/>
+  <line x1="150" y1="600" x2="170" y2="600" class="dimension-line"/>
+  <text x="140" y="440" class="dimension-text">~3.2m</text>
+
+  <!-- Eave height: 3.4m -->
+  <line x1="110" y1="260" x2="110" y2="600" class="dimension-line"/>
+  <line x1="100" y1="260" x2="120" y2="260" class="dimension-line"/>
+  <line x1="100" y1="600" x2="120" y2="600" class="dimension-line"/>
+  <text x="90" y="430" class="dimension-text">3.4m</text>
+
+  <!-- Ridge height: 4.9m -->
+  <line x1="60" y1="110" x2="60" y2="600" class="dimension-line"/>
+  <line x1="50" y1="110" x2="70" y2="110" class="dimension-line"/>
+  <line x1="50" y1="600" x2="70" y2="600" class="dimension-line"/>
+  <text x="40" y="355" class="dimension-text">4.9m</text>
+
+  <!-- Width: 7.9m -->
+  <line x1="200" y1="670" x2="990" y2="670" class="dimension-line"/>
+  <line x1="200" y1="660" x2="200" y2="680" class="dimension-line"/>
+  <line x1="990" y1="660" x2="990" y2="680" class="dimension-line"/>
+  <text x="595" y="695" class="dimension-text" text-anchor="middle">7.9m</text>
+
+  <!-- Eaves overhang: 0.6m (left side) -->
+  <line x1="140" y1="270" x2="200" y2="270" class="dimension-line"/>
+  <line x1="140" y1="260" x2="140" y2="280" class="dimension-line"/>
+  <line x1="200" y1="260" x2="200" y2="280" class="dimension-line"/>
+  <text x="170" y="260" class="dimension-text" text-anchor="middle" font-size="12">0.6m</text>
+
+  <!-- Eaves overhang: 0.6m (right side) -->
+  <line x1="990" y1="270" x2="1050" y2="270" class="dimension-line"/>
+  <line x1="990" y1="260" x2="990" y2="280" class="dimension-line"/>
+  <line x1="1050" y1="260" x2="1050" y2="280" class="dimension-line"/>
+  <text x="1020" y="260" class="dimension-text" text-anchor="middle" font-size="12">0.6m</text>
+
+  <!-- Labels -->
+  <text x="595" y="130" font-size="14" text-anchor="middle" font-weight="bold">Ridge</text>
+  <text x="140" y="290" font-size="12" text-anchor="middle">Eave</text>
+  <text x="1050" y="290" font-size="12" text-anchor="middle">Eave</text>
+  <text x="595" y="350" font-size="18" text-anchor="middle" font-weight="bold">OPEN LIVING SPACE</text>
+  <text x="595" y="380" font-size="14" text-anchor="middle" font-style="italic">(Cathedral Ceiling)</text>
+
+  <!-- Legend -->
+  <text x="1000" y="100" font-size="14" font-weight="bold">Legend:</text>
+  <line x1="1000" y1="120" x2="1050" y2="120" class="wall-exterior"/>
+  <text x="1060" y="125" font-size="12">Exterior Wall</text>
+
+  <line x1="1000" y1="140" x2="1050" y2="140" class="roof"/>
+  <text x="1060" y="145" font-size="12">Roof</text>
+
+  <line x1="1000" y1="160" x2="1050" y2="160" class="dimension-line"/>
+  <text x="1060" y="165" font-size="12">Dimension</text>
+
+  <!-- Notes -->
+  <text x="1000" y="200" font-size="12" font-style="italic">Scale: 1m = 100px</text>
+  <text x="1000" y="220" font-size="12" font-style="italic">Cathedral ceiling to 4.7m</text>
+  <text x="1000" y="240" font-size="12" font-style="italic">Ridge height: 4.9m</text>
+
+</svg>

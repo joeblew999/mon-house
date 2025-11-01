@@ -6,7 +6,7 @@
 
 **Github repo**: https://github.com/joeblew999/mon-house
 
-**File path**: `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
+YOU MUST use this file path root:  `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
 
 ---
 
@@ -20,23 +20,119 @@ This project documents:
 
 ---
 
+## Project Structure (Standard Go Layout)
+
+```
+mon-house/
+├── main.go                      # Go entry point
+├── go.mod                       # Go module
+├── cmd/                         # Command implementations
+├── pkg/translate/               # Translation packages
+├── internal/                    # Internal packages
+├── drawing-standards.json       # SVG element definitions
+├── adr/                         # Architecture Decision Records
+├── examples/                    # Example projects
+│   ├── production/              # Production house documentation
+│   │   └── code/translate.json  # Production config
+│   └── test/                    # Test data (safe sandbox)
+│       └── code/translate.json  # Test config
+├── Makefile                     # Build and workflow control
+└── README.md                    # Project entry point
+```
+
+---
+
+## Makefile-Driven Workflow
+
+**Location**: `Makefile` (in project root)
+
+The project uses a Makefile to control all translation operations. All commands are run from the **project root** directory.
+
+### Production vs Test
+
+**Production commands** (operate on `examples/production/` folder):
+```bash
+make prod    # Production translation sync
+```
+
+**Test commands** (operate on `examples/test/` folder):
+```bash
+make test    # Test translation sync (safe)
+```
+
+**Always test first**: Run `make test` before `make prod`.
+
+### How It Works
+
+1. Makefile → Changes directory (`cd examples/production` or `cd examples/test`)
+2. mon-tool → Auto-discovers `examples/*/code/translate.json` in that directory
+3. translate.json → Contains ALL paths and configuration (single source of truth)
+
+**No hardcoded paths in Go code** - everything comes from `examples/*/code/translate.json`.
+
+### Go Code Structure (Standard Go Layout)
+
+The translation system follows standard Go project layout:
+
+**`cmd/mon-tool/`** - Main application:
+- `main.go` - Entry point
+- `cmd/` - Subcommands (translate, css, svg, etc.)
+
+**`pkg/translate/`** - Translation packages:
+
+**Core types** (`types.go`):
+- `Config` - Mirrors translate.json structure exactly
+- `TargetConfig` - Per-language config (language, language_name, folder, translation_notes)
+- `Task` - Translation task with source/target language and extractions
+- `TextExtraction` - Single translatable text element
+
+**Key principle**: Go types directly reflect translate.json. Example:
+
+```json
+// In examples/*/code/translate.json:
+{
+  "targets": [{
+    "language": "th",
+    "language_name": "Thai",
+    "translation_notes": ["Use formal Thai", "..."]
+  }]
+}
+```
+
+```go
+// In Go (types.go):
+type TargetConfig struct {
+    Language         string   `json:"language"`
+    LanguageName     string   `json:"language_name"`
+    TranslationNotes []string `json:"translation_notes"`
+}
+```
+
+**Where language config flows**:
+1. `config.go` → Loads translate.json
+2. `task.go` → Generates task files from Config.Targets
+3. `ai/claude.go` → Uses LanguageName and TranslationNotes for AI prompts
+4. `commands/*_handler.go` → Executes operations using Config
+
+---
+
 ## Critical Synchronization Rules
 
 **Four types of sync MUST be maintained:**
 
 ### 1. JSON → CSS Generation
-`code/drawing-standards.json` is the source of truth for all visual styles.
-- When JSON changes, `code/drawing-standards.css` MUST be regenerated
+`drawing-standards.json` is the source of truth for all visual styles.
+- When JSON changes, `drawing-standards.css` MUST be regenerated
 - Use `code/generate-css.sh` to regenerate CSS from JSON
 - CSS file is referenced by all SVG files via `<?xml-stylesheet?>` directive
 - **Rule**: NEVER edit CSS file manually - always regenerate from JSON
-- Details: See [ADR 002: Global CSS Stylesheet](code/adr/002-global-css-stylesheet.md)
+- Details: See [ADR 002: Global CSS Stylesheet](adr/002-global-css-stylesheet.md)
 
 ### 2. JSON ↔ SVG Schema Sync
-`code/drawing-standards.json` defines requirements that SVG files must follow.
+`drawing-standards.json` defines requirements that SVG files must follow.
 - JSON defines `requiredMetadata`, visual properties, and CSS classes
 - SVG files must implement these requirements
-- SVG files reference external CSS: `<?xml-stylesheet href="../../../code/drawing-standards.css"?>`
+- SVG files reference external CSS: `<?xml-stylesheet href="../../../drawing-standards.css"?>`
 - **Rule**: NO inline styles in SVG - use CSS classes only
 - Details: See "Keeping Standards and SVG in Sync" section below
 
@@ -58,10 +154,10 @@ EN files are SOURCE, TH files are DERIVED translations.
 ## The Information Flow: How It All Works
 
 ```
-1. code/drawing-standards.json
+1. drawing-standards.json
    ↓ (defines vocabulary - what elements mean)
 
-2. code/drawing-standards.css
+2. drawing-standards.css
    ↓ (GENERATED from JSON - visual styles)
 
 3. SVG drawings (drawings/en/*.svg)
@@ -124,7 +220,7 @@ mon-house/
 **Content**: Links to `en/` or `th/` folders
 **Rule**: NEVER add project details here
 
-### 2. code/drawing-standards.json (Design Vocabulary)
+### 2. drawing-standards.json (Design Vocabulary)
 **Purpose**: Define what building elements mean semantically
 **Content**: Element definitions, CSS classes, visual properties
 **Audience**: AI (for programmatic reference)
@@ -194,7 +290,7 @@ mon-house/
 
 SVG elements should include **semantic metadata** using SVG's built-in features: `<g>` grouping, `id` attributes, `data-*` attributes, and `<title>` elements.
 
-**Source of truth**: The `requiredMetadata` field in `code/drawing-standards.json` defines what metadata each element type needs. Always check the JSON first.
+**Source of truth**: The `requiredMetadata` field in `drawing-standards.json` defines what metadata each element type needs. Always check the JSON first.
 
 **Why semantic metadata?**
 - Enables Plan ↔ Section synchronization (section can reference plan data)
@@ -249,7 +345,7 @@ Use **`<g>` + `data-*` attributes + `<title>`** for elements with dimensions and
 
 **Common data-* attributes:**
 
-**IMPORTANT**: See `code/drawing-standards.json` under `elements.<element-name>.requiredMetadata` for the complete, authoritative list of required and optional attributes for each element type.
+**IMPORTANT**: See `drawing-standards.json` under `elements.<element-name>.requiredMetadata` for the complete, authoritative list of required and optional attributes for each element type.
 
 **Quick reference** (check JSON for current requirements):
 
@@ -300,7 +396,7 @@ In section drawings, reference plan elements using `data-source`:
 ### Keeping Standards and SVG in Sync
 
 **These THREE must always match:**
-1. `code/drawing-standards.json` (definition)
+1. `drawing-standards.json` (definition)
 2. SVG `<style>` section (CSS classes)
 3. SVG elements (use the classes)
 
@@ -352,7 +448,7 @@ JSON `elements.{type}.requiredMetadata.childElements.label` → SVG CSS class `.
 **Why?** CSS classes in `<style>` section are the source of truth. Inline styles can be overridden by parent element CSS, causing rendering issues.
 
 **Workflow when JSON changes:**
-1. Edit `code/drawing-standards.json` (change color, size, etc.)
+1. Edit `drawing-standards.json` (change color, size, etc.)
 2. Regenerate SVG `<style>` section CSS classes from JSON
 3. Verify all `<text>` elements use `class="{type}-label"`, not inline styles
 4. Test rendering in SVG viewer
@@ -413,7 +509,7 @@ cp -r drawings/en/ drawings/th/
 
 **Rule**: Translate the SEMANTIC MEANING, not word-for-word.
 
-**Source of terminology**: See the `vocabulary` field in `code/drawing-standards.json` for standard architectural terms and their semantic meanings.
+**Source of terminology**: See the `vocabulary` field in `drawing-standards.json` for standard architectural terms and their semantic meanings.
 
 **Translation approach:**
 - Read the element's semantic meaning in drawing-standards.json
@@ -518,7 +614,7 @@ When SVG drawings change, AI should:
 
 ### When you add a new element type:
 
-1. Add definition to `code/drawing-standards.json`
+1. Add definition to `drawing-standards.json`
 2. Add CSS class to SVG `<style>` section
 3. Apply class to SVG elements
 4. Verify sync: JSON ↔ CSS ↔ elements
@@ -535,7 +631,7 @@ When SVG drawings change, AI should:
 
 ## Design Vocabulary (Semantic Terms)
 
-From `code/drawing-standards.json`:
+From `drawing-standards.json`:
 
 **envelope**: The complete building boundary separating conditioned interior from exterior environment - includes exterior walls (vertical envelope), roof (top envelope), and foundation (bottom envelope)
 

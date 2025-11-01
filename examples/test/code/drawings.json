@@ -1,0 +1,9 @@
+{
+  "drawings": [
+    {
+      "path": "drawings/en/sample/test-plan.svg",
+      "type": "plan",
+      "language": "en"
+    }
+  ]
+}

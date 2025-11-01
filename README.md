@@ -11,14 +11,14 @@ Complete bilingual architectural documentation for a house renovation.
 ## 🏗️ For Builders / สำหรับช่างก่อสร้าง
 
 ### **English Speakers**
-👉 **[Go to English Documentation](drawings/en/README.md)**
+👉 **[Go to English Documentation](examples/production/drawings/en/README.md)**
 
 All drawings and specifications in English.
 
 ---
 
 ### **Thai Speakers / ผู้พูดภาษาไทย**
-👉 **[ไปที่เอกสารภาษาไทย](drawings/th/README.th.md)**
+👉 **[ไปที่เอกสารภาษาไทย](examples/production/drawings/th/README.th.md)**
 
 แบบวาดและข้อกำหนดทั้งหมดเป็นภาษาไทย
 
