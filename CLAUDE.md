@@ -208,6 +208,14 @@ mon-house/
 │   │       └── SPEC.md                # Technical specs (AI-generated)
 │   └── th/                            # Thai translation (DERIVED from en/)
 │       └── (mirror of en/ structure with Thai text)
+├── furniture/
+│   ├── en/                            # English furniture specs (SOURCE)
+│   │   ├── SPEC.md                    # Furniture specifications
+│   │   └── shopping/                  # Product research and links
+│   │       ├── README.md              # Shopping directory naming pattern
+│   │       └── *.md                   # Product research files
+│   └── th/                            # Thai translation (DERIVED from en/)
+│       └── (mirror of en/ structure with Thai text)
 └── .git/hooks/pre-commit              # Enforces EN→TH sync
 ```
 
@@ -260,6 +268,66 @@ mon-house/
 **Purpose**: Thai translations for Thai builders
 **Generation**: Copy entire `en/` folder → translate all text
 **Rule**: Must maintain identical structure to EN files
+
+---
+
+## Furniture Directory Structure
+
+**Location**: `furniture/en/` (SOURCE) and `furniture/th/` (DERIVED)
+
+### Purpose
+Contains furniture and fixture specifications for all rooms in the house. Unlike drawing SPEC.md files (which are auto-generated from SVG), furniture SPEC.md is manually curated with detailed product specifications.
+
+### Structure
+
+```
+furniture/
+├── en/                          # English furniture specs (SOURCE)
+│   ├── SPEC.md                  # Furniture specifications by category
+│   └── shopping/                # Product research and vendor links
+│       ├── README.md            # Naming pattern documentation
+│       └── {section}-{name}.md  # Product research files
+└── th/                          # Thai translation (DERIVED)
+    └── (mirror of en/ structure)
+```
+
+### Key Principles
+
+1. **SPEC.md is source of truth** for furniture specifications
+   - Contains detailed product information, dimensions, specifications, placement notes
+   - Organized by categories (e.g., Section 1: Bedroom, Section 2: Bathroom)
+   - Each item has a section number (e.g., 2.1 Toilet, 2.15 Toilet Paper Holder)
+
+2. **Shopping directory** separates product research from specifications
+   - Keeps SPEC.md clean with requirements only
+   - Contains volatile information (prices, links, vendor SKUs)
+   - Files named using pattern: `{section-number}-{kebab-case-name}.md`
+   - Example: Section "2.1 Toilet" → shopping file `2.1-toilet.md`
+
+3. **Naming pattern** ensures consistency
+   - Shopping filenames MUST match SPEC.md section numbers exactly
+   - Convert section title to kebab-case for filename
+   - See `shopping/README.md` for complete naming guidelines
+
+4. **Translation workflow** same as drawings
+   - Delete `furniture/th/`, copy `furniture/en/`, translate all text
+   - Maintain identical structure (section numbers, filenames)
+   - Translate markdown content but keep numbers, measurements, patterns
+
+### Example Workflow
+
+**Adding a new furniture item:**
+
+1. Add to `furniture/en/SPEC.md` with section number (e.g., 2.19 Water Softener)
+2. Create shopping file: `furniture/en/shopping/2.19-water-softener.md`
+3. Research products, add to shopping file (prices, links, SKUs)
+4. When ready to translate: delete `furniture/th/`, copy from `furniture/en/`, translate
+
+**Updating SPEC.md:**
+
+1. Edit `furniture/en/SPEC.md` only (TH is derived)
+2. If section number/title changes, rename corresponding shopping file
+3. Run translation workflow to sync to `furniture/th/`
 
 ---
 
@@ -485,25 +553,32 @@ JSON `elements.{type}.requiredMetadata.childElements.label` → SVG CSS class `.
 
 ### The Simple 3-Step Process
 
-**Step 1: Delete TH folder, Copy EN folder**
+**Step 1: Delete TH folders, Copy EN folders**
 ```bash
-# Delete entire TH folder
+# Delete entire TH drawings folder
 rm -rf drawings/th/
 
-# Copy entire EN folder
+# Copy entire EN drawings folder
 cp -r drawings/en/ drawings/th/
+
+# Delete entire TH furniture folder
+rm -rf furniture/th/
+
+# Copy entire EN furniture folder
+cp -r furniture/en/ furniture/th/
 ```
 
-**Step 2: Translate ALL text in SVG files**
+**Step 2: Translate ALL text in SVG files (drawings only)**
 - Open every `.svg` file in `drawings/th/`
 - Translate ALL `<text>` element content
 - **Don't change**: coordinates, CSS classes, structure
 
-**Step 3: Translate ALL text in Markdown files**
-- Rename `SPEC.md` → `SPEC.th.md`
-- Rename `README.md` → `README.th.md`
-- Translate ALL text
-- **Don't change**: numbers, coordinates, measurements
+**Step 3: Translate ALL text in Markdown files (drawings AND furniture)**
+- **In drawings/th/**: Rename `SPEC.md` → `SPEC.th.md`, `README.md` → `README.th.md`
+- **In furniture/th/**: Rename `SPEC.md` → `SPEC.th.md`
+- **In furniture/th/shopping/**: Rename `README.md` → `README.th.md`, translate all `*.md` files
+- Translate ALL text in all markdown files
+- **Don't change**: numbers, coordinates, measurements, section numbers, file naming patterns
 
 ### Thai Architectural Terminology
 
@@ -654,14 +729,15 @@ From `drawing-standards.json`:
 1. **SVG is source of truth** - all measurements derive from SVG geometry
 2. **Building envelope** = exterior walls + roof + foundation (semantic concept)
 3. **All interior elements must be inside envelope** (below roof, between walls, above foundation)
-4. **EN is source, TH is derived** - always edit EN first, then translate to TH
-5. **Translation = brute force** - delete TH folder, copy EN, translate all text
+4. **EN is source, TH is derived** - always edit EN first, then translate to TH (applies to drawings/ AND furniture/)
+5. **Translation = brute force** - delete TH folders (drawings/th/ AND furniture/th/), copy EN folders, translate all text
 6. **Structure must match** - TH files must have identical coordinates/CSS/structure as EN
 7. **Use CSS classes, NEVER inline styles** - all SVG styling must use CSS classes from `<style>` section, which are generated from drawing-standards.json. Inline styles (`fill="pink"`, `font-size="16"`) can be overridden by parent CSS and cause rendering bugs. If you need a new style, add it to the JSON first, then generate the CSS class.
 8. **SVG `<style>` must match JSON** - CSS classes in SVG must be generated from drawing-standards.json. When JSON changes, regenerate SVG CSS.
-9. **SPEC.md is auto-generated** - regenerate when SVG changes
+9. **SPEC.md is auto-generated** - regenerate when SVG changes (for drawings); SPEC.md is manually curated for furniture
 10. **README.md references SPEC** - no numbers in README, only concepts
 11. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
+12. **furniture/SPEC.md is source of truth** - shopping files must follow SPEC.md section numbering exactly using pattern `{section-number}-{kebab-case-name}.md`
 
 ---
 

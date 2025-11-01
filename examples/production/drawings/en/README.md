@@ -4,6 +4,8 @@
 
 1. outside
 
+- high pressure cleaning from top to bottom.
+
 2. inside bathroom
 
 3. inside all
