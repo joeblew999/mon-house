@@ -27,6 +27,7 @@ This directory contains product research, shopping links, and vendor-specific in
 
 | SPEC.md Section | Shopping File |
 |----------------|---------------|
+| 1.1 Chaise Lounge / Reclining Chair | `1.1-chaise-lounge.md` |
 | 2.1 Toilet | `2.1-toilet.md` |
 | 2.2 Basin | `2.2-basin.md` |
 | 2.5 Shower Taps | `2.5-shower-taps.md` |
@@ -40,10 +41,10 @@ This directory contains product research, shopping links, and vendor-specific in
 shopping/
 ├── README.md                      # This file
 ├── images/                        # Product images and screenshots
-│   ├── 1-chaise-lounge-molesun.webp
+│   ├── 1.1-chaise-lounge-molesun.webp
 │   ├── 2.1-toilet-cotto-option1.jpg
 │   └── ... (organized by section number)
-├── 1-chaise-lounge.md            # Chaise lounge product research
+├── 1.1-chaise-lounge.md          # Chaise lounge product research
 ├── 2.1-toilet.md                 # Toilet product research
 ├── 2.2-basin.md                  # Basin product research
 ├── 2.3-shower.md                 # Shower product research
@@ -71,7 +72,7 @@ Product images should be stored in the `images/` subdirectory with the following
 **Pattern**: `{section-number}-{product-name}-{variant}.{ext}`
 
 **Examples**:
-- `1-chaise-lounge-molesun.webp` - Chaise lounge from Molesun
+- `1.1-chaise-lounge-molesun.webp` - Chaise lounge from Molesun
 - `2.1-toilet-cotto-option1.jpg` - COTTO toilet option 1
 - `2.1-toilet-toto-premium.jpg` - TOTO toilet premium option
 - `2.5-shower-taps-chrome.jpg` - Shower taps in chrome finish
