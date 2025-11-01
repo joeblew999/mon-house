@@ -39,6 +39,11 @@ This directory contains product research, shopping links, and vendor-specific in
 ```
 shopping/
 ├── README.md                      # This file
+├── images/                        # Product images and screenshots
+│   ├── 1-chaise-lounge-molesun.webp
+│   ├── 2.1-toilet-cotto-option1.jpg
+│   └── ... (organized by section number)
+├── 1-chaise-lounge.md            # Chaise lounge product research
 ├── 2.1-toilet.md                 # Toilet product research
 ├── 2.2-basin.md                  # Basin product research
 ├── 2.3-shower.md                 # Shower product research
@@ -59,6 +64,27 @@ shopping/
 └── 2.18-electrical-outlets.md    # Electrical outlets product research
 ```
 
+## Product Images
+
+Product images should be stored in the `images/` subdirectory with the following naming convention:
+
+**Pattern**: `{section-number}-{product-name}-{variant}.{ext}`
+
+**Examples**:
+- `1-chaise-lounge-molesun.webp` - Chaise lounge from Molesun
+- `2.1-toilet-cotto-option1.jpg` - COTTO toilet option 1
+- `2.1-toilet-toto-premium.jpg` - TOTO toilet premium option
+- `2.5-shower-taps-chrome.jpg` - Shower taps in chrome finish
+
+**Image Guidelines**:
+- Keep images reasonably sized (< 500KB when possible)
+- Use descriptive filenames
+- Include product variant/brand in filename
+- Prefer `.webp` or `.jpg` formats
+- Reference images in markdown files using: `![Description](images/filename.ext)`
+
+---
+
 ## What to Include in Shopping Files
 
 Each shopping file should contain:
@@ -67,6 +93,7 @@ Each shopping file should contain:
    - Links to products from Thailand vendors (HomePro, Global House, Boonthavorn, etc.)
    - Online shopping links (Lazada, Shopee, etc.)
    - Manufacturer product pages
+   - Product images (stored in `images/` folder)
 
 2. **Pricing Information**
    - Current prices in Thai Baht (THB)
