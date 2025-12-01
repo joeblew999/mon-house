@@ -201,14 +201,37 @@
       return hash;
     }
 
+    // Auto-detect GitHub edit URL from current page location
+    function getGitHubEditUrl(filePath) {
+      var host = window.location.host;
+      var pathname = window.location.pathname;
+
+      // GitHub Pages: username.github.io/repo/path/to/folder/
+      if (host.endsWith('.github.io')) {
+        var username = host.split('.')[0];
+        var parts = pathname.split('/').filter(function(p) { return p && p !== 'index.html'; });
+        var repo = parts[0];
+        var basePath = parts.slice(1).join('/');
+        return 'https://github.com/' + username + '/' + repo + '/edit/main/' + basePath + '/' + filePath;
+      }
+      // Not on GitHub Pages - no edit URL
+      return null;
+    }
+
     // Load and render markdown
     async function loadPage() {
       var path = getPath();
       var content = document.getElementById('content');
       var editBtn = document.getElementById('edit-btn');
 
-      // Update edit button (normalize path for clean URLs)
-      editBtn.href = 'https://github.com/joeblew999/mon-house/edit/main/examples/production/furniture/' + normalizePath(path);
+      // Update edit button (auto-detect GitHub URL)
+      var editUrl = getGitHubEditUrl(normalizePath(path));
+      if (editUrl) {
+        editBtn.href = editUrl;
+        editBtn.style.display = '';
+      } else {
+        editBtn.style.display = 'none';
+      }
 
       content.innerHTML = '<div class="loading">Loading...</div>';
 
