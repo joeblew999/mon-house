@@ -1,13 +1,37 @@
 # mon-house Taskfile
 # https://taskfile.dev
-# Keep It Simple: Build tool, sync translations, deploy helpers
+#
+# This is the SINGLE SOURCE OF TRUTH for project automation.
+# Claude can add new tasks here as needed.
 
 version: '3'
 
+# =============================================================================
+# VARIABLES - Single source of truth for paths, URLs, and config
+# =============================================================================
+# Naming convention:
+#   BIN_*  = Binary/executable names
+#   DIR_*  = Directory paths
+#   URL_*  = URLs
+#   REPO_* = Repository info
+
 vars:
-  MON_TOOL: mon-tool
-  REPO: joeblew999/mon-house
-  PAGES_URL: https://joeblew999.github.io/mon-house/examples/production/furniture/
+  # Binaries
+  BIN_MON_TOOL: mon-tool
+
+  # Directories
+  DIR_TEST: examples/test
+  DIR_PROD: examples/production
+  DIR_FURNITURE: examples/production/furniture
+
+  # Repository
+  REPO_OWNER: joeblew999
+  REPO_NAME: mon-house
+  REPO_FULL: "{{.REPO_OWNER}}/{{.REPO_NAME}}"
+
+  # URLs
+  URL_PAGES_BASE: "https://{{.REPO_OWNER}}.github.io/{{.REPO_NAME}}"
+  URL_FURNITURE: "{{.URL_PAGES_BASE}}/{{.DIR_FURNITURE}}/"
 
 tasks:
   default:
@@ -22,13 +46,13 @@ tasks:
   build:
     desc: Build mon-tool
     cmds:
-      - go build -o {{.MON_TOOL}}
-      - echo "✓ Built {{.MON_TOOL}}"
+      - go build -o {{.BIN_MON_TOOL}}
+      - echo "✓ Built {{.BIN_MON_TOOL}}"
 
   clean:
     desc: Remove binary
     cmds:
-      - rm -f {{.MON_TOOL}}
+      - rm -f {{.BIN_MON_TOOL}}
       - echo "✓ Cleaned"
 
   # =============================================================================
@@ -36,21 +60,21 @@ tasks:
   # =============================================================================
 
   test:
-    desc: Test translation sync (safe - uses examples/test/)
+    desc: Test translation sync (safe - uses {{.DIR_TEST}}/)
     deps: [build]
-    dir: examples/test
+    dir: "{{.DIR_TEST}}"
     cmds:
       - echo "Testing translation sync..."
-      - ../../{{.MON_TOOL}} translate sync
+      - ../../{{.BIN_MON_TOOL}} translate sync
       - echo "✓ Test complete"
 
   prod:
-    desc: Production translation sync (uses examples/production/)
+    desc: Production translation sync (uses {{.DIR_PROD}}/)
     deps: [build]
-    dir: examples/production
+    dir: "{{.DIR_PROD}}"
     cmds:
       - echo "Production translation sync..."
-      - ../../{{.MON_TOOL}} translate sync
+      - ../../{{.BIN_MON_TOOL}} translate sync
       - echo "✓ Production sync complete"
 
   # =============================================================================
@@ -61,7 +85,7 @@ tasks:
     desc: Check GitHub Pages build status
     cmds:
       - |
-        status=$(gh api repos/{{.REPO}}/pages -q '.status')
+        status=$(gh api repos/{{.REPO_FULL}}/pages -q '.status')
         echo "GitHub Pages status: $status"
         if [ "$status" = "built" ]; then
           echo "✓ Ready to view"
@@ -75,7 +99,7 @@ tasks:
       - |
         echo "Waiting for GitHub Pages build..."
         while true; do
-          status=$(gh api repos/{{.REPO}}/pages -q '.status')
+          status=$(gh api repos/{{.REPO_FULL}}/pages -q '.status')
           if [ "$status" = "built" ]; then
             echo "✓ Build complete!"
             break
@@ -87,12 +111,12 @@ tasks:
   pages:open:
     desc: Open GitHub Pages in browser (normal mode)
     cmds:
-      - open "{{.PAGES_URL}}"
+      - open "{{.URL_FURNITURE}}"
 
   pages:dev:
     desc: Open GitHub Pages in browser (dev mode - no cache)
     cmds:
-      - open "{{.PAGES_URL}}?dev"
+      - open "{{.URL_FURNITURE}}?dev"
 
   # =============================================================================
   # Deploy Workflow

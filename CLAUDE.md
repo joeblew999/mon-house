@@ -10,6 +10,44 @@ YOU MUST use this file path root:  `/Users/apple/workspace/go/src/github.com/joe
 
 ---
 
+## Taskfile (Single Source of Truth for Automation)
+
+**Location**: `Taskfile.yml` (in project root)
+
+The project uses [go-task](https://taskfile.dev) for all automation. **Taskfile.yml is the single source of truth** for project variables and tasks. You can add new tasks to this file as needed.
+
+### Key Variables (defined in Taskfile.yml)
+
+All paths and URLs are defined as variables with clear prefixes:
+- `BIN_*` - Binary/executable names
+- `DIR_*` - Directory paths
+- `URL_*` - URLs
+- `REPO_*` - Repository info
+
+### Common Tasks
+
+```bash
+task                  # Show all available tasks
+task build            # Build mon-tool
+task test             # Test translation sync (safe)
+task prod             # Production translation sync
+
+# GitHub Pages helpers
+task pages:status     # Check build status
+task pages:wait       # Wait for build to complete
+task pages:dev        # Open in dev mode (no cache)
+task deploy           # Push + wait + open in dev mode
+```
+
+### Adding New Tasks
+
+When you need new automation, add tasks to `Taskfile.yml`:
+- Use existing variables from the `vars:` section
+- Add new variables with appropriate prefix (DIR_, URL_, etc.)
+- Follow existing patterns for consistency
+
+---
+
 ## What This Project Contains
 
 This project documents:
@@ -36,35 +74,33 @@ mon-house/
 │   │   └── code/translate.json  # Production config
 │   └── test/                    # Test data (safe sandbox)
 │       └── code/translate.json  # Test config
-├── Makefile                     # Build and workflow control
+├── Taskfile.yml                 # Task runner (single source of truth for automation)
 └── README.md                    # Project entry point
 ```
 
 ---
 
-## Makefile-Driven Workflow
+## Translation Workflow
 
-**Location**: `Makefile` (in project root)
-
-The project uses a Makefile to control all translation operations. All commands are run from the **project root** directory.
+All commands are run from the **project root** directory using `task`.
 
 ### Production vs Test
 
 **Production commands** (operate on `examples/production/` folder):
 ```bash
-make prod    # Production translation sync
+task prod    # Production translation sync
 ```
 
 **Test commands** (operate on `examples/test/` folder):
 ```bash
-make test    # Test translation sync (safe)
+task test    # Test translation sync (safe)
 ```
 
-**Always test first**: Run `make test` before `make prod`.
+**Always test first**: Run `task test` before `task prod`.
 
 ### How It Works
 
-1. Makefile → Changes directory (`cd examples/production` or `cd examples/test`)
+1. Taskfile.yml → Changes directory (`cd examples/production` or `cd examples/test`)
 2. mon-tool → Auto-discovers `examples/*/code/translate.json` in that directory
 3. translate.json → Contains ALL paths and configuration (single source of truth)
 
