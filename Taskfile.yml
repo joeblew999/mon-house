@@ -16,7 +16,7 @@ version: '3'
 #   REPO_* = Repository info
 
 vars:
-  # Binaries
+  # Binaries (without extension - .gitignore handles both Unix and Windows)
   BIN_MON_TOOL: mon-tool
 
   # Directories
@@ -148,8 +148,9 @@ tasks:
         # Edit Taskfile.yml vars, then run: task gitignore
         # =============================================================================
 
-        # Binaries
+        # Binaries (Unix and Windows)
         {{.BIN_MON_TOOL}}
+        {{.BIN_MON_TOOL}}.exe
 
         # Generated files
         *_gen.*

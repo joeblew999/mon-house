@@ -3,8 +3,9 @@
 # Edit Taskfile.yml vars, then run: task gitignore
 # =============================================================================
 
-# Binaries
+# Binaries (Unix and Windows)
 mon-tool
+mon-tool.exe
 
 # Generated files
 *_gen.*
