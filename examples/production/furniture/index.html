@@ -70,6 +70,17 @@
   </div>
 
   <script>
+    // Normalize path by resolving . and .. segments
+    function normalizePath(path) {
+      var parts = path.split('/');
+      var result = [];
+      for (var i = 0; i < parts.length; i++) {
+        if (parts[i] === '..') result.pop();
+        else if (parts[i] !== '.' && parts[i] !== '') result.push(parts[i]);
+      }
+      return result.join('/');
+    }
+
     // Get base directory from a file path
     function getBaseDir(path) {
       var parts = path.split('/');
@@ -77,10 +88,10 @@
       return parts.length ? parts.join('/') + '/' : '';
     }
 
-    // Resolve relative path against base
+    // Resolve relative path against base and normalize
     function resolvePath(base, rel) {
       if (rel.startsWith('http') || rel.startsWith('/')) return rel;
-      return base + rel;
+      return normalizePath(base + rel);
     }
 
     // Simple markdown to HTML
@@ -196,8 +207,8 @@
       var content = document.getElementById('content');
       var editBtn = document.getElementById('edit-btn');
 
-      // Update edit button
-      editBtn.href = 'https://github.com/joeblew999/mon-house/edit/main/examples/production/furniture/' + path;
+      // Update edit button (normalize path for clean URLs)
+      editBtn.href = 'https://github.com/joeblew999/mon-house/edit/main/examples/production/furniture/' + normalizePath(path);
 
       content.innerHTML = '<div class="loading">Loading...</div>';
 
