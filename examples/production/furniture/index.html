@@ -238,11 +238,27 @@
       return result;
     }
 
-    // Get file path from hash or default to SPEC.md
-    function getPath() {
+    // Parse hash into file path and anchor
+    // Examples:
+    //   #SPEC.md -> { file: 'SPEC.md', anchor: null }
+    //   #living-room/SPEC.md -> { file: 'living-room/SPEC.md', anchor: null }
+    //   #living-room/SPEC.md#12-coffee-table -> { file: 'living-room/SPEC.md', anchor: '12-coffee-table' }
+    //   #12-coffee-table -> { file: null, anchor: '12-coffee-table' } (pure anchor)
+    function parseHash() {
       var hash = window.location.hash.slice(1) || 'SPEC.md';
-      return hash;
+
+      // Check if it's a .md file path (possibly with anchor)
+      var mdMatch = hash.match(/^(.+\.md)(?:#(.+))?$/);
+      if (mdMatch) {
+        return { file: mdMatch[1], anchor: mdMatch[2] || null };
+      }
+
+      // Pure anchor (no .md) - stays on current file
+      return { file: null, anchor: hash };
     }
+
+    // Track current file to detect file changes vs anchor-only changes
+    var currentFile = null;
 
     // Auto-detect GitHub edit URL from current page location
     function getGitHubEditUrl(filePath) {
@@ -261,11 +277,30 @@
       return null;
     }
 
+    // Scroll to anchor element if it exists
+    function scrollToAnchor(anchor) {
+      if (!anchor) return;
+      var el = document.getElementById(anchor);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
     // Load and render markdown
     async function loadPage() {
-      var path = getPath();
+      var parsed = parseHash();
       var content = document.getElementById('content');
       var editBtn = document.getElementById('edit-btn');
+
+      // If pure anchor (no file change), just scroll
+      if (parsed.file === null && currentFile) {
+        scrollToAnchor(parsed.anchor);
+        return;
+      }
+
+      // Determine file to load
+      var path = parsed.file || currentFile || 'SPEC.md';
+      currentFile = path;
 
       // Update edit button (auto-detect GitHub URL)
       var editUrl = getGitHubEditUrl(normalizePath(path));
@@ -286,13 +321,28 @@
         var text = await res.text();
         content.innerHTML = md(text, path);
 
-        // Intercept .md link clicks
+        // Intercept link clicks
         content.querySelectorAll('a[href^="#"]').forEach(function(a) {
           a.onclick = function(e) {
             e.preventDefault();
-            window.location.hash = a.getAttribute('href').slice(1);
+            var href = a.getAttribute('href').slice(1);
+
+            // If pure anchor (no .md), scroll directly without changing URL
+            // This keeps the URL clean and avoids reload issues
+            if (!href.includes('.md')) {
+              scrollToAnchor(href);
+              return;
+            }
+
+            // File link - update hash (triggers hashchange -> loadPage)
+            window.location.hash = href;
           };
         });
+
+        // Scroll to anchor after content loads (if specified)
+        if (parsed.anchor) {
+          setTimeout(function() { scrollToAnchor(parsed.anchor); }, 50);
+        }
       } catch (err) {
         content.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
       }
