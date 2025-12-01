@@ -194,6 +194,9 @@ tasks:
         *.out
         go.work
         go.work.sum
+
+        # Playwright MCP
+        .playwright-mcp/
         EOF
       - echo "✓ Generated {{.FILE_GITIGNORE}}"
 
