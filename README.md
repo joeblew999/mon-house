@@ -8,6 +8,16 @@ Complete bilingual architectural documentation for a house renovation.
 
 ---
 
+## 🛋️ Furniture & Shopping / เฟอร์นิเจอร์และรายการซื้อ
+
+👉 **[View Furniture Specs & Shopping Lists](https://joeblew999.github.io/mon-house/examples/production/furniture/)**
+
+Browse specifications and shopping lists for all furniture and fixtures. Click "Edit" to update directly on GitHub.
+
+ดูข้อมูลจำเพาะและรายการซื้อเฟอร์นิเจอร์และอุปกรณ์ทั้งหมด คลิก "Edit" เพื่อแก้ไขโดยตรงบน GitHub
+
+---
+
 ## 🏗️ For Builders / สำหรับช่างก่อสร้าง
 
 ### **English Speakers**

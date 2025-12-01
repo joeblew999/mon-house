@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mon House Furniture</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #24292e;
+    }
+    h1, h2, h3 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; }
+    h1 { font-size: 2em; border-bottom: 1px solid #e1e4e8; padding-bottom: 0.3em; }
+    h2 { font-size: 1.5em; border-bottom: 1px solid #e1e4e8; padding-bottom: 0.3em; }
+    a { color: #0366d6; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+    th, td { border: 1px solid #dfe2e5; padding: 8px 12px; text-align: left; }
+    th { background: #f6f8fa; font-weight: 600; }
+    code { background: #f6f8fa; padding: 2px 6px; border-radius: 3px; font-size: 85%; }
+    pre { background: #f6f8fa; padding: 16px; overflow-x: auto; border-radius: 6px; }
+    pre code { background: none; padding: 0; }
+    hr { border: none; border-top: 1px solid #e1e4e8; margin: 24px 0; }
+    ul, ol { padding-left: 2em; }
+    li { margin: 4px 0; }
+    blockquote { margin: 16px 0; padding: 0 16px; border-left: 4px solid #dfe2e5; color: #6a737d; }
+    strong { font-weight: 600; }
+    .toolbar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      gap: 8px;
+      z-index: 1000;
+    }
+    .btn {
+      background: #0366d6;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover { background: #0256b9; text-decoration: none; color: white; }
+    .btn-secondary { background: #f6f8fa; color: #24292e; border: 1px solid #e1e4e8; }
+    .btn-secondary:hover { background: #e1e4e8; }
+    #content { margin-top: 20px; }
+    .loading { text-align: center; padding: 40px; color: #6a737d; }
+    .error { color: #cb2431; padding: 20px; background: #ffeef0; border-radius: 6px; }
+    .nav { margin-bottom: 20px; font-size: 14px; }
+    .nav a { margin-right: 16px; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <a class="btn" id="edit-btn">✏️ Edit</a>
+  </div>
+  <div class="nav">
+    <a href="#SPEC.md">Home</a>
+  </div>
+  <div id="content">
+    <div class="loading">Loading...</div>
+  </div>
+
+  <script>
+    // Simple markdown to HTML
+    function md(text) {
+      // First pass: convert links (before other processing)
+      // Links with .md and optional anchor: [text](path.md) or [text](path.md#anchor)
+      text = text.replace(/\[([^\]]+)\]\(([^)]+\.md(?:#[^)]*)?)\)/g, function(m, label, href) {
+        return '<a href="#' + href + '">' + label + '</a>';
+      });
+      // External links
+      text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+      // Process line by line for better control
+      var lines = text.split('\n');
+      var html = [];
+      var inCodeBlock = false;
+      var inTable = false;
+      var tableRows = [];
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        // Code blocks
+        if (line.startsWith('```')) {
+          if (inCodeBlock) {
+            html.push('</code></pre>');
+            inCodeBlock = false;
+          } else {
+            html.push('<pre><code>');
+            inCodeBlock = true;
+          }
+          continue;
+        }
+        if (inCodeBlock) {
+          html.push(line);
+          continue;
+        }
+
+        // Tables
+        if (line.startsWith('|')) {
+          if (!inTable) inTable = true;
+          // Skip separator row
+          if (line.match(/^\|[\s\-:|]+\|$/)) continue;
+          var cells = line.split('|').slice(1, -1).map(c => c.trim());
+          var isHeader = i + 1 < lines.length && lines[i + 1].match(/^\|[\s\-:|]+\|$/);
+          var tag = isHeader ? 'th' : 'td';
+          tableRows.push('<tr>' + cells.map(c => '<' + tag + '>' + c + '</' + tag + '>').join('') + '</tr>');
+          continue;
+        } else if (inTable) {
+          html.push('<table>' + tableRows.join('') + '</table>');
+          tableRows = [];
+          inTable = false;
+        }
+
+        // Headers
+        if (line.startsWith('### ')) { html.push('<h3>' + line.slice(4) + '</h3>'); continue; }
+        if (line.startsWith('## ')) { html.push('<h2>' + line.slice(3) + '</h2>'); continue; }
+        if (line.startsWith('# ')) { html.push('<h1>' + line.slice(2) + '</h1>'); continue; }
+
+        // Horizontal rule
+        if (line === '---') { html.push('<hr>'); continue; }
+
+        // Lists
+        if (line.match(/^- /)) {
+          line = '<li>' + line.slice(2) + '</li>';
+        } else if (line.match(/^\d+\. /)) {
+          line = '<li>' + line.replace(/^\d+\. /, '') + '</li>';
+        }
+
+        // Inline formatting
+        line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Blockquote
+        if (line.startsWith('> ')) {
+          line = '<blockquote>' + line.slice(2) + '</blockquote>';
+        }
+
+        html.push(line);
+      }
+
+      // Close any open table
+      if (inTable && tableRows.length) {
+        html.push('<table>' + tableRows.join('') + '</table>');
+      }
+
+      // Wrap consecutive li in ul
+      var result = html.join('\n');
+      result = result.replace(/(<li>[\s\S]*?<\/li>\n?)+/g, '<ul>$&</ul>');
+
+      return result;
+    }
+
+    // Get file path from hash or default to SPEC.md
+    function getPath() {
+      var hash = window.location.hash.slice(1) || 'SPEC.md';
+      return hash;
+    }
+
+    // Load and render markdown
+    async function loadPage() {
+      var path = getPath();
+      var content = document.getElementById('content');
+      var editBtn = document.getElementById('edit-btn');
+
+      // Update edit button
+      editBtn.href = 'https://github.com/joeblew999/mon-house/edit/main/examples/production/furniture/' + path;
+
+      content.innerHTML = '<div class="loading">Loading...</div>';
+
+      try {
+        var res = await fetch(path);
+        if (!res.ok) throw new Error('File not found: ' + path);
+        var text = await res.text();
+        content.innerHTML = md(text);
+
+        // Intercept .md link clicks
+        content.querySelectorAll('a[href^="#"]').forEach(function(a) {
+          a.onclick = function(e) {
+            e.preventDefault();
+            window.location.hash = a.getAttribute('href').slice(1);
+          };
+        });
+      } catch (err) {
+        content.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
+      }
+    }
+
+    // Load on hash change
+    window.addEventListener('hashchange', loadPage);
+
+    // Initial load
+    loadPage();
+  </script>
+</body>
+</html>
