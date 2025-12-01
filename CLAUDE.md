@@ -46,6 +46,18 @@ When you need new automation, add tasks to `Taskfile.yml`:
 - Add new variables with appropriate prefix (DIR_, URL_, etc.)
 - Follow existing patterns for consistency
 
+### Browser Testing
+
+**For simple page viewing/testing:**
+- Use `task pages:dev` - opens user's default browser in dev mode
+- User can inspect and verify manually
+- No orphaned browser instances
+
+**For automated browser testing (clicking, filling forms, screenshots):**
+- Use MCP Playwright tools (`mcp__playwright__browser_*`)
+- ALWAYS call `mcp__playwright__browser_close` when done testing
+- If "browser already in use" error occurs, run `task browser:kill` first
+
 ---
 
 ## What This Project Contains

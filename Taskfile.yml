@@ -190,3 +190,9 @@ tasks:
         echo "{{.BIN_MON_TOOL}}"
         echo ""
         echo "# Run 'task gitignore' to generate {{.FILE_GITIGNORE}}"
+
+  browser:kill:
+    desc: Kill stale Playwright Chrome instances
+    cmds:
+      - pkill -f "mcp-chrome" || true
+      - echo "✓ Killed stale Playwright browsers"
