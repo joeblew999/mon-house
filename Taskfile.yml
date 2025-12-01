@@ -214,3 +214,22 @@ tasks:
     cmds:
       - pkill -f "mcp-chrome" || true
       - echo "✓ Killed stale Playwright browsers"
+
+  # =============================================================================
+  # Local Development
+  # =============================================================================
+
+  dev:
+    desc: Start local dev server for furniture SPA (port 8080)
+    dir: "{{.DIR_FURNITURE}}"
+    cmds:
+      - |
+        echo "Starting local dev server at http://localhost:8080"
+        echo "Press Ctrl+C to stop"
+        go run github.com/eliben/static-server@latest -port 8080
+
+  dev:install:
+    desc: Install static-server globally (optional)
+    cmds:
+      - go install github.com/eliben/static-server@latest
+      - echo "✓ Installed static-server"
