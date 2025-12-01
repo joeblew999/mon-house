@@ -169,7 +169,7 @@
 
   <script>
     // Version for cache-busting (updated by: task version:bump)
-    var PAGE_VERSION = '20251201-155405';
+    var PAGE_VERSION = '20251201-155742';
 
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
@@ -436,6 +436,10 @@
         if (i === parts.length - 1) {
           // Last part - not a link
           html += '<span class="current">' + parts[i] + '</span>';
+        } else if (parts[i] === 'shopping') {
+          // Shopping folders don't have SPEC.md - link back to parent category
+          var parentPath = parts.slice(0, i).join('/');
+          html += '<a href="#' + parentPath + '/SPEC.md">' + parts[i] + '</a>';
         } else {
           // Intermediate folder - link to its SPEC.md
           html += '<a href="#' + accumulated + '/SPEC.md">' + parts[i] + '</a>';
