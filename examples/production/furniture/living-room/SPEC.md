@@ -6,8 +6,8 @@ Specifications for living room furniture and fixtures.
 
 ## Table of Contents
 - 1.1 [Chaise Lounge / Reclining Chair](#11-chaise-lounge--reclining-chair)
-- 1.2 [Coffee Table](#12-coffee-table) *(TBD)*
-- 1.3 [TV Stand/Console](#13-tv-standconsole) *(TBD)*
+- 1.2 [Coffee Table](#12-coffee-table)
+- 1.3 [TV Stand/Console](#13-tv-standconsole)
 
 ---
 
@@ -53,10 +53,66 @@ Specifications for living room furniture and fixtures.
 
 ## 1.2 Coffee Table
 
-*TBD - Add specifications when selected*
+**Product Information**
+- **Type**: Coffee Table
+- **Brand**: IKEA
+- **Model**: LACK
+- **Color**: Black-brown
+- **Price**: ฿599
+- **Source**: [IKEA Thailand](https://www.ikea.com/th/en/p/lack-coffee-table-black-brown-80104268/)
+
+[View Shopping Options](shopping/1.2-coffee-table.md)
+
+**Dimensions**
+- **Width**: 0.90m (90cm)
+- **Depth**: 0.55m (55cm)
+- **Height**: 0.45m (45cm)
+- **Footprint**: W90 × D55 cm
+
+**Materials**
+- **Construction**: Particle board with wood veneer
+- **Finish**: Foil/laminate
+
+**Placement in Floor Plan**
+- **Room**: Living room
+- **Position**: Center of seating area
+- **Purpose**: Surface for drinks, books, remote controls
+
+**Notes**
+- Flat-pack, requires assembly
+- Lightweight and easy to move
+- Multiple colors available
 
 ---
 
 ## 1.3 TV Stand/Console
 
-*TBD - Add specifications when selected*
+**Product Information**
+- **Type**: TV Stand / Media Console
+- **Brand**: IKEA
+- **Model**: BESTA TV Bench
+- **Color**: Black-brown
+- **Price**: ฿2,490
+- **Source**: [IKEA Thailand](https://www.ikea.com/th/en/p/besta-tv-bench-black-brown-10294504/)
+
+[View Shopping Options](shopping/1.3-tv-stand.md)
+
+**Dimensions**
+- **Width**: 1.20m (120cm)
+- **Depth**: 0.40m (40cm)
+- **Height**: 0.38m (38cm)
+- **Footprint**: W120 × D40 cm
+
+**Materials**
+- **Construction**: Particle board with foil/veneer
+- **Features**: Cable management hole, adjustable feet
+
+**Placement in Floor Plan**
+- **Room**: Living room
+- **Position**: Against wall, under TV
+- **Purpose**: TV support, media storage, cable management
+
+**Notes**
+- Flat-pack, requires assembly (~45 minutes)
+- Modular system - can add doors/drawers
+- Fits TVs up to 55"

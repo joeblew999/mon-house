@@ -32,9 +32,14 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Wall-hung toilet (โถสุขภัณฑ์แขวนผนัง)
+- **Brand**: COTTO
+- **Model**: SC19517(T) + C962170 + C942000
 - **Style**: Wall-hung with concealed cistern
-- **Flush Type**: Dual-flush (3L/4.5L or 3L/6L)
-- **Source**: TBD (COTTO, American Standard, or TOTO recommended)
+- **Flush Type**: Dual-flush (3L/4.5L)
+- **Price**: ฿32,253 (complete system)
+- **Source**: [OneStockHome](https://www.onestockhome.com/en/products/85885450/wall-hung-toilet-cotto-sc19517t-345-l-c962170c942000_wall-hanging-toilet_cotto)
+
+[View Shopping Options](shopping/2.1-toilet.md)
 
 **System Components**
 1. **Wall-hung toilet bowl** - Ceramic, visible portion
@@ -87,9 +92,14 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Wall-mounted washbasin (อ่างล้างหน้าแขวนผนัง)
+- **Brand**: COTTO
+- **Model**: C0107 (Alice series)
 - **Style**: Wall-mounted on false wall
 - **Material**: Ceramic/Porcelain
-- **Source**: TBD (COTTO, American Standard, or TOTO recommended)
+- **Price**: ฿2,090
+- **Source**: [HomePro](https://www.homepro.co.th/p/151882?lang=en)
+
+[View Shopping Options](shopping/2.2-basin.md)
 
 **Dimensions**
 - **Basin Width**: ~0.50-0.60m (50-60cm)
@@ -135,9 +145,10 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Shower enclosure (ฝักบัว)
-- **Style**: TBD (Walk-in, Enclosed, or Wet room)
-- **Shower Head**: Rain shower or standard
-- **Source**: TBD
+- **Style**: Walk-in with glass panel and hand shower
+- **Shower Head**: Hand shower (rain shower optional)
+
+[View Shopping Options](shopping/2.3-shower.md) (Note: Shower is assembled from components - see individual items)
 
 **Dimensions**
 - **Minimum Size**: 0.90m × 0.90m (90cm × 90cm)
@@ -164,7 +175,9 @@ Specifications for all bathroom fixtures and fittings.
 - **Style**: Frameless or semi-frameless fixed panel
 - **Material**: Tempered safety glass
 - **Thickness**: 8mm or 10mm recommended
-- **Source**: TBD
+- **Price**: ฿2,500-฿3,500
+
+[View Shopping Options](shopping/2.4-shower-glass-panel.md)
 
 **Dimensions**
 - **Standard Width**: 0.80-1.00m (80-100cm)
@@ -191,10 +204,15 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Shower mixer/faucet (ก๊อกฝักบัว)
-- **Style**: TBD (Exposed or Concealed)
-- **Configuration**: Single-handle mixer or dual-handle
-- **Finish**: Chrome, brushed nickel, or matte black
-- **Source**: TBD
+- **Brand**: COTTO
+- **Model**: CT2326A (Essentia Series)
+- **Style**: Exposed single-lever mixer
+- **Configuration**: Single-handle mixer
+- **Finish**: Extra Chrome (8 micron)
+- **Price**: ฿2,990
+- **Source**: [Thai Watsadu](https://www.thaiwatsadu.com/en/brand/COTTO)
+
+[View Shopping Options](shopping/2.5-shower-taps.md)
 
 **Dimensions**
 - **Mixer body**: ~0.15m × 0.10m (wall-mounted)
@@ -224,10 +242,15 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Basin mixer/faucet (ก๊อกอ่างล้างหน้า)
-- **Style**: TBD (Deck-mounted or Wall-mounted)
-- **Configuration**: Single-handle mixer recommended
-- **Finish**: Chrome, brushed nickel, or matte black
-- **Source**: TBD
+- **Brand**: COTTO
+- **Model**: CT1160AN(HM)
+- **Style**: Deck-mounted
+- **Configuration**: Single-handle mixer
+- **Finish**: Chrome
+- **Price**: ฿1,090
+- **Source**: [HomePro](https://www.homepro.co.th/p/1093790?lang=en)
+
+[View Shopping Options](shopping/2.6-basin-taps.md)
 
 **Dimensions**
 - **Spout reach**: 0.10-0.15m (10-15cm)
@@ -256,9 +279,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Full-length bathroom mirror (กระจกห้องน้ำยาวเต็มตัว)
-- **Style**: Frameless wall-mounted
-- **Features**: TBD (Plain, LED-lit, or Anti-fog)
-- **Source**: TBD
+- **Style**: Frameless wall-mounted, custom cut
+- **Material**: 4mm mirror glass with safety backing
+- **Features**: Plain (anti-fog spray optional)
+- **Price**: ฿800-฿1,200 (~฿500/m²)
+- **Source**: HomePro glass section (custom cut)
+
+[View Shopping Options](shopping/2.7-mirror.md)
 
 **Dimensions**
 - **Width**: Matches false wall length (continuous above false wall)
@@ -307,10 +334,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Ceramic or porcelain floor tiles (กระเบื้องปูพื้น)
-- **Finish**: Anti-slip (matte or textured)
-- **Color**: TBD (Light colors recommended for small spaces)
-- **Pattern**: TBD (Plain, Geometric, or Stone-look)
-- **Source**: TBD
+- **Finish**: Anti-slip matte (R10/R11 rated)
+- **Color**: Light grey
+- **Size**: 30cm × 30cm
+- **Price**: ฿25/tile (฿280/m²)
+- **Source**: HomePro tiles section
+
+[View Shopping Options](shopping/2.8-floor-tiles.md)
 
 **Dimensions**
 - **Tile Size**: Common options:
@@ -343,10 +373,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Ceramic wall tiles (กระเบื้องผนัง)
-- **Finish**: Glossy or matte
-- **Color**: TBD (Light colors recommended)
-- **Pattern**: TBD (Plain, Subway, or Decorative)
-- **Source**: TBD
+- **Finish**: White glossy
+- **Color**: Pure white
+- **Size**: 20cm × 25cm
+- **Price**: ฿18/tile (฿360/m²)
+- **Source**: HomePro tiles section
+
+[View Shopping Options](shopping/2.9-wall-tiles.md)
 
 **Dimensions**
 - **Tile Size**: Common options:
@@ -382,10 +415,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Electric water heater (เครื่องทำน้ำอ้อน)
+- **Brand**: STIEBEL ELTRON
 - **Style**: External tank water heater
-- **Capacity**: 15-30L recommended for single bathroom
-- **Power**: 220V
-- **Source**: TBD
+- **Capacity**: 15L (single bathroom)
+- **Power**: 220V, 2.5kW
+- **Price**: ฿3,990
+
+[View Shopping Options](shopping/2.10-water-heater.md)
 
 **Dimensions**
 - **Tank type**: ~0.40m diameter × 0.60m height
@@ -420,10 +456,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Bathroom exhaust fan (พัดลมระบายอากาศห้องน้ำ)
+- **Brand**: Panasonic or Mitsubishi Electric
 - **Style**: Ceiling-mounted
-- **Airflow Capacity**: 100-150 CFM (Cubic Feet per Minute)
+- **Airflow Capacity**: 100-150 CFM
 - **Noise Level**: Ultra-quiet (<1.0 sones / <20dB)
-- **Source**: TBD (Mitsubishi Electric, Panasonic, or KDK recommended)
+- **Price**: ฿1,200-฿1,800
+
+[View Shopping Options](shopping/2.11-ventilation-fan.md)
 
 **Dimensions**
 - **Fan housing**: ~0.25m × 0.25m (25cm × 25cm) ceiling cutout
@@ -474,12 +513,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Bathroom lighting (ไฟห้องน้ำ)
-- **Main Lights**: Wall-mounted LED sconces
-- **Task Lighting**: LED strip above/around mirror
-- **IP Rating**: Mixed (IP65 near shower, IP44 for general areas)
+- **Main Lights**: LED downlights (2 units) IP44
+- **Task Lighting**: LED strip above mirror
+- **IP Rating**: IP44 (splash-proof)
 - **Color Temperature**: Warm white (2700-3000K)
-- **Dimming**: Dimmable with dimmer switch
-- **Source**: TBD
+- **Price**: ฿1,200-฿1,800 (complete set)
+
+[View Shopping Options](shopping/2.12-lighting.md)
 
 **Main Wall-Mounted Sconces**
 
@@ -577,11 +617,12 @@ Specifications for all bathroom fixtures and fittings.
 - **Type**: Bathroom door (ประตูห้องน้ำ)
 - **Style**: Swinging door (hinged)
 - **Material**: Composite/engineered wood (moisture-resistant)
-- **Width**: 0.70-0.80m (70-80cm) standard
-- **Height**: 2.10-2.20m (210-220cm) tall
+- **Size**: 80cm × 210cm
 - **Privacy**: Solid door (no glass, no louvers)
 - **Swing Direction**: Inward (into bathroom)
-- **Source**: TBD
+- **Price**: ฿3,500-฿5,000 (door slab only)
+
+[View Shopping Options](shopping/2.13-bathroom-door.md)
 
 **Dimensions**
 - **Door Width**: 0.70-0.80m (70-80cm)
@@ -695,11 +736,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Bathroom towel accessories (ที่แขวนผ้าห้องน้ำ)
-- **Main Towel Bar**: Double towel bar (two horizontal bars stacked)
-- **Robe Hooks**: 2 hooks
-- **Finish**: Match basin/shower tap finish (coordinate with fixtures)
-- **Mounting**: Wall-mounted with screws (permanent installation)
-- **Source**: TBD
+- **Main Towel Bar**: Double towel bar 60cm (chrome)
+- **Robe Hooks**: 2 hooks (chrome)
+- **Finish**: Chrome (matches basin/shower taps)
+- **Mounting**: Wall-mounted with screws
+- **Price**: ฿600-฿800 (complete set)
+
+[View Shopping Options](shopping/2.14-towel-bars-hooks.md)
 
 **Double Towel Bar**
 
@@ -816,9 +859,11 @@ Specifications for all bathroom fixtures and fittings.
 **Product Information**
 - **Type**: Toilet paper holder (ที่ใส่กระดาษชำระ)
 - **Style**: Wall-mounted standard holder (single roll)
-- **Finish**: Match basin/shower tap finish
+- **Finish**: Chrome (matches fixtures)
 - **Reserve Storage**: No (single roll only)
-- **Source**: TBD
+- **Price**: ฿150-฿300
+
+[View Shopping Options](shopping/2.15-toilet-paper-holder.md)
 
 **Specifications**
 - **Material**: Stainless steel, brass, or aluminum
@@ -863,8 +908,10 @@ Specifications for all bathroom fixtures and fittings.
 **Product Information**
 - **Type**: Bathroom accessories (อุปกรณ์ห้องน้ำ)
 - **Items**: Wall-mounted trash receptacle only
-- **Finish**: Match basin/shower tap finish (coordinate with fixtures)
-- **Source**: TBD
+- **Finish**: Chrome/white (matches fixtures)
+- **Price**: ฿250-฿400
+
+[View Shopping Options](shopping/2.16-bathroom-accessories.md)
 
 **Wall-Mounted Trash Receptacle**
 
@@ -930,9 +977,11 @@ Specifications for all bathroom fixtures and fittings.
 - **Type**: Bathroom floor drain (ท่อระบายน้ำพื้น)
 - **Style**: Center floor drain (single point drain in shower area)
 - **Location**: Shower area only (wet zone)
-- **Grate Style**: Linear slot (minimalist design)
-- **Size**: Standard (100mm / 4 inches square)
-- **Source**: TBD
+- **Grate Style**: Linear slot (stainless steel)
+- **Size**: 100mm × 100mm (4" × 4")
+- **Price**: ฿350-฿500
+
+[View Shopping Options](shopping/2.17-floor-drain.md)
 
 **Specifications**
 
@@ -1051,11 +1100,13 @@ Specifications for all bathroom fixtures and fittings.
 
 **Product Information**
 - **Type**: Bathroom electrical outlets (ปลั๊กไฟห้องน้ำ)
-- **Quantity**: TBD (typically 1-2 outlets)
-- **Location**: TBD (dry zone, away from water sources)
-- **Protection**: GFCI/RCD protected (required for bathroom safety)
-- **Weatherproof covers**: IP44 rated minimum
-- **Source**: TBD
+- **Quantity**: 1-2 outlets with IP44 covers
+- **Location**: Dry zone (>0.6m from shower)
+- **Protection**: GFCI/RCD protected (30A circuit breaker)
+- **Weatherproof covers**: IP44 rated
+- **Price**: ฿800-฿1,200 (GFCI breaker + covers)
+
+[View Shopping Options](shopping/2.18-electrical-outlets.md)
 
 **Specifications**
 
