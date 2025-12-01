@@ -88,18 +88,6 @@
       font-size: 12px;
       font-weight: 600;
     }
-    .back-btn {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #e1e4e8;
-      background: #f6f8fa;
-      color: #6a737d;
-      cursor: pointer;
-      font-size: 13px;
-      margin-right: 8px;
-    }
-    .back-btn:hover { background: #e1e4e8; }
-
     /* External link indicator */
     #content a[target="_blank"]::after {
       content: ' ↗';
@@ -151,12 +139,9 @@
 </head>
 <body>
   <header class="header">
-    <div style="display:flex;align-items:center;">
-      <button class="back-btn" id="back-btn" style="display:none">← Back</button>
-      <nav class="breadcrumb" id="breadcrumb">
-        <a href="#SPEC.md">🏠</a>
-      </nav>
-    </div>
+    <nav class="breadcrumb" id="breadcrumb">
+      <a href="#SPEC.md">🏠</a>
+    </nav>
     <div class="header-actions">
       <button class="header-btn" id="toc-btn" style="display:none">↑ TOC</button>
       <button class="header-btn" id="edit-btn" style="display:none" title="Edit on GitHub (opens in new tab)">Edit ↗</button>
@@ -177,22 +162,6 @@
     if (DEV_MODE) {
       document.getElementById('dev-badge').style.display = 'inline-block';
     }
-
-    // Navigation history tracking for back button
-    var navHistory = [];
-    var backBtn = document.getElementById('back-btn');
-
-    function updateBackButton() {
-      backBtn.style.display = navHistory.length > 1 ? 'inline-block' : 'none';
-    }
-
-    backBtn.onclick = function() {
-      if (navHistory.length > 1) {
-        navHistory.pop(); // remove current
-        var prev = navHistory[navHistory.length - 1];
-        window.location.hash = prev;
-      }
-    };
 
     // Site config loaded from root SPEC.md frontmatter
     var siteConfig = {
@@ -527,12 +496,6 @@
       // Determine file to load
       var path = parsed.file || currentFile || 'SPEC.md';
       currentFile = path;
-
-      // Track navigation history for back button
-      if (navHistory[navHistory.length - 1] !== path) {
-        navHistory.push(path);
-        updateBackButton();
-      }
 
       // Update edit button (auto-detect GitHub URL - opens in new tab)
       var editBtn = document.getElementById('edit-btn');

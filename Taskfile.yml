@@ -2,21 +2,16 @@
 # https://taskfile.dev
 #
 # This is the SINGLE SOURCE OF TRUTH for project automation.
-# Claude can add new tasks here as needed.
 
 version: '3'
 
 # =============================================================================
-# VARIABLES - Single source of truth for paths, URLs, and config
+# VARIABLES
 # =============================================================================
-# Naming convention:
-#   BIN_*  = Binary/executable names
-#   DIR_*  = Directory paths
-#   URL_*  = URLs
-#   REPO_* = Repository info
+# Naming: BIN_* = binaries, DIR_* = directories, URL_* = URLs, REPO_* = repo
 
 vars:
-  # Binaries (without extension - .gitignore handles both Unix and Windows)
+  # Binaries
   BIN_MON_TOOL: mon-tool
 
   # Directories
@@ -36,7 +31,6 @@ vars:
   # Files
   FILE_GITIGNORE: .gitignore
   FILE_VERSION: "{{.DIR_FURNITURE}}/version.txt"
-  FILE_INDEX: "{{.DIR_FURNITURE}}/index.html"
 
 tasks:
   default:
@@ -45,46 +39,43 @@ tasks:
       - task --list
 
   # =============================================================================
-  # Build
+  # Development (most used)
   # =============================================================================
 
-  build:
-    desc: Build mon-tool
+  dev:
+    desc: Start local dev server for furniture SPA (http://localhost:8080)
+    dir: "{{.DIR_FURNITURE}}"
     cmds:
-      - go build -o {{.BIN_MON_TOOL}}
-      - echo "✓ Built {{.BIN_MON_TOOL}}"
+      - |
+        echo "Local dev server: http://localhost:8080"
+        echo "Press Ctrl+C to stop"
+        go run github.com/eliben/static-server@latest -port 8080
 
-  clean:
-    desc: Remove binary
+  deploy:
+    desc: Bump version, push, wait for GitHub Pages, open in dev mode
     cmds:
-      - rm -f {{.BIN_MON_TOOL}}
-      - echo "✓ Cleaned"
-
-  # =============================================================================
-  # Translation Sync
-  # =============================================================================
-
-  test:
-    desc: Test translation sync (safe - uses {{.DIR_TEST}}/)
-    deps: [build]
-    dir: "{{.DIR_TEST}}"
-    cmds:
-      - echo "Testing translation sync..."
-      - ../../{{.BIN_MON_TOOL}} translate sync
-      - echo "✓ Test complete"
-
-  prod:
-    desc: Production translation sync (uses {{.DIR_PROD}}/)
-    deps: [build]
-    dir: "{{.DIR_PROD}}"
-    cmds:
-      - echo "Production translation sync..."
-      - ../../{{.BIN_MON_TOOL}} translate sync
-      - echo "✓ Production sync complete"
+      - task: version:bump
+      - git add {{.FILE_VERSION}}
+      - git commit -m "Bump version for deploy" --allow-empty
+      - git push
+      - task: pages:wait
+      - echo ""
+      - echo "✓ Deployed! Opening in dev mode..."
+      - task: pages:dev
 
   # =============================================================================
   # GitHub Pages
   # =============================================================================
+
+  pages:dev:
+    desc: Open GitHub Pages in dev mode (bypasses cache)
+    cmds:
+      - open "{{.URL_FURNITURE}}?dev"
+
+  pages:open:
+    desc: Open GitHub Pages in normal mode
+    cmds:
+      - open "{{.URL_FURNITURE}}"
 
   pages:status:
     desc: Check GitHub Pages build status
@@ -92,11 +83,6 @@ tasks:
       - |
         status=$(gh api repos/{{.REPO_FULL}}/pages -q '.status')
         echo "GitHub Pages status: $status"
-        if [ "$status" = "built" ]; then
-          echo "✓ Ready to view"
-        else
-          echo "⏳ Still building..."
-        fi
 
   pages:wait:
     desc: Wait for GitHub Pages build to complete
@@ -113,43 +99,61 @@ tasks:
           sleep 5
         done
 
-  pages:open:
-    desc: Open GitHub Pages in browser (normal mode)
-    cmds:
-      - open "{{.URL_FURNITURE}}"
-
-  pages:dev:
-    desc: Open GitHub Pages in browser (dev mode - no cache)
-    cmds:
-      - open "{{.URL_FURNITURE}}?dev"
-
   # =============================================================================
-  # Deploy Workflow
+  # Translation (mon-tool)
   # =============================================================================
 
-  version:bump:
-    desc: Bump version in version.txt (single source of truth)
+  build:
+    desc: Build mon-tool binary
     cmds:
-      - |
-        VERSION=$(date +%Y%m%d-%H%M%S)
-        echo "$VERSION" > {{.FILE_VERSION}}
-        echo "✓ Version bumped to $VERSION"
+      - go build -o {{.BIN_MON_TOOL}}
+      - echo "✓ Built {{.BIN_MON_TOOL}}"
 
-  deploy:
-    desc: Bump version, commit, push, and wait for GitHub Pages
+  test:
+    desc: Test translation sync (uses {{.DIR_TEST}}/)
+    deps: [build]
+    dir: "{{.DIR_TEST}}"
     cmds:
-      - task: version:bump
-      - git add {{.FILE_VERSION}}
-      - git commit -m "Bump version for deploy" --allow-empty
-      - git push
-      - task: pages:wait
-      - echo ""
-      - echo "✓ Deployed! Opening in dev mode..."
-      - task: pages:dev
+      - ../../{{.BIN_MON_TOOL}} translate sync
+      - echo "✓ Test complete"
+
+  prod:
+    desc: Production translation sync (uses {{.DIR_PROD}}/)
+    deps: [build]
+    dir: "{{.DIR_PROD}}"
+    cmds:
+      - ../../{{.BIN_MON_TOOL}} translate sync
+      - echo "✓ Production sync complete"
 
   # =============================================================================
   # Utilities
   # =============================================================================
+
+  version:bump:
+    desc: Bump version in version.txt
+    cmds:
+      - |
+        VERSION=$(date +%Y%m%d-%H%M%S)
+        echo "$VERSION" > {{.FILE_VERSION}}
+        echo "✓ Version: $VERSION"
+
+  clean:
+    desc: Remove built binary
+    cmds:
+      - rm -f {{.BIN_MON_TOOL}}
+      - echo "✓ Cleaned"
+
+  dev:install:
+    desc: Install static-server globally (optional)
+    cmds:
+      - go install github.com/eliben/static-server@latest
+      - echo "✓ Installed static-server"
+
+  browser:kill:
+    desc: Kill stale Playwright Chrome instances
+    cmds:
+      - pkill -f "mcp-chrome" || true
+      - echo "✓ Killed stale browsers"
 
   gitignore:
     desc: Generate .gitignore from Taskfile variables
@@ -158,17 +162,14 @@ tasks:
         cat > {{.FILE_GITIGNORE}} << 'EOF'
         # =============================================================================
         # AUTO-GENERATED by: task gitignore
-        # Edit Taskfile.yml vars, then run: task gitignore
         # =============================================================================
 
-        # Binaries (Unix and Windows)
+        # Binaries
         {{.BIN_MON_TOOL}}
         {{.BIN_MON_TOOL}}.exe
 
-        # Generated files
+        # Generated
         *_gen.*
-
-        # Task artifacts
         tasks/
 
         # IDE
@@ -193,41 +194,7 @@ tasks:
         go.work
         go.work.sum
 
-        # Playwright MCP
+        # Playwright
         .playwright-mcp/
         EOF
       - echo "✓ Generated {{.FILE_GITIGNORE}}"
-
-  gitignore:show:
-    desc: Show what would be in .gitignore (dry run)
-    cmds:
-      - |
-        echo "# Binaries (from BIN_* vars)"
-        echo "{{.BIN_MON_TOOL}}"
-        echo ""
-        echo "# Run 'task gitignore' to generate {{.FILE_GITIGNORE}}"
-
-  browser:kill:
-    desc: Kill stale Playwright Chrome instances
-    cmds:
-      - pkill -f "mcp-chrome" || true
-      - echo "✓ Killed stale Playwright browsers"
-
-  # =============================================================================
-  # Local Development
-  # =============================================================================
-
-  dev:
-    desc: Start local dev server for furniture SPA (port 8080)
-    dir: "{{.DIR_FURNITURE}}"
-    cmds:
-      - |
-        echo "Starting local dev server at http://localhost:8080"
-        echo "Press Ctrl+C to stop"
-        go run github.com/eliben/static-server@latest -port 8080
-
-  dev:install:
-    desc: Install static-server globally (optional)
-    cmds:
-      - go install github.com/eliben/static-server@latest
-      - echo "✓ Installed static-server"
