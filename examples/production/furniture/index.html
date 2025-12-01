@@ -75,7 +75,6 @@
       cursor: pointer;
       font-size: 13px;
       text-decoration: none;
-      display: none;
     }
     .header-btn:hover {
       background: #e1e4e8;
@@ -88,7 +87,6 @@
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
-      display: none;
     }
 
     #content { margin-top: 20px; }
@@ -127,9 +125,9 @@
       <a href="#SPEC.md">🏠</a>
     </nav>
     <div class="header-actions">
-      <button class="header-btn" id="toc-btn">↑ TOC</button>
-      <a class="header-btn" id="edit-btn">Edit</a>
-      <span class="dev-badge" id="dev-badge">DEV</span>
+      <button class="header-btn" id="toc-btn" style="display:none">↑ TOC</button>
+      <a class="header-btn" id="edit-btn" style="display:none">Edit</a>
+      <span class="dev-badge" id="dev-badge" style="display:none">DEV</span>
     </div>
   </header>
   <div id="content">
@@ -143,7 +141,7 @@
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
     if (DEV_MODE) {
-      document.getElementById('dev-badge').style.display = '';
+      document.getElementById('dev-badge').style.display = 'inline-block';
     }
 
     // Version check - detects when page is stale and prompts/auto-refreshes
@@ -411,7 +409,7 @@
       var editUrl = getGitHubEditUrl(normalizePath(path));
       if (editUrl) {
         editBtn.href = editUrl;
-        editBtn.style.display = '';
+        editBtn.style.display = 'inline-block';
       } else {
         editBtn.style.display = 'none';
       }
@@ -492,7 +490,7 @@
       }
       var tocRect = currentTocHeading.getBoundingClientRect();
       // Show button when TOC is scrolled out of view (above viewport)
-      tocBtn.style.display = tocRect.bottom < 60 ? '' : 'none';
+      tocBtn.style.display = tocRect.bottom < 60 ? 'inline-block' : 'none';
     }
 
     // Update TOC button visibility on scroll
