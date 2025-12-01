@@ -273,61 +273,89 @@ mon-house/
 
 ## Furniture Directory Structure
 
-**Location**: `furniture/en/` (SOURCE) and `furniture/th/` (DERIVED)
+**Location**: `examples/production/furniture/` (organized by category)
 
 ### Purpose
 Contains furniture and fixture specifications for all rooms in the house. Unlike drawing SPEC.md files (which are auto-generated from SVG), furniture SPEC.md is manually curated with detailed product specifications.
 
-### Structure
+### Structure (Category-Based)
 
 ```
 furniture/
-├── en/                          # English furniture specs (SOURCE)
-│   ├── SPEC.md                  # Furniture specifications by category
-│   └── shopping/                # Product research and vendor links
-│       ├── README.md            # Naming pattern documentation
-│       └── {section}-{name}.md  # Product research files
-└── th/                          # Thai translation (DERIVED)
-    └── (mirror of en/ structure)
+├── SPEC.md              # Master index (links to all categories)
+├── SELLERS.md           # Shared list of Thailand retailers
+├── README.md            # Naming conventions and guidelines
+│
+├── living-room/         # Section 1.x
+│   ├── SPEC.md          # Living room specifications
+│   └── shopping/
+│       ├── 1.1-chaise-lounge.md
+│       └── images/
+│
+├── bathroom/            # Section 2.x
+│   ├── SPEC.md          # Bathroom specifications (18 items)
+│   └── shopping/
+│       ├── 2.1-toilet.md
+│       ├── 2.2-basin.md
+│       └── ...
+│
+├── dining/              # Section 3.x
+│   ├── SPEC.md          # Dining specifications
+│   └── shopping/
+│
+├── lighting/            # Section 4.x
+│   ├── SPEC.md          # Lighting specifications
+│   └── shopping/
+│
+└── outdoor/             # Section 5.x
+    ├── SPEC.md          # Outdoor specifications
+    └── shopping/
 ```
+
+### Section Numbering Convention
+
+- **1.x** = Living Room (1.1 Chaise Lounge, 1.2 Coffee Table, etc.)
+- **2.x** = Bathroom (2.1 Toilet, 2.2 Basin, etc.)
+- **3.x** = Dining (3.1 Table, 3.2 Chairs, etc.)
+- **4.x** = Lighting (4.1 Living Room Light, 4.2 Bedroom Light, etc.)
+- **5.x** = Outdoor (5.1 Plants, 5.2 Outdoor Furniture, etc.)
 
 ### Key Principles
 
-1. **SPEC.md is source of truth** for furniture specifications
-   - Contains detailed product information, dimensions, specifications, placement notes
-   - Organized by categories (e.g., Section 1: Bedroom, Section 2: Bathroom)
-   - Each item has a section number (e.g., 2.1 Toilet, 2.15 Toilet Paper Holder)
+1. **Category SPEC.md is source of truth** for each category
+   - Each category folder has its own SPEC.md
+   - Contains detailed product information, dimensions, specifications
+   - Master SPEC.md at root is an index linking to all categories
 
 2. **Shopping directory** separates product research from specifications
-   - Keeps SPEC.md clean with requirements only
+   - Each category has its own `shopping/` subfolder
    - Contains volatile information (prices, links, vendor SKUs)
    - Files named using pattern: `{section-number}-{kebab-case-name}.md`
-   - Example: Section "2.1 Toilet" → shopping file `2.1-toilet.md`
+   - Example: Section "2.1 Toilet" → `bathroom/shopping/2.1-toilet.md`
 
-3. **Naming pattern** ensures consistency
+3. **SELLERS.md** is shared at furniture root
+   - List of Thailand retailers (HomePro, Lazada, Shopee, etc.)
+   - Used for product research across all categories
+
+4. **Naming pattern** ensures consistency
    - Shopping filenames MUST match SPEC.md section numbers exactly
    - Convert section title to kebab-case for filename
-   - See `shopping/README.md` for complete naming guidelines
-
-4. **Translation workflow** same as drawings
-   - Delete `furniture/th/`, copy `furniture/en/`, translate all text
-   - Maintain identical structure (section numbers, filenames)
-   - Translate markdown content but keep numbers, measurements, patterns
 
 ### Example Workflow
 
 **Adding a new furniture item:**
 
-1. Add to `furniture/en/SPEC.md` with section number (e.g., 2.19 Water Softener)
-2. Create shopping file: `furniture/en/shopping/2.19-water-softener.md`
-3. Research products, add to shopping file (prices, links, SKUs)
-4. When ready to translate: delete `furniture/th/`, copy from `furniture/en/`, translate
+1. Determine category (living-room, bathroom, dining, lighting, outdoor)
+2. Add to `{category}/SPEC.md` with next section number (e.g., 3.1 Dining Table)
+3. Create shopping file: `{category}/shopping/3.1-dining-table.md`
+4. Research products using sellers in `SELLERS.md` (at furniture root)
 
-**Updating SPEC.md:**
+**Adding a new category:**
 
-1. Edit `furniture/en/SPEC.md` only (TH is derived)
-2. If section number/title changes, rename corresponding shopping file
-3. Run translation workflow to sync to `furniture/th/`
+1. Create folder: `furniture/{category-name}/`
+2. Create `{category}/SPEC.md` with template
+3. Create `{category}/shopping/` subfolder
+4. Update master `furniture/SPEC.md` index with new category link
 
 ---
 
