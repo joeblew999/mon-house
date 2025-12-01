@@ -11,7 +11,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       max-width: 900px;
       margin: 0 auto;
-      padding: 20px;
+      padding: 0 20px 20px 20px;
       line-height: 1.6;
       color: #24292e;
     }
@@ -31,46 +31,70 @@
     li { margin: 4px 0; }
     blockquote { margin: 16px 0; padding: 0 16px; border-left: 4px solid #dfe2e5; color: #6a737d; }
     strong { font-weight: 600; }
-    .toolbar {
-      position: fixed;
-      top: 10px;
-      right: 10px;
+
+    /* Unified sticky header */
+    .header {
+      position: sticky;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid #e1e4e8;
+      margin: 0 -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      z-index: 100;
+    }
+    .breadcrumb {
+      font-size: 14px;
+      color: #6a737d;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+    }
+    .breadcrumb a { color: #0366d6; }
+    .breadcrumb a:hover { text-decoration: underline; }
+    .breadcrumb .sep { margin: 0 8px; color: #959da5; }
+    .breadcrumb .current { color: #24292e; }
+    .header-actions {
       display: flex;
       gap: 8px;
-      z-index: 1000;
+      align-items: center;
     }
-    .btn {
-      background: #0366d6;
-      color: white;
-      padding: 8px 16px;
+    .header-btn {
+      padding: 6px 12px;
       border-radius: 6px;
-      text-decoration: none;
-      font-size: 14px;
-      border: none;
+      border: 1px solid #e1e4e8;
+      background: #f6f8fa;
+      color: #24292e;
       cursor: pointer;
+      font-size: 13px;
+      text-decoration: none;
+      display: none;
     }
-    .btn:hover { background: #0256b9; text-decoration: none; color: white; }
-    .btn-secondary { background: #f6f8fa; color: #24292e; border: 1px solid #e1e4e8; }
-    .btn-secondary:hover { background: #e1e4e8; }
+    .header-btn:hover {
+      background: #e1e4e8;
+      text-decoration: none;
+    }
+    .dev-badge {
+      background: #ffc107;
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+    }
+
     #content { margin-top: 20px; }
     .loading { text-align: center; padding: 40px; color: #6a737d; }
     .error { color: #cb2431; padding: 20px; background: #ffeef0; border-radius: 6px; }
-    .nav { margin-bottom: 20px; font-size: 14px; }
-    .nav a { margin-right: 16px; }
-    .breadcrumb { font-size: 14px; color: #6a737d; margin-bottom: 16px; }
-    .breadcrumb a { color: #0366d6; }
-    .breadcrumb span { margin: 0 8px; color: #959da5; }
-    .dev-badge {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: #ffc107;
-      color: #000;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 600;
-    }
+
     .update-banner {
       position: fixed;
       top: 0;
@@ -95,34 +119,19 @@
     .update-banner button:hover {
       background: #f0f0f0;
     }
-    .toc-button {
-      position: fixed;
-      bottom: 10px;
-      left: 10px;
-      background: #f6f8fa;
-      color: #24292e;
-      border: 1px solid #e1e4e8;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 1000;
-      display: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .toc-button:hover {
-      background: #e1e4e8;
-    }
   </style>
 </head>
 <body>
-  <div class="toolbar">
-    <a class="btn" id="edit-btn">✏️ Edit</a>
-  </div>
-  <div class="nav">
-    <a href="#SPEC.md">Home</a>
-  </div>
-  <div class="breadcrumb" id="breadcrumb"></div>
+  <header class="header">
+    <nav class="breadcrumb" id="breadcrumb">
+      <a href="#SPEC.md">🏠</a>
+    </nav>
+    <div class="header-actions">
+      <button class="header-btn" id="toc-btn">↑ TOC</button>
+      <a class="header-btn" id="edit-btn">Edit</a>
+      <span class="dev-badge" id="dev-badge">DEV</span>
+    </div>
+  </header>
   <div id="content">
     <div class="loading">Loading...</div>
   </div>
@@ -134,10 +143,7 @@
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
     if (DEV_MODE) {
-      var badge = document.createElement('div');
-      badge.className = 'dev-badge';
-      badge.innerHTML = '🔄 DEV MODE <button onclick="loadPage()" style="margin-left:8px;cursor:pointer;">Refresh</button>';
-      document.body.appendChild(badge);
+      document.getElementById('dev-badge').style.display = '';
     }
 
     // Version check - detects when page is stale and prompts/auto-refreshes
@@ -369,14 +375,14 @@
     function updateBreadcrumb(path) {
       var bc = document.getElementById('breadcrumb');
       var parts = path.replace('.md', '').split('/');
-      var html = '<a href="#SPEC.md">Home</a>';
+      var html = '<a href="#SPEC.md">🏠</a>';
       var accumulated = '';
       for (var i = 0; i < parts.length; i++) {
         accumulated += (i > 0 ? '/' : '') + parts[i];
-        html += ' <span>›</span> ';
+        html += '<span class="sep">›</span>';
         if (i === parts.length - 1) {
           // Last part - not a link
-          html += parts[i];
+          html += '<span class="current">' + parts[i] + '</span>';
         } else {
           // Intermediate folder - link to its SPEC.md
           html += '<a href="#' + accumulated + '/SPEC.md">' + parts[i] + '</a>';
@@ -457,46 +463,40 @@
     // Load on hash change
     window.addEventListener('hashchange', loadPage);
 
-    // TOC button - appears when scrolled past TOC, scrolls back to TOC when clicked
-    var tocButton = null;
+    // TOC button in header - shows/hides based on scroll position
+    var tocBtn = document.getElementById('toc-btn');
+    var currentTocHeading = null;
+
     function setupTocButton() {
       // Find TOC heading (id is "table-of-contents" from slugify)
-      var tocHeading = document.getElementById('table-of-contents');
-      if (!tocHeading) {
+      currentTocHeading = document.getElementById('table-of-contents');
+      if (!currentTocHeading) {
         // Hide button if no TOC on this page
-        if (tocButton) tocButton.style.display = 'none';
+        tocBtn.style.display = 'none';
         return;
       }
 
-      // Create button if it doesn't exist
-      if (!tocButton) {
-        tocButton = document.createElement('button');
-        tocButton.className = 'toc-button';
-        tocButton.innerHTML = '↑ TOC';
-        tocButton.onclick = function() {
-          tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        };
-        document.body.appendChild(tocButton);
-      }
-
-      // Update click handler for new TOC heading
-      tocButton.onclick = function() {
-        tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Setup click handler
+      tocBtn.onclick = function() {
+        currentTocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
       };
 
-      // Show/hide based on scroll position
-      function updateTocButtonVisibility() {
-        var tocRect = tocHeading.getBoundingClientRect();
-        tocButton.style.display = tocRect.bottom < 0 ? 'block' : 'none';
-      }
-
-      // Remove old listener if any, add new one
-      window.removeEventListener('scroll', updateTocButtonVisibility);
-      window.addEventListener('scroll', updateTocButtonVisibility);
-
-      // Initial check
+      // Initial visibility check
       updateTocButtonVisibility();
     }
+
+    function updateTocButtonVisibility() {
+      if (!currentTocHeading) {
+        tocBtn.style.display = 'none';
+        return;
+      }
+      var tocRect = currentTocHeading.getBoundingClientRect();
+      // Show button when TOC is scrolled out of view (above viewport)
+      tocBtn.style.display = tocRect.bottom < 60 ? '' : 'none';
+    }
+
+    // Update TOC button visibility on scroll
+    window.addEventListener('scroll', updateTocButtonVisibility);
 
     // Initial load
     loadPage();
