@@ -79,6 +79,8 @@
       });
       // External links
       text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+      // Images: ![alt](src)
+      text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;height:auto;">');
 
       // Process line by line for better control
       var lines = text.split('\n');

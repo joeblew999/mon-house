@@ -13,14 +13,17 @@ Specifications for living room furniture and fixtures.
 
 ## 1.1 Chaise Lounge / Reclining Chair
 
+![Chaise Lounge](shopping/images/1.1-chaise-lounge-molesun.webp)
+
 **Product Information**
 - **Product ID**: 964300427/28055411040
 - **Type**: Chaise Lounge / Reclining Chair (single-person lounger)
 - **Brand**: Molesun
 - **Source**: [Shopee Thailand](https://shopee.co.th/product/964300427/28055411040)
-- **Product Image**: `shopping/images/1.1-chaise-lounge-molesun.webp`
 - **Color**: Beige/Cream
 - **Price**: 2,999 THB
+
+[View Shopping Options & Alternatives](shopping/1.1-chaise-lounge.md)
 
 **Dimensions**
 - **Width**: 0.65m (65cm)
