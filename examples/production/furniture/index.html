@@ -114,6 +114,15 @@
       return normalizePath(base + rel);
     }
 
+    // Convert heading text to GitHub-style slug for anchor IDs
+    function slugify(text) {
+      return text.toLowerCase()
+        .replace(/[^\w\s-]/g, '')  // Remove special chars except spaces and hyphens
+        .replace(/\s+/g, '-')       // Replace spaces with hyphens
+        .replace(/-+/g, '-')        // Collapse multiple hyphens
+        .trim();
+    }
+
     // Simple markdown to HTML
     function md(text, basePath) {
       var baseDir = getBaseDir(basePath);
@@ -125,6 +134,8 @@
         var resolvedHref = resolvePath(baseDir, href);
         return '<a href="#' + resolvedHref + '">' + label + '</a>';
       });
+      // Pure anchor links (for TOC) - must come before external links
+      text = text.replace(/\[([^\]]+)\]\((#[^)]+)\)/g, '<a href="$2">$1</a>');
       // External links
       text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
       // Images: ![alt](src) - resolve relative paths
@@ -175,10 +186,22 @@
           inTable = false;
         }
 
-        // Headers
-        if (line.startsWith('### ')) { html.push('<h3>' + line.slice(4) + '</h3>'); continue; }
-        if (line.startsWith('## ')) { html.push('<h2>' + line.slice(3) + '</h2>'); continue; }
-        if (line.startsWith('# ')) { html.push('<h1>' + line.slice(2) + '</h1>'); continue; }
+        // Headers (with id for anchor links)
+        if (line.startsWith('### ')) {
+          var t = line.slice(4);
+          html.push('<h3 id="' + slugify(t) + '">' + t + '</h3>');
+          continue;
+        }
+        if (line.startsWith('## ')) {
+          var t = line.slice(3);
+          html.push('<h2 id="' + slugify(t) + '">' + t + '</h2>');
+          continue;
+        }
+        if (line.startsWith('# ')) {
+          var t = line.slice(2);
+          html.push('<h1 id="' + slugify(t) + '">' + t + '</h1>');
+          continue;
+        }
 
         // Horizontal rule
         if (line === '---') { html.push('<hr>'); continue; }
