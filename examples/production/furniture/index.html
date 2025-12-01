@@ -67,6 +67,30 @@
       font-size: 12px;
       font-weight: 600;
     }
+    .update-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #0366d6;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      z-index: 1001;
+    }
+    .update-banner button {
+      margin-left: 8px;
+      padding: 4px 12px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background: white;
+      color: #0366d6;
+      font-weight: 600;
+    }
+    .update-banner button:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
@@ -81,6 +105,9 @@
   </div>
 
   <script>
+    // Version for cache-busting (updated by: task version:bump)
+    var PAGE_VERSION = '20251201-145819';
+
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
     if (DEV_MODE) {
@@ -89,6 +116,35 @@
       badge.innerHTML = '🔄 DEV MODE <button onclick="loadPage()" style="margin-left:8px;cursor:pointer;">Refresh</button>';
       document.body.appendChild(badge);
     }
+
+    // Version check - detects when page is stale and prompts/auto-refreshes
+    async function checkVersion() {
+      try {
+        var res = await fetch('version.txt?t=' + Date.now());
+        if (!res.ok) return; // version.txt doesn't exist yet
+        var serverVersion = (await res.text()).trim();
+        if (serverVersion !== PAGE_VERSION) {
+          if (DEV_MODE) {
+            // Auto-refresh in dev mode
+            console.log('New version detected:', serverVersion, '(was:', PAGE_VERSION + ')');
+            window.location.reload(true);
+          } else {
+            // Show update banner in normal mode
+            showUpdateBanner(serverVersion);
+          }
+        }
+      } catch (e) { /* ignore - version.txt may not exist */ }
+    }
+
+    function showUpdateBanner(newVersion) {
+      var banner = document.createElement('div');
+      banner.className = 'update-banner';
+      banner.innerHTML = '🔄 New version available <button onclick="location.reload(true)">Refresh</button>';
+      document.body.prepend(banner);
+    }
+
+    // Check version after page loads (slight delay to not block initial render)
+    setTimeout(checkVersion, 1000);
 
     // Normalize path by resolving . and .. segments
     function normalizePath(path) {
