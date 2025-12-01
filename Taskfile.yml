@@ -128,20 +128,18 @@ tasks:
   # =============================================================================
 
   version:bump:
-    desc: Bump version in version.txt and index.html
+    desc: Bump version in version.txt (single source of truth)
     cmds:
       - |
         VERSION=$(date +%Y%m%d-%H%M%S)
         echo "$VERSION" > {{.FILE_VERSION}}
-        # Update PAGE_VERSION in index.html
-        sed -i '' "s/PAGE_VERSION = '[^']*'/PAGE_VERSION = '$VERSION'/" {{.FILE_INDEX}}
         echo "✓ Version bumped to $VERSION"
 
   deploy:
     desc: Bump version, commit, push, and wait for GitHub Pages
     cmds:
       - task: version:bump
-      - git add {{.FILE_VERSION}} {{.FILE_INDEX}}
+      - git add {{.FILE_VERSION}}
       - git commit -m "Bump version for deploy" --allow-empty
       - git push
       - task: pages:wait

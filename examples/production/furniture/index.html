@@ -168,8 +168,9 @@
   </div>
 
   <script>
-    // Version for cache-busting (updated by: task version:bump)
-    var PAGE_VERSION = '20251201-161442';
+    // Version tracking - loaded from version.txt on first check
+    // This is the ONLY source of truth (no hardcoded version in HTML)
+    var loadedVersion = null;
 
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
@@ -243,15 +244,24 @@
     }
 
     // Version check - detects when page is stale and prompts/auto-refreshes
+    // First call: stores version from version.txt
+    // Subsequent calls: compares against stored version
     async function checkVersion() {
       try {
         var res = await fetch('version.txt?t=' + Date.now());
         if (!res.ok) return; // version.txt doesn't exist yet
         var serverVersion = (await res.text()).trim();
-        if (serverVersion !== PAGE_VERSION) {
+
+        if (loadedVersion === null) {
+          // First check - store the version we loaded with
+          loadedVersion = serverVersion;
+          return;
+        }
+
+        if (serverVersion !== loadedVersion) {
           if (DEV_MODE) {
             // Auto-refresh in dev mode
-            console.log('New version detected:', serverVersion, '(was:', PAGE_VERSION + ')');
+            console.log('New version detected:', serverVersion, '(was:', loadedVersion + ')');
             window.location.reload(true);
           } else {
             // Show update banner in normal mode
@@ -268,8 +278,9 @@
       document.body.prepend(banner);
     }
 
-    // Check version after page loads (slight delay to not block initial render)
-    setTimeout(checkVersion, 1000);
+    // Check version on load (to store initial version) and periodically
+    checkVersion();
+    setInterval(checkVersion, 30000); // Check every 30 seconds
 
     // Normalize path by resolving . and .. segments
     function normalizePath(path) {
