@@ -56,6 +56,17 @@
     .error { color: #cb2431; padding: 20px; background: #ffeef0; border-radius: 6px; }
     .nav { margin-bottom: 20px; font-size: 14px; }
     .nav a { margin-right: 16px; }
+    .dev-badge {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: #ffc107;
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +81,15 @@
   </div>
 
   <script>
+    // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
+    var DEV_MODE = window.location.search.includes('dev');
+    if (DEV_MODE) {
+      var badge = document.createElement('div');
+      badge.className = 'dev-badge';
+      badge.innerHTML = '🔄 DEV MODE <button onclick="loadPage()" style="margin-left:8px;cursor:pointer;">Refresh</button>';
+      document.body.appendChild(badge);
+    }
+
     // Normalize path by resolving . and .. segments
     function normalizePath(path) {
       var parts = path.split('/');
@@ -236,7 +256,9 @@
       content.innerHTML = '<div class="loading">Loading...</div>';
 
       try {
-        var res = await fetch(path);
+        // In dev mode, add cache-busting timestamp
+        var fetchUrl = DEV_MODE ? path + '?t=' + Date.now() : path;
+        var res = await fetch(fetchUrl);
         if (!res.ok) throw new Error('File not found: ' + path);
         var text = await res.text();
         content.innerHTML = md(text, path);
