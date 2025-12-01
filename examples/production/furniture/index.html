@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon House Furniture</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
   <style>
     * { box-sizing: border-box; }
     body {
@@ -56,6 +57,9 @@
     .error { color: #cb2431; padding: 20px; background: #ffeef0; border-radius: 6px; }
     .nav { margin-bottom: 20px; font-size: 14px; }
     .nav a { margin-right: 16px; }
+    .breadcrumb { font-size: 14px; color: #6a737d; margin-bottom: 16px; }
+    .breadcrumb a { color: #0366d6; }
+    .breadcrumb span { margin: 0 8px; color: #959da5; }
     .dev-badge {
       position: fixed;
       bottom: 10px;
@@ -118,13 +122,14 @@
   <div class="nav">
     <a href="#SPEC.md">Home</a>
   </div>
+  <div class="breadcrumb" id="breadcrumb"></div>
   <div id="content">
     <div class="loading">Loading...</div>
   </div>
 
   <script>
     // Version for cache-busting (updated by: task version:bump)
-    var PAGE_VERSION = '20251201-150246';
+    var PAGE_VERSION = '20251201-151235';
 
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
@@ -360,6 +365,26 @@
       }
     }
 
+    // Update breadcrumb navigation
+    function updateBreadcrumb(path) {
+      var bc = document.getElementById('breadcrumb');
+      var parts = path.replace('.md', '').split('/');
+      var html = '<a href="#SPEC.md">Home</a>';
+      var accumulated = '';
+      for (var i = 0; i < parts.length; i++) {
+        accumulated += (i > 0 ? '/' : '') + parts[i];
+        html += ' <span>›</span> ';
+        if (i === parts.length - 1) {
+          // Last part - not a link
+          html += parts[i];
+        } else {
+          // Intermediate folder - link to its SPEC.md
+          html += '<a href="#' + accumulated + '/SPEC.md">' + parts[i] + '</a>';
+        }
+      }
+      bc.innerHTML = html;
+    }
+
     // Load and render markdown
     async function loadPage() {
       var parsed = parseHash();
@@ -394,6 +419,10 @@
         if (!res.ok) throw new Error('File not found: ' + path);
         var text = await res.text();
         content.innerHTML = md(text, path);
+
+        // Update page title and breadcrumb
+        document.title = 'Mon House - ' + path.replace('.md', '').replace(/\//g, ' > ');
+        updateBreadcrumb(path);
 
         // Intercept link clicks
         content.querySelectorAll('a[href^="#"]').forEach(function(a) {
