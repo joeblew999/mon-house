@@ -1,0 +1,108 @@
+# mon-house Taskfile
+# https://taskfile.dev
+# Keep It Simple: Build tool, sync translations, deploy helpers
+
+version: '3'
+
+vars:
+  MON_TOOL: mon-tool
+  REPO: joeblew999/mon-house
+  PAGES_URL: https://joeblew999.github.io/mon-house/examples/production/furniture/
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # =============================================================================
+  # Build
+  # =============================================================================
+
+  build:
+    desc: Build mon-tool
+    cmds:
+      - go build -o {{.MON_TOOL}}
+      - echo "✓ Built {{.MON_TOOL}}"
+
+  clean:
+    desc: Remove binary
+    cmds:
+      - rm -f {{.MON_TOOL}}
+      - echo "✓ Cleaned"
+
+  # =============================================================================
+  # Translation Sync
+  # =============================================================================
+
+  test:
+    desc: Test translation sync (safe - uses examples/test/)
+    deps: [build]
+    dir: examples/test
+    cmds:
+      - echo "Testing translation sync..."
+      - ../../{{.MON_TOOL}} translate sync
+      - echo "✓ Test complete"
+
+  prod:
+    desc: Production translation sync (uses examples/production/)
+    deps: [build]
+    dir: examples/production
+    cmds:
+      - echo "Production translation sync..."
+      - ../../{{.MON_TOOL}} translate sync
+      - echo "✓ Production sync complete"
+
+  # =============================================================================
+  # GitHub Pages
+  # =============================================================================
+
+  pages:status:
+    desc: Check GitHub Pages build status
+    cmds:
+      - |
+        status=$(gh api repos/{{.REPO}}/pages -q '.status')
+        echo "GitHub Pages status: $status"
+        if [ "$status" = "built" ]; then
+          echo "✓ Ready to view"
+        else
+          echo "⏳ Still building..."
+        fi
+
+  pages:wait:
+    desc: Wait for GitHub Pages build to complete
+    cmds:
+      - |
+        echo "Waiting for GitHub Pages build..."
+        while true; do
+          status=$(gh api repos/{{.REPO}}/pages -q '.status')
+          if [ "$status" = "built" ]; then
+            echo "✓ Build complete!"
+            break
+          fi
+          echo "  Status: $status (waiting 5s...)"
+          sleep 5
+        done
+
+  pages:open:
+    desc: Open GitHub Pages in browser (normal mode)
+    cmds:
+      - open "{{.PAGES_URL}}"
+
+  pages:dev:
+    desc: Open GitHub Pages in browser (dev mode - no cache)
+    cmds:
+      - open "{{.PAGES_URL}}?dev"
+
+  # =============================================================================
+  # Deploy Workflow
+  # =============================================================================
+
+  deploy:
+    desc: Push changes and wait for GitHub Pages
+    cmds:
+      - git push
+      - task: pages:wait
+      - echo ""
+      - echo "✓ Deployed! Opening in dev mode..."
+      - task: pages:dev
