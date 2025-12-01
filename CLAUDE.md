@@ -389,6 +389,11 @@ furniture/
    - Shopping filenames MUST match SPEC.md section numbers exactly
    - Convert section title to kebab-case for filename
 
+5. **Frontmatter configuration** in root SPEC.md
+   - `leaf_folders: [shopping, images, assets]` defines folders without their own SPEC.md
+   - These folders link back to their parent SPEC.md in breadcrumb navigation
+   - Configuration is read once by index.html at startup
+
 ### Example Workflow
 
 **Adding a new furniture item:**
@@ -814,6 +819,7 @@ From `drawing-standards.json`:
 10. **README.md references SPEC** - no numbers in README, only concepts
 11. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
 12. **furniture/SPEC.md is source of truth** - shopping files must follow SPEC.md section numbering exactly using pattern `{section-number}-{kebab-case-name}.md`
+13. **leaf_folders frontmatter** - Root furniture/SPEC.md uses frontmatter to define folders that don't have their own SPEC.md (e.g., shopping, images). The SPA uses this for breadcrumb navigation.
 
 ---
 

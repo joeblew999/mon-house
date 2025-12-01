@@ -1,3 +1,6 @@
+---
+leaf_folders: [shopping, images, assets]
+---
 # Furniture Specifications - Master Index
 
 This document serves as the index for all furniture and fixture specifications.

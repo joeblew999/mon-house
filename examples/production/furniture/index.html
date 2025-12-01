@@ -193,6 +193,55 @@
       }
     };
 
+    // Site config loaded from root SPEC.md frontmatter
+    var siteConfig = {
+      leafFolders: ['shopping', 'images', 'assets']  // defaults
+    };
+
+    // Parse YAML frontmatter (simple key: [array] format)
+    function parseFrontmatter(text) {
+      var config = {};
+      if (!text.startsWith('---')) return { config: config, content: text };
+
+      var endIndex = text.indexOf('---', 3);
+      if (endIndex === -1) return { config: config, content: text };
+
+      var yaml = text.substring(3, endIndex).trim();
+      var content = text.substring(endIndex + 3).trim();
+
+      // Parse simple YAML (leaf_folders: [shopping, images])
+      var lines = yaml.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line.startsWith('leaf_folders:')) {
+          var value = line.substring(13).trim();
+          // Handle inline array format: [a, b, c]
+          if (value.startsWith('[') && value.endsWith(']')) {
+            config.leafFolders = value.slice(1, -1).split(',').map(function(s) {
+              return s.trim();
+            });
+          }
+        }
+      }
+      return { config: config, content: content };
+    }
+
+    // Load site config from root SPEC.md frontmatter
+    async function loadSiteConfig() {
+      try {
+        var response = await fetch('SPEC.md?t=' + Date.now());
+        if (response.ok) {
+          var text = await response.text();
+          var parsed = parseFrontmatter(text);
+          if (parsed.config.leafFolders) {
+            siteConfig.leafFolders = parsed.config.leafFolders;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load site config from SPEC.md frontmatter');
+      }
+    }
+
     // Version check - detects when page is stale and prompts/auto-refreshes
     async function checkVersion() {
       try {
@@ -258,6 +307,10 @@
     // Simple markdown to HTML
     function md(text, basePath) {
       var baseDir = getBaseDir(basePath);
+
+      // Strip frontmatter if present (---\n...\n---)
+      var parsed = parseFrontmatter(text);
+      text = parsed.content;
 
       // First pass: convert links (before other processing)
       // Links with .md and optional anchor: [text](path.md) or [text](path.md#anchor)
@@ -436,10 +489,10 @@
         if (i === parts.length - 1) {
           // Last part - not a link
           html += '<span class="current">' + parts[i] + '</span>';
-        } else if (parts[i] === 'shopping') {
-          // Shopping folders don't have SPEC.md - link back to parent category
+        } else if (siteConfig.leafFolders.indexOf(parts[i]) !== -1) {
+          // Leaf folder (no SPEC.md) - link back to parent category
           var parentPath = parts.slice(0, i).join('/');
-          html += '<a href="#' + parentPath + '/SPEC.md">' + parts[i] + '</a>';
+          html += '<a href="#' + (parentPath ? parentPath + '/SPEC.md' : 'SPEC.md') + '">' + parts[i] + '</a>';
         } else {
           // Intermediate folder - link to its SPEC.md
           html += '<a href="#' + accumulated + '/SPEC.md">' + parts[i] + '</a>';
@@ -565,8 +618,8 @@
     // Update TOC button visibility on scroll
     window.addEventListener('scroll', updateTocButtonVisibility);
 
-    // Initial load
-    loadPage();
+    // Initial load - load config first, then page
+    loadSiteConfig().then(loadPage);
   </script>
 </body>
 </html>
