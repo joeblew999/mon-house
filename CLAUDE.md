@@ -389,7 +389,14 @@ furniture/
    - Shopping filenames MUST match SPEC.md section numbers exactly
    - Convert section title to kebab-case for filename
 
-5. **Frontmatter configuration** in root SPEC.md
+5. **Shopping file back links** must include section anchors
+   - Links back to SPEC.md MUST include anchor to specific section
+   - Without anchor, user lands at top of SPEC instead of the item they were shopping for
+   - Format: `[← Back to Category SPEC](../SPEC.md#section-anchor)`
+   - Anchor format: lowercase, hyphens for spaces, no special chars
+   - Example: Section "2.5 Shower Taps/Faucet" → anchor `#25-shower-tapsfaucet`
+
+6. **Frontmatter configuration** in root SPEC.md
    - `leaf_folders: [shopping, images, assets]` defines folders without their own SPEC.md
    - These folders link back to their parent SPEC.md in breadcrumb navigation
    - Configuration is read once by index.html at startup
@@ -820,6 +827,7 @@ From `drawing-standards.json`:
 11. **Pre-commit hook enforces sync** - cannot commit EN without translating TH
 12. **furniture/SPEC.md is source of truth** - shopping files must follow SPEC.md section numbering exactly using pattern `{section-number}-{kebab-case-name}.md`
 13. **leaf_folders frontmatter** - Root furniture/SPEC.md uses frontmatter to define folders that don't have their own SPEC.md (e.g., shopping, images). The SPA uses this for breadcrumb navigation.
+14. **shopping file back links need anchors** - links from shopping files back to SPEC.md MUST include section anchor (e.g., `../SPEC.md#25-shower-tapsfaucet`) so users return to the specific item, not top of page
 
 ---
 

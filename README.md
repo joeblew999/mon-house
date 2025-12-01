@@ -1,6 +1,8 @@
 # House Renovation Project / โครงการรีโนเวทบ้าน
 
-https://github.com/joeblew999/mon-house
+**GitHub Pages**: https://joeblew999.github.io/mon-house/
+
+**Repository**: https://github.com/joeblew999/mon-house
 
 Complete bilingual architectural documentation for a house renovation.
 
