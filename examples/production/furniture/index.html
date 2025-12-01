@@ -91,6 +91,24 @@
     .update-banner button:hover {
       background: #f0f0f0;
     }
+    .toc-button {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      background: #f6f8fa;
+      color: #24292e;
+      border: 1px solid #e1e4e8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .toc-button:hover {
+      background: #e1e4e8;
+    }
   </style>
 </head>
 <body>
@@ -399,6 +417,9 @@
         if (parsed.anchor) {
           setTimeout(function() { scrollToAnchor(parsed.anchor); }, 50);
         }
+
+        // Setup TOC button for this page
+        setupTocButton();
       } catch (err) {
         content.innerHTML = '<div class="error">Error: ' + err.message + '</div>';
       }
@@ -406,6 +427,47 @@
 
     // Load on hash change
     window.addEventListener('hashchange', loadPage);
+
+    // TOC button - appears when scrolled past TOC, scrolls back to TOC when clicked
+    var tocButton = null;
+    function setupTocButton() {
+      // Find TOC heading (id is "table-of-contents" from slugify)
+      var tocHeading = document.getElementById('table-of-contents');
+      if (!tocHeading) {
+        // Hide button if no TOC on this page
+        if (tocButton) tocButton.style.display = 'none';
+        return;
+      }
+
+      // Create button if it doesn't exist
+      if (!tocButton) {
+        tocButton = document.createElement('button');
+        tocButton.className = 'toc-button';
+        tocButton.innerHTML = '↑ TOC';
+        tocButton.onclick = function() {
+          tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        document.body.appendChild(tocButton);
+      }
+
+      // Update click handler for new TOC heading
+      tocButton.onclick = function() {
+        tocHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
+      // Show/hide based on scroll position
+      function updateTocButtonVisibility() {
+        var tocRect = tocHeading.getBoundingClientRect();
+        tocButton.style.display = tocRect.bottom < 0 ? 'block' : 'none';
+      }
+
+      // Remove old listener if any, add new one
+      window.removeEventListener('scroll', updateTocButtonVisibility);
+      window.addEventListener('scroll', updateTocButtonVisibility);
+
+      // Initial check
+      updateTocButtonVisibility();
+    }
 
     // Initial load
     loadPage();
