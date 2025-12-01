@@ -107,57 +107,9 @@
       color: #6a737d;
     }
 
-    /* Edit side panel */
-    .edit-panel {
-      position: fixed;
-      top: 0;
-      right: -60%;
-      width: 60%;
-      height: 100%;
-      background: white;
-      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-      z-index: 1000;
-      transition: right 0.3s ease;
-    }
-    .edit-panel.open { right: 0; }
-    .edit-panel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: #f6f8fa;
-      border-bottom: 1px solid #e1e4e8;
-    }
-    .edit-panel-header span { font-weight: 600; font-size: 14px; }
-    .edit-panel-close {
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: #6a737d;
-      padding: 0 8px;
-    }
-    .edit-panel-close:hover { color: #24292e; }
-    .edit-panel iframe {
-      width: 100%;
-      height: calc(100% - 50px);
-      border: none;
-    }
-    .edit-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.3);
-      z-index: 999;
-      display: none;
-    }
-    .edit-overlay.open { display: block; }
-
     /* Print styles */
     @media print {
-      .header, .update-banner, .edit-panel, .edit-overlay { display: none !important; }
+      .header, .update-banner { display: none !important; }
       body { max-width: none; padding: 20px; }
       #content { margin-top: 0; }
       a { color: #000; text-decoration: underline; }
@@ -207,7 +159,7 @@
     </div>
     <div class="header-actions">
       <button class="header-btn" id="toc-btn" style="display:none">↑ TOC</button>
-      <button class="header-btn" id="edit-btn" style="display:none">Edit</button>
+      <button class="header-btn" id="edit-btn" style="display:none" title="Edit on GitHub (opens in new tab)">Edit ↗</button>
       <span class="dev-badge" id="dev-badge" style="display:none">DEV</span>
     </div>
   </header>
@@ -215,19 +167,9 @@
     <div class="loading">Loading...</div>
   </div>
 
-  <!-- Edit side panel -->
-  <div class="edit-overlay" id="edit-overlay"></div>
-  <div class="edit-panel" id="edit-panel">
-    <div class="edit-panel-header">
-      <span>Edit on GitHub</span>
-      <button class="edit-panel-close" id="edit-panel-close">×</button>
-    </div>
-    <iframe id="edit-iframe"></iframe>
-  </div>
-
   <script>
     // Version for cache-busting (updated by: task version:bump)
-    var PAGE_VERSION = '20251201-154736';
+    var PAGE_VERSION = '20251201-155405';
 
     // Dev mode: add ?dev to URL to bypass cache (for testing after deploys)
     var DEV_MODE = window.location.search.includes('dev');
@@ -250,38 +192,6 @@
         window.location.hash = prev;
       }
     };
-
-    // Edit panel functionality
-    var editPanel = document.getElementById('edit-panel');
-    var editOverlay = document.getElementById('edit-overlay');
-    var editIframe = document.getElementById('edit-iframe');
-    var editBtn = document.getElementById('edit-btn');
-    var currentEditUrl = null;
-
-    function openEditPanel(url) {
-      currentEditUrl = url;
-      editIframe.src = url;
-      editPanel.classList.add('open');
-      editOverlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeEditPanel() {
-      editPanel.classList.remove('open');
-      editOverlay.classList.remove('open');
-      document.body.style.overflow = '';
-      editIframe.src = '';
-    }
-
-    document.getElementById('edit-panel-close').onclick = closeEditPanel;
-    editOverlay.onclick = closeEditPanel;
-
-    // Escape key closes panel
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && editPanel.classList.contains('open')) {
-        closeEditPanel();
-      }
-    });
 
     // Version check - detects when page is stale and prompts/auto-refreshes
     async function checkVersion() {
@@ -556,13 +466,13 @@
         updateBackButton();
       }
 
-      // Update edit button (auto-detect GitHub URL)
+      // Update edit button (auto-detect GitHub URL - opens in new tab)
+      var editBtn = document.getElementById('edit-btn');
       var editUrl = getGitHubEditUrl(normalizePath(path));
       if (editUrl) {
-        currentEditUrl = editUrl;
         editBtn.onclick = function(e) {
           e.preventDefault();
-          openEditPanel(editUrl);
+          window.open(editUrl, '_blank');
         };
         editBtn.style.display = 'inline-block';
       } else {
