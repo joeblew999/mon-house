@@ -60,7 +60,8 @@
 | Floor Tiles / กระเบื้องพื้น | 144 tiles | ฿5,652.00 |
 | Wall Tiles / กระเบื้องผนัง | 24 tiles | ฿942.00 |
 | Linear Drain / รางระบายน้ำ | 2 pcs | ฿1,980.00 |
-| **Grand Total / รวมทั้งหมด** | | **฿8,574.00** |
+| Tile Adhesive / กาวซีเมนต์ | 14 bags | ฿2,786.00 |
+| **Grand Total / รวมทั้งหมด** | | **฿11,360.00** |
 
 ---
 
@@ -78,6 +79,19 @@
 | Connection / การเชื่อมต่อ | To existing drainage point / เชื่อมต่อจุดระบายน้ำเดิม |
 | Floor gradient / ความลาดเอียงพื้น | Slope towards drain (golf ball test) / ลาดเอียงไปยังราง (ทดสอบลูกกอล์ฟ) |
 | **Builder note / หมายเหตุช่าง:** | Dig out area to make room for drain / ขุดพื้นที่เพื่อติดตั้งราง |
+
+---
+
+## Tile Adhesive / กาวซีเมนต์ปูกระเบื้อง
+
+| Description / รายการ | Details / รายละเอียด |
+|----------------------|----------------------|
+| Product / สินค้า | Crocodile Green Cement Adhesive 20 kg / จระเข้ กาวซีเมนต์ จระเข้เขียว 20 กก. |
+| Price / ราคา | ฿199 per 20 kg bag / ต่อถุง 20 กก. |
+| Supplier / ร้าน | [Global House](https://globalhouse.co.th/product/จระเข้-กาวซีเมนต์-จระเข้เขียว-20-กก.-i.8852278010104) |
+| Coverage / พื้นที่ใช้งาน | ~4-5 m² per bag / ต่อถุง |
+| Estimated qty / จำนวนโดยประมาณ | 14 bags (for ~53 m²) / ถุง |
+| **Subtotal / รวม** | **฿2,786** |
 
 ---
 
