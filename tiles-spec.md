@@ -131,14 +131,16 @@
 - New tap / ก๊อกน้ำใหม่
 - End panels: LG Hi-Macs 12 mm white / แผงปิดหัวท้าย LG Hi-Macs หนา 12 มม. สีขาว
 - Front panels: LG Hi-Macs 12 mm white / หน้าบาน LG Hi-Macs หนา 12 มม. สีขาว
-- Installation video / วิดีโอติดตั้ง: https://youtu.be/4rAThTQF7Ng?si=CwQQ5Sw5-csyfor7
+
 
 **Kitchen reference / ภาพอ้างอิงครัว**
 
-![Kitchen reference](kitchen.jpg)
+![Current Kitchen reference](kitchen.jpg)
 
 
+- Installation video / วิดีโอติดตั้ง: https://youtu.be/4rAThTQF7Ng?si=CwQQ5Sw5-csyfor7
 
+![LG Himac reference](lg-himac.jpg)
 
 
 **Date / วันที่:** December 2024
