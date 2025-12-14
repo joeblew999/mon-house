@@ -114,6 +114,19 @@
 - Bathroom door: 800 × 2400 mm (deducted from wall area up to 1.5m tile height)
 - ประตูห้องน้ำ: 800 × 2400 มม. (หักจากพื้นที่ผนังถึงความสูงกระเบื้อง 1.5 ม.)
 
----
+## Builder Quotation (BAN) / ใบเสนอราคาผู้รับเหมา
+
+| Scope / งาน | Details / รายละเอียด | Cost / ราคา |
+|-------------|----------------------|-------------|
+| Bathroom renovation / ปรับปรุงห้องน้ำ | Everything included / ครบทุกงาน | ฿140,000 |
+| Kitchen works / งานครัว | Scope TBD (confirm inclusions) / รายละเอียดรอตรวจสอบ | ฿8,000 |
+| Living room & 2 bedrooms tiling / ปูกระเบื้องห้องนั่งเล่นและ 2 ห้องนอน | Tile installation | ฿23,000 |
+| **Total / รวมทั้งหมด** | | **฿171,000** |
 
 **Date / วันที่:** December 2024
+
+
+
+
+
+

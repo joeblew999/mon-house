@@ -10,6 +10,25 @@ YOU MUST use this file path root:  `/Users/apple/workspace/go/src/github.com/joe
 
 ---
 
+## SPA & Markdown Convention
+
+**README.md is the standard index file** for every folder in this project.
+
+- The root `index.html` is a unified SPA that renders all markdown files
+- Navigation uses hash-based routing (e.g., `#examples/production/furniture/SPEC.md`)
+- Breadcrumbs link to `README.md` for each folder
+- Optional YAML frontmatter in README.md can configure folder behavior:
+
+```yaml
+---
+leaf_folders: [shopping, images, assets]   # Folders without their own README
+---
+```
+
+**Note**: SPEC.md files still exist for specifications content, but README.md is the entry point/index for each folder.
+
+---
+
 ## Taskfile (Single Source of Truth for Automation)
 
 **Location**: `Taskfile.yml` (in project root)

@@ -1,3 +1,6 @@
+---
+leaf_folders: [shopping, images, assets]
+---
 # House Renovation Project / โครงการรีโนเวทบ้าน
 
 **GitHub Pages**: https://joeblew999.github.io/mon-house/
@@ -12,7 +15,7 @@ Complete bilingual architectural documentation for a house renovation.
 
 ## 🛋️ Furniture & Shopping / เฟอร์นิเจอร์และรายการซื้อ
 
-👉 **[View Furniture Specs & Shopping Lists](https://joeblew999.github.io/mon-house/examples/production/furniture/)**
+👉 **[View Furniture Specs & Shopping Lists](examples/production/furniture/SPEC.md)**
 
 Browse specifications and shopping lists for all furniture and fixtures. Click "Edit" to update directly on GitHub.
 

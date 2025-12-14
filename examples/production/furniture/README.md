@@ -1,3 +1,6 @@
+---
+leaf_folders: [shopping, images, assets]
+---
 # Shopping Directory
 
 ## Purpose
