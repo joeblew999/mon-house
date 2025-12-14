@@ -124,15 +124,13 @@
 | **Total / รวมทั้งหมด** | | **฿171,000** |
 
 
-## Suggested changes
+## Suggested changes / ข้อเสนอแนะการปรับปรุง
 
-- Kithchen Benchtop . lg-himacs 12 mm white
-- Sink inserted on top.
-- New tap
-
-- Kithchen Ends. lg-himacs 12 mm white
-
-- Kithcne Fronts. lg-himacs 12 mm white
+- Kitchen benchtop: LG Hi-Macs 12 mm white / ท็อปครัว LG Hi-Macs หนา 12 มม. สีขาว
+- Undermount sink / อ่างล้างจานฝังใต้เคาน์เตอร์
+- New tap / ก๊อกน้ำใหม่
+- End panels: LG Hi-Macs 12 mm white / แผงปิดหัวท้าย LG Hi-Macs หนา 12 มม. สีขาว
+- Front panels: LG Hi-Macs 12 mm white / หน้าบาน LG Hi-Macs หนา 12 มม. สีขาว
 
 **Kitchen reference / ภาพอ้างอิงครัว**
 
@@ -143,7 +141,6 @@
 
 
 **Date / วันที่:** December 2024
-
 
 
 
