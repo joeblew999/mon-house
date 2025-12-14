@@ -114,7 +114,7 @@
 - Bathroom door: 800 × 2400 mm (deducted from wall area up to 1.5m tile height)
 - ประตูห้องน้ำ: 800 × 2400 มม. (หักจากพื้นที่ผนังถึงความสูงกระเบื้อง 1.5 ม.)
 
-## Builder Quotation (BAN) / ใบเสนอราคาผู้รับเหมา
+## Builder Quotation (BAN - 14th Dec) / ใบเสนอราคาผู้รับเหมา
 
 | Scope / งาน | Details / รายละเอียด | Cost / ราคา |
 |-------------|----------------------|-------------|
@@ -123,8 +123,26 @@
 | Living room & 2 bedrooms tiling / ปูกระเบื้องห้องนั่งเล่นและ 2 ห้องนอน | Tile installation | ฿23,000 |
 | **Total / รวมทั้งหมด** | | **฿171,000** |
 
-**Date / วันที่:** December 2024
 
+## Suggested changes
+
+- Kithchen Benchtop . lg-himacs 12 mm white
+- Sink inserted on top.
+- New tap
+
+- Kithchen Ends. lg-himacs 12 mm white
+
+- Kithcne Fronts. lg-himacs 12 mm white
+
+**Kitchen reference / ภาพอ้างอิงครัว**
+
+![Kitchen reference](kitchen.jpg)
+
+
+
+
+
+**Date / วันที่:** December 2024
 
 
 
