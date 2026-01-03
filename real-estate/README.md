@@ -15,6 +15,8 @@ Selling a detached house in Laem Chabang, Chonburi.
 | **Age** | 16 years |
 | **Features** | A/C in master bedroom, tiled roof |
 
+
+
 ## Valuation
 
 | Scenario | Price Range |
@@ -35,6 +37,7 @@ Selling a detached house in Laem Chabang, Chonburi.
 
 | File | Description |
 |------|-------------|
+| [legal.md](legal.md) | Chanote, Tabien Baan, owner details, debt info |
 | [process.md](process.md) | Full valuation details & repair recommendations |
 | [contacts.md](contacts.md) | Estate agents & Facebook groups |
 | [estate-agent-template.md](estate-agent-template.md) | Email templates for agents (Thai/English) |
