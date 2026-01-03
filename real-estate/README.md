@@ -49,8 +49,8 @@ Selling a detached house in Laem Chabang, Chonburi.
 
 ## Next Steps
 
-1. [ ] Decide on asking price
-2. [ ] Do high-priority repairs (฿15-23k for ฿200-280k value add)
-3. [ ] Take new photos after staging
-4. [ ] Contact estate agents
-5. [ ] Post to Facebook groups
+1. [ ] Contact estate agents for valuation advice
+2. [ ] Decide on asking price
+3. [ ] Do recommended repairs
+4. [ ] Take new photos after staging
+5. [ ] List with agents + post to Facebook groups
