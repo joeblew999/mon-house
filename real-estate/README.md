@@ -16,15 +16,6 @@ Selling a detached house in Laem Chabang, Chonburi.
 | **Features** | A/C in master bedroom, tiled roof |
 
 
-
-## Valuation
-
-| Scenario | Price Range |
-|----------|-------------|
-| Quick sale (as-is) | ฿1.4 - 1.6 million |
-| Market value (as-is) | ฿1.7 - 2.0 million |
-| With ฿30-50k repairs | ฿2.0 - 2.3 million |
-
 ## Photos
 
 | | |
@@ -32,6 +23,10 @@ Selling a detached house in Laem Chabang, Chonburi.
 | ![Front](exterior-front.jpg) | ![Master Bedroom](bedroom-master.jpg) |
 | ![Bedroom 2](bedroom-2.jpg) | ![Living Room](living-room.jpg) |
 | ![Kitchen](kitchen.jpg) | ![Bathroom](bathroom.jpg) |
+
+## Floor Plan
+
+![Existing Floor Plan](../examples/production/drawings/en/existing/plan.svg)
 
 ## Documents
 

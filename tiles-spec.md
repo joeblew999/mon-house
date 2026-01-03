@@ -126,11 +126,17 @@
 
 ## Suggested changes / ข้อเสนอแนะการปรับปรุง
 
-- Kitchen benchtop: LG Hi-Macs 12 mm white / ท็อปครัว LG Hi-Macs หนา 12 มม. สีขาว
+- Kitchen benchtop: LG Hausys HI-MACS 12 mm white / ท็อปครัว LG Hausys HI-MACS หนา 12 มม. สีขาว
+
 - Undermount sink / อ่างล้างจานฝังใต้เคาน์เตอร์
+
 - New tap / ก๊อกน้ำใหม่
-- End panels: LG Hi-Macs 12 mm white / แผงปิดหัวท้าย LG Hi-Macs หนา 12 มม. สีขาว
-- Front panels: LG Hi-Macs 12 mm white / หน้าบาน LG Hi-Macs หนา 12 มม. สีขาว
+
+- End panels: LG Hausys HI-MACS 12 mm white / แผงปิดหัวท้าย LG Hausys HI-MACS หนา 12 มม. สีขาว
+
+- Front panels: LG Hausys HI-MACS 12 mm white / หน้าบาน LG Hausys HI-MACS หนา 12 มม. สีขาว
+
+Colour: Alpine White (S028)
 
 
 **Kitchen reference / ภาพอ้างอิงครัว**
