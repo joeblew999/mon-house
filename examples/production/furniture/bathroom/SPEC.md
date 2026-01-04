@@ -8,7 +8,7 @@ Specifications for all bathroom fixtures and fittings.
 - 2.1 [Toilet](#21-toilet)
 - 2.2 [Sink/Basin](#22-sinkbasin)
 - 2.3 [Shower](#23-shower)
-- 2.4 [Shower Glass Panel](#24-shower-glass-panel)
+- 2.4 ~~Shower Glass Panel~~ *(removed - no glass panel)*
 - 2.5 [Shower Taps/Faucet](#25-shower-tapsfaucet)
 - 2.6 [Basin Taps/Faucet](#26-basin-tapsfaucet)
 - 2.7 [Mirror](#27-mirror)
@@ -30,114 +30,112 @@ Specifications for all bathroom fixtures and fittings.
 
 ### 2.1 Toilet
 
-**Product Information**
-- **Type**: Wall-hung toilet (โถสุขภัณฑ์แขวนผนัง)
-- **Brand**: COTTO
-- **Model**: SC19517(T) + C962170 + C942000
-- **Style**: Wall-hung with concealed cistern
-- **Flush Type**: Dual-flush (3L/4.5L)
-- **Price**: ฿32,253 (complete system)
-- **Source**: [OneStockHome](https://www.onestockhome.com/en/products/85885450/wall-hung-toilet-cotto-sc19517t-345-l-c962170c942000_wall-hanging-toilet_cotto)
+**Selected: PREMA P10002 Floor-Mounted Toilet**
+
+| | |
+|---|---|
+| **Type** | Floor-mounted one-piece toilet (โถสุขภัณฑ์ชิ้นเดียวแบบตั้งพื้น) |
+| **Brand** | PREMA |
+| **Model** | P10002(SOFT) |
+| **Flush** | Dual-flush (3L/4.5L) |
+| **Price** | ฿3,990 (sale) / ฿4,900 (regular) |
+| **Total Installed** | ~฿5,500-7,000 |
+| **Source** | [Thai Watsadu](https://www.thaiwatsadu.com/th/product/สุขภัณฑ์ชิ้นเดียว-3|45-ลิตร-PREMA-รุ่น-P10002(SOFT)-60295868) |
 
 [View Shopping Options](shopping/2.1-toilet.md)
 
-**System Components**
-1. **Wall-hung toilet bowl** - Ceramic, visible portion
-2. **Concealed cistern + frame** - Hidden in false wall
-3. **Flush plate** - Wall-mounted button/plate
+**Product Information**
+- **Type**: One-piece floor-mounted toilet (สุขภัณฑ์ชิ้นเดียว)
+- **Brand**: PREMA (budget brand by SCG group)
+- **Model**: P10002(SOFT)
+- **Style**: One-piece (integrated tank and bowl)
+- **Flush Type**: Dual-flush (3L/4.5L) - Siphon Jet
+- **Price**: ฿3,990 (sale) / ฿4,900 (regular)
+- **Source**: Thai Watsadu, Global House, Lazada
 
 **Dimensions**
-- **Toilet Bowl**:
-  - Width: ~0.35-0.40m (35-40cm)
-  - Depth: ~0.50-0.55m (50-55cm) from wall
-  - Height: ~0.40m (40cm) rim height (adjustable during installation)
-- **Concealed Cistern Frame** (in false wall):
-  - Width: ~0.50m (50cm)
-  - Depth: ~0.12-0.20m (12-20cm) - thickness of false wall required
-  - Height: ~1.00-1.20m (100-120cm)
-- **Clearance Required**: Min 0.75m in front of toilet
+- **Width**: 395mm (39.5cm)
+- **Depth**: 705mm (70.5cm) from wall
+- **Height**: 685mm (68.5cm) to top of tank
+- **Rim Height**: ~400mm (40cm) standard
+- **Clearance Required**: Min 600mm in front of toilet
 
-**False Wall Requirements**
-- **Purpose**: Houses concealed cistern, frame, and plumbing
-- **Minimum Depth**: 0.12-0.20m (depends on cistern model)
-- **Frame Type**: Steel frame supports toilet weight (up to 400kg rated)
-- **Access Panel**: Required for cistern maintenance
-- **Wall Finish**: Tiled to match bathroom walls
+**Features**
+- Modern elongated design
+- Siphon Jet flush (faster & stronger)
+- Soft-close seat included
+- Floor outlet (ท่อลงพื้น)
+- Water-saving dual-flush
+
+**Installation**
+- Mount to floor with bolts
+- Connect water supply (cold only)
+- Connect waste pipe to sewer
+- Standard installation: ฿1,500-3,000 labor
+- **Any plumber can install** - no special skills required
 
 **Placement in Floor Plan**
 - **Drawing**: section.svg, plan.svg
 - **Room**: Bathroom (northwest corner)
-- **Position**: Against false wall
+- **Position**: Against wall, floor-mounted
 - **Purpose**: Primary toilet
 
-**Advantages of Wall-Hung Design**
-- Saves floor space (appears to "float")
-- Easier floor cleaning (no base to clean around)
-- Modern, minimalist aesthetic
-- Adjustable height during installation
-- Hidden tank and plumbing in false wall
-- Complements false wall construction already planned
-
 **Notes**
-- Water-saving dual-flush: 3L (half flush) / 4.5-6L (full flush)
-- Thailand brands: COTTO (local), American Standard, TOTO all offer wall-hung models
-- Installation requires professional plumber (wall-hung systems more complex than floor-mounted)
-- False wall must be structurally sound to support toilet weight
-- Flush plate style: Square or round, chrome/matte finish to match other fixtures
-- Consider soft-close seat for quiet operation
+- PREMA is a budget brand - good quality, lower price
+- Parts widely available in Thailand
+- One-piece design (no gap between tank and bowl - easier to clean)
 
 ---
 
 ### 2.2 Sink/Basin
 
-**Product Information**
-- **Type**: Wall-mounted washbasin (อ่างล้างหน้าแขวนผนัง)
-- **Brand**: COTTO
-- **Model**: C0107 (Alice series)
-- **Style**: Wall-mounted on false wall
-- **Material**: Ceramic/Porcelain
-- **Price**: ฿2,090
-- **Source**: [HomePro](https://www.homepro.co.th/p/151882?lang=en)
+**Selected: PREMA P55000 Wall-Hung Basin**
+
+| | |
+|---|---|
+| **Type** | Wall-hung basin (อ่างล้างหน้าแขวนผนัง) |
+| **Brand** | PREMA |
+| **Model** | P55000 |
+| **Material** | Ceramic |
+| **Price** | ฿640 (sale) / ฿770 (regular) |
+| **Source** | [Thai Watsadu](https://www.thaiwatsadu.com/th/product/อ่างล้างหน้าแบบแขวน-PREMA-รุ่น-P55000-สีขาว-60295873) |
 
 [View Shopping Options](shopping/2.2-basin.md)
 
 **Dimensions**
-- **Basin Width**: ~0.50-0.60m (50-60cm)
-- **Basin Depth**: ~0.40-0.50m (40-50cm)
-- **Mounting Height**: ~0.85m (85cm from floor to rim)
-- **False Wall Shelf Depth**: ~0.12-0.20m (matches toilet false wall)
+- **Basin Width**: 520mm (52cm)
+- **Basin Depth**: 355mm (35.5cm)
+- **Basin Height**: 200mm (20cm)
+- **Mounting Height**: ~850mm (85cm from floor to rim)
 
-**False Wall Integration**
-- **Mounting**: Basin mounts to false wall (same wall as toilet)
-- **Dual Purpose**: False wall serves as:
-  1. Structural support for wall-mounted basin
-  2. Shelf surface for toiletries, soap, etc.
-- **Shelf Surface**: Top of false wall provides counter/shelf space
-- **Plumbing**: All pipes hidden inside false wall
-- **Drainage**: P-trap concealed in false wall
+**Features**
+- Single faucet hole
+- Overflow drainage
+- Compact size - perfect for small bathroom
+- Wall-mounted design
+
+**Does NOT Include**
+- Faucet (see Section 2.6)
+- Drain/P-trap → **Buy PREMA PM653(HM) Chrome** ~฿200-350
+- Stop valve → **Buy PREMA PM1079(HM) Chrome** ~฿100-200
+
+**Installation**
+- Wall-mounted with brackets
+- Connect water supply
+- Connect P-trap drain
+- Standard installation: ฿500-1,000 labor
 
 **Placement in Floor Plan**
 - **Drawing**: section.svg, plan.svg
 - **Room**: Bathroom
-- **Position**: Wall-mounted on false wall (continuous with toilet false wall)
+- **Position**: Wall-mounted
 - **Purpose**: Hand washing, face washing
 
-**Advantages of Wall-Mounted on False Wall**
-- Clean, floating appearance (no pedestal or cabinet)
-- False wall top becomes functional shelf for toiletries
-- All plumbing hidden (cleaner aesthetic)
-- Easier floor cleaning (no cabinet base)
-- Space-efficient for small bathroom
-- Consistent design with wall-hung toilet
-- False wall serves dual purpose (structure + shelf)
-
 **Notes**
+- PREMA is a budget brand - good quality, lower price
+- Compact size suitable for small bathroom
 - Mirror mounted on wall above basin
-- False wall shelf eliminates need for separate storage cabinet
-- Shelf depth (12-20cm) suitable for soap, toothbrush holder, small items
-- Consider waterproof finish on shelf surface (tiles or sealed surface)
-- Mounting height adjustable during installation
-- Ensure false wall structure supports basin weight + water
+- Parts compatible with standard fittings
 
 ---
 
@@ -170,33 +168,9 @@ Specifications for all bathroom fixtures and fittings.
 
 ### 2.4 Shower Glass Panel
 
-**Product Information**
-- **Type**: Fixed glass partition/panel (กระจกกั้นอาบน้ำแบบติดตาย)
-- **Style**: Frameless or semi-frameless fixed panel
-- **Material**: Tempered safety glass
-- **Thickness**: 8mm or 10mm recommended
-- **Price**: ฿2,500-฿3,500
+**Status: REMOVED** - No shower glass panel for this bathroom.
 
-[View Shopping Options](shopping/2.4-shower-glass-panel.md)
-
-**Dimensions**
-- **Standard Width**: 0.80-1.00m (80-100cm)
-- **Standard Height**: 1.80-2.00m (180-200cm)
-- **Clearance**: Fixed to wall or floor, no swing clearance needed
-
-**Placement in Floor Plan**
-- **Drawing**: section.svg, plan.svg
-- **Room**: Bathroom
-- **Position**: Separates shower area from dry area
-- **Purpose**: Wet-dry separation, splash protection
-
-**Notes**
-- **Not a door**: Fixed glass panel with no hinges or moving parts
-- Tempered glass for safety (breaks into small pieces if shattered)
-- Thailand climate: Essential for wet-dry separation
-- Consider drain placement to ensure water stays in wet zone
-- Easier to clean than shower curtain
-- More durable and hygienic than curtain
+The bathroom will have an open shower area without glass partition.
 
 ---
 
@@ -240,15 +214,16 @@ Specifications for all bathroom fixtures and fittings.
 
 ### 2.6 Basin Taps/Faucet
 
-**Product Information**
-- **Type**: Basin mixer/faucet (ก๊อกอ่างล้างหน้า)
-- **Brand**: COTTO
-- **Model**: CT1160AN(HM)
-- **Style**: Deck-mounted
-- **Configuration**: Single-handle mixer
-- **Finish**: Chrome
-- **Price**: ฿1,090
-- **Source**: [HomePro](https://www.homepro.co.th/p/1093790?lang=en)
+**Selected: PREMA Basin Faucet (Chrome)**
+
+| | |
+|---|---|
+| **Type** | Basin faucet (ก๊อกอ่างล้างหน้า) |
+| **Brand** | PREMA |
+| **Model** | PM1076(HM) or PM1077(HM) |
+| **Finish** | Chrome |
+| **Price** | ~฿400-600 |
+| **Source** | [Thai Watsadu](https://www.thaiwatsadu.com/th/brand/PREMA) |
 
 [View Shopping Options](shopping/2.6-basin-taps.md)
 
@@ -258,20 +233,20 @@ Specifications for all bathroom fixtures and fittings.
 - **Base diameter**: ~0.05m (5cm)
 
 **Features**
-- **Aerator**: Water-saving flow restrictor
-- **Pop-up waste**: Integrated drain control (optional)
-- **Swivel spout**: Flexible positioning (optional)
+- Single-lever operation
+- Chrome finish
+- Deck-mounted (on basin)
+- Cold water only
 
 **Placement**
-- **Location**: On basin rim (deck-mounted) or wall above basin
+- **Location**: On basin rim (deck-mounted)
 - **Height**: Comfortable reach from standing position
-- **Plumbing**: Hot and cold water supply required
+- **Plumbing**: Cold water supply
 
 **Notes**
-- Finish should match shower taps for consistency
-- Consider water-saving aerator (6L/min typical)
-- Wall-mounted style saves basin counter space
-- Ensure spout height allows comfortable hand washing
+- Same brand as toilet and basin (PREMA)
+- Budget-friendly option
+- Chrome finish matches other fixtures
 
 ---
 

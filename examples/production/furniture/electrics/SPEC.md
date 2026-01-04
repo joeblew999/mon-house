@@ -8,7 +8,7 @@ Specifications for lighting fixtures and electrical items throughout the house.
 - 4.1 [Strip Spot Lights (Track Lighting)](#41-strip-spot-lights-track-lighting)
 - 4.2 [Floor Lamps](#42-floor-lamps) *(TBD)*
 - 4.3 [Reading Lamps](#43-reading-lamps) *(TBD)*
-- 4.4 [Outdoor Lights](#44-outdoor-lights) *(TBD)*
+- 4.4 [Outdoor Lights](#44-outdoor-lights)
 - 4.5 [Light Switches](#45-light-switches)
 - 4.6 [Outdoor Power Outlets](#46-outdoor-power-outlets)
 - 4.7 [Projector](#47-projector)
@@ -63,100 +63,162 @@ Specifications for lighting fixtures and electrical items throughout the house.
 
 ## 4.4 Outdoor Lights
 
-*TBD - Add specifications when selected*
+**Selected: LUZINO Outdoor Wall Lights**
+
+| | |
+|---|---|
+| **Brand** | LUZINO |
+| **Type** | Wall-mounted outdoor lights |
+| **Socket** | E27 (standard bulb) |
+| **Rating** | IPX4 (splash-proof) |
+| **Color** | Black |
+| **Source** | [Thai Watsadu - LUZINO](https://www.thaiwatsadu.com/en/brand/LUZINO) |
 
 **Requirements:**
-- Waterproof rating: IP65 or higher
+- Waterproof rating: IPX4 or higher
 - Style: Minimalist
+- Color: Black (matches switches)
+
+**Recommended Models:**
+
+### 4.4.1 Wall Light - MILLIE Series
+- **Model**: YJ2181A/1(BK)
+- **Socket**: 1×E27
+- **Color**: Black
+- **Style**: Modern minimalist
+- **Use**: Entry door, patio, carport
+
+### 4.4.2 Garden Post Light (Optional)
+- **Model**: 0387-PL-1SS(BK)
+- **Height**: 1 meter
+- **Socket**: 1×E27
+- **Color**: Black
+- **Use**: Garden path lighting
+
+### 4.4.3 Solar Garden Light (Optional)
+- **Model**: ESL-25Pro or RH2023F
+- **Power**: Solar (no wiring needed)
+- **Color**: Black
+- **Use**: Garden accent, no electrical work
+
+**Placement:**
+- **Entry door**: 1-2 wall lights
+- **Carport**: 1 wall light
+- **Patio/garden**: 1-2 lights as needed
+
+**Quantity Estimate:**
+- Wall lights: 2-4 units
+- Garden post (optional): 1-2 units
+
+[View Shopping Options](shopping/4.4-outdoor-lights.md)
 
 ---
 
 ## 4.5 Light Switches
 
-**Product Information**
-- **Type**: Wall-mounted light switches (สวิตช์ไฟติดผนัง)
-- **Style**: Modern/minimalist
-- **Installation**: Builder to install during electrical rough-in
+**Selected: LUZINO Switches (Black)**
+
+| | |
+|---|---|
+| **Brand** | LUZINO |
+| **Type** | Wall-mounted light switches |
+| **Voltage** | 220V AC |
+| **Color** | Black |
+| **Source** | [Thai Watsadu - LUZINO](https://www.thaiwatsadu.com/en/brand/LUZINO) |
 
 **Types Required**
 
-### 4.5.1 Dimmable Switches (สวิตช์หรี่ไฟ)
-
-For controlling [track spot lights](#41-strip-spot-lights-track-lighting) brightness from the wall switch:
+### 4.5.1 Standard Switches (สวิตช์ปิด-เปิด)
 
 | Requirement | Specification |
 |-------------|---------------|
-| **Type** | LED dimmer switch |
-| **Brand** | Panasonic |
+| **Type** | Standard on/off switch |
+| **Brand** | LUZINO |
+| **Series** | MLQ or MLS79 |
 | **Voltage** | 220V AC |
-| **Load** | Suitable for LED track lights (check total wattage) |
-| **Style** | Rotary knob |
+| **Gang** | 1-gang, 2-gang, 3-gang as needed |
 | **Color** | Black |
+
+**LUZINO Switch Models:**
+- **MLQ-8901** - 1-way switch (illuminated)
+- **MLQ-8931** - 1-way switch large (illuminated)
+- **MLS79-S13-AL** - 1-way switch 3-module set (black)
+- **A85-BK03A** - 3-way switch (silver/black)
+
+**Locations for Switches:**
+- Bathroom
+- Kitchen
+- Hallway/corridor
+- Outdoor lights
+- Utility areas
+- All rooms
+
+**Quantity Estimate:**
+- Standard switches: 8-12 units (varies by room layout)
+
+### 4.5.2 Dimmable Switches (สวิตช์หรี่ไฟ) - Optional
+
+For controlling [track spot lights](#41-strip-spot-lights-track-lighting) brightness:
+
+**Note**: Check LUZINO for dimmer availability. If not available, use separate brand for dimmers only.
 
 **Locations for Dimmable Switches:**
 - Living room (track lights) - adjust mood lighting
 - Bedroom (track lights) - dim for sleep
 - Dining area (track lights) - romantic dinner setting
 
-**Important**: Dimmer switch controls the track lights - adjust brightness without getting up!
-
-### 4.5.2 Standard Switches (สวิตช์ปิด-เปิด)
-
-For regular on/off control:
-
-| Requirement | Specification |
-|-------------|---------------|
-| **Type** | Standard on/off switch |
-| **Brand** | Panasonic Wide Series |
-| **Voltage** | 220V AC |
-| **Gang** | 1-gang, 2-gang, 3-gang as needed |
-| **Style** | Rocker |
-| **Color** | Black |
-
-**Locations for Standard Switches:**
-- Bathroom
-- Kitchen
-- Hallway/corridor
-- Outdoor lights
-- Utility areas
-
-**Quantity Estimate**
-- Dimmable switches: 3-4 units
-- Standard switches: 6-10 units (varies by room layout)
-
 **Builder Notes**
 - Coordinate switch locations with electrician during rough-in
 - Consider 2-way switches for rooms with multiple entrances
 - Match switch plate colors throughout house for consistency
-- Ensure dimmer switches are compatible with LED lights
 
 [View Shopping Options](shopping/4.5-light-switches.md)
 
 ---
 
-## 4.6 Outdoor Power Outlets
+## 4.6 Power Outlets
 
-**Product Information**
-- **Type**: Weatherproof outdoor power outlets (เต้าเสียบไฟฟ้ากันน้ำ)
-- **Purpose**: Charging electric scooter, outdoor power tools, garden equipment
-- **Installation**: Builder to install during construction
+**Selected: LUZINO Power Outlets**
 
-**Requirements**
+| | |
+|---|---|
+| **Brand** | LUZINO |
+| **Type** | Power outlets (indoor & outdoor) |
+| **Voltage** | 220V AC (Thailand standard) |
+| **Rating** | 16A |
+| **Color** | Black (indoor), White (outdoor) |
+| **Source** | [Thai Watsadu - LUZINO](https://www.thaiwatsadu.com/en/brand/LUZINO) |
 
+### 4.6.1 Indoor Outlets
+
+**LUZINO Outlet Models:**
+- **MLS-8961NS** - Single grounded outlet (small)
+- **MLQ-8962NS** - Single grounded outlet (large)
+- **MLQ-8963NS** - Dual grounded outlet
+- **AB-1633** - Dual 3-pin outlet (brass contacts)
+- **E15-C28K** - 16A 3-pin switch socket combo (SQUARE series)
+
+**Locations:**
+- Living room: 4-6 outlets
+- Bedroom: 2-4 outlets
+- Kitchen: 2-4 outlets
+- Bathroom: 1 outlet (GFCI protected)
+
+### 4.6.2 Outdoor Outlets (Weatherproof)
+
+**Requirements:**
 | Requirement | Specification |
 |-------------|---------------|
-| **Voltage** | 220V AC (Thailand standard) |
-| **Rating** | Minimum 16A |
 | **Weatherproof** | IP44 or higher (splash-proof) |
 | **Cover** | Spring-loaded flip cover |
-| **Material** | UV-resistant plastic or stainless steel |
+| **Material** | UV-resistant plastic |
 
-**Locations**
+**Locations:**
 - **Carport/Parking area**: Primary location for scooter charging
 - **Garden area**: For power tools, lights, water pump
 - **Patio/Terrace**: For outdoor appliances
 
-**Quantity**
+**Quantity:**
 - Minimum: 2 outlets
 - Recommended: 3-4 outlets (flexibility for different uses)
 
@@ -165,12 +227,6 @@ For regular on/off control:
 - Install on dedicated circuit with RCD/GFCI protection
 - Position outlets at convenient height (30-50cm above ground)
 - Ensure weatherproof covers face downward to prevent water ingress
-- Consider adding outdoor lighting circuits at same time
-
-**Placement**
-- **Carport**: 1-2 outlets near parking spot for scooter charging
-- **Garden**: 1 outlet for tools and equipment
-- **Patio**: 1 outlet for outdoor use
 
 **See also**: [Transport - Electric Scooter](../transport/SPEC.md#61-electric-scooter) for charging requirements
 

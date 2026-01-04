@@ -43,8 +43,20 @@ All drawings and specifications in English.
 
 ```
 mon-house/
-├── drawings/en/       # English documentation + drawings
-└── drawings/th/       # Thai documentation + drawings (เอกสารภาษาไทย)
+├── drawings/
+│   ├── en/            # English documentation + drawings
+│   └── th/            # Thai documentation + drawings (เอกสารภาษาไทย)
+│
+└── furniture/
+    ├── SPEC.md        # Master index (all categories)
+    ├── bathroom/      # Section 2.x
+    ├── bedroom/       # Section 8.x (bilingual)
+    │   ├── en/        # English specs + shopping
+    │   └── th/        # Thai specs + shopping (ภาษาไทย)
+    ├── electrics/     # Section 4.x
+    ├── kitchen/       # Section 10.x
+    ├── tiles/         # Section 9.x
+    └── ...            # Other categories
 ```
 
 **Note / หมายเหตุ**: All project details, specifications, and drawings are in the language-specific folders above. Please go to your language folder to get started.
