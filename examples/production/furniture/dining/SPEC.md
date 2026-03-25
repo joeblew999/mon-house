@@ -13,27 +13,28 @@ Specifications for dining tables, chairs, and related fixtures.
 ## 3.1 Dining Table Set
 
 **Product Information**
-- **Type**: Dining table with 2 chairs (ชุดโต๊ะอาหารพร้อมเก้าอี้ 2 ตัว)
+- **Type**: Glass dining table with 4 chairs (ชุดโต๊ะอาหารกระจกพร้อมเก้าอี้ 4 ตัว)
 - **Style**: Modern/minimalist
-- **Seating**: 2 persons
-- **Material**: Various (wood, metal, glass options)
+- **Seating**: 4 persons
+- **Table Top**: Tempered glass (กระจกนิรภัย)
+- **Legs**: Metal (chrome or powder-coated steel)
 
 **Requirements**
-- Table with 2 chairs included
-- Compact size for small dining area
+- Glass top table with 4 chairs included
+- Metal legs (chrome preferred, black steel acceptable)
+- Tempered safety glass
 - Sturdy construction
 - Easy to clean
 
 **Dimensions**
-- Compact: 67×67 cm
-- Standard: 70×70 cm
-- Large: up to 120×75 cm
+- Table: ~110-140 × 70-80 cm (rectangular) or ~100-120 cm (round)
+- Height: ~75 cm
 
 **Placement in Floor Plan**
 - **Drawing**: plan.svg
 - **Room**: Dining area
 - **Position**: TBD
-- **Purpose**: Daily meals for 2 persons
+- **Purpose**: Daily meals for 4 persons
 
 [View Shopping Options](shopping/3.1-dining-table-set.md)
 

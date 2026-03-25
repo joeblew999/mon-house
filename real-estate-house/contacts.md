@@ -43,11 +43,13 @@ Source: [Property2Share - รวม 120 กลุ่มเฟซบุ๊ค](ht
 
 #### 1. MyHomeChonburi ⭐ (Recommended - local specialists)
 
+SENT !!
+
 | Field | Value |
 |-------|-------|
 | Website | [myhomechonburi.com](https://www.myhomechonburi.com/) |
-| Email | ❌ Not found (use LINE) |
-| LINE | @myhomechonburi |
+| Email | ❌   |
+| LINE | https://line.me/ti/p/@myhomechonburi |
 | Address | 344/8 Moo 2, Surasak, Sriracha, Chonburi 20110 |
 | Hours | Daily 8:00 - 20:00 |
 
@@ -62,10 +64,13 @@ Notes: Specialize in Sriracha/Laem Chabang, also buy houses directly
 
 #### 2. A House Sriracha ⭐
 
+SENT  !!!
+
 | Field | Value |
 |-------|-------|
 | Website | [ahousesriracha.com](https://www.ahousesriracha.com/en/) |
 | Email | **ahouse2516@gmail.com** |
+| LINE | 092-288-9359 |
 | Office Phone | 038-313-211 |
 | Mobile | 092-288-9359, 061-979-5595 (Danita) |
 | Address | 165/129 GoldenCity Soi 2, M.10, Surasak, Sriracha, Chonburi 20110 |
@@ -74,33 +79,21 @@ Notes: 10+ years experience, expat-friendly, second-hand homes specialist
 
 ---
 
-#### 3. Chonburi Zone Real Estate
 
-| Field | Value |
-|-------|-------|
-| Website | [Dot Property listing](https://www.dotproperty.co.th/en/agency/chonburi-zone-real-estate/8864/properties-for-rent) |
-| Email | ❌ Not found (use Dot Property contact form) |
-| Phone | ❌ Not found |
+Land for Loan
 
-Notes: Active in Laem Chabang/Sriracha rentals & sales. Contact via Dot Property website.
+SENT !!
 
----
+LINE ID: 
 
-#### 4. Chavisa Property
-
-| Field | Value |
-|-------|-------|
-| Website | [Thailand-Property listing](https://www.thailand-property.com/agency/chavisa-property-coltd/7186/properties-for-sale) |
-| Email | ❌ Not found (use website contact form) |
-| Phone | ❌ Not found |
-
-Notes: Si Racha/Chonburi focus, 665+ properties listed. Contact via listing websites.
 
 ---
 
 ### Larger Agencies (wider reach)
 
 #### 5. AKN Asset
+
+SENT !
 
 | Field | Value |
 |-------|-------|
@@ -113,6 +106,8 @@ Notes: Network of 1,000+ agents. Limited online presence.
 ---
 
 #### 6. One Stop Real Estate ⭐ (Pattaya-based but covers area)
+
+SENT !! - Mark
 
 | Field | Value |
 |-------|-------|

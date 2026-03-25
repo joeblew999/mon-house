@@ -6,7 +6,7 @@ Selling a detached house in Laem Chabang, Chonburi.
 
 | | |
 |---|---|
-| **Address** | 171/48 Moo 10, Laem Chabang, Bang Lamung, Chonburi 20230 |
+| **Address** | 171/48 Moo 10, Nongklamai Raod, Bueng, Sriracha, Chonburi 20230, Thailand |
 | **Type** | Detached single-story house |
 | **Land** | 33 sq wah (132 sq m) |
 | **Living Area** | 60 sq m |
@@ -14,6 +14,18 @@ Selling a detached house in Laem Chabang, Chonburi.
 | **Bathrooms** | 1 |
 | **Age** | 16 years |
 | **Features** | A/C in master bedroom, tiled roof |
+
+## Legal Title
+
+Chanode:  103765
+
+Village Name: Praewhouse
+
+Detached" Confirmation: There a gap of at least 2 meters around the entire house.
+
+Street Feel: Its NOT an estate or Project. Its a normal Street with all the same detached houses on the street and a small garden area in front. Its a cul-de-sac street.
+
+
 
 
 ## Photos
