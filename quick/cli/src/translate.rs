@@ -122,7 +122,11 @@ fn translate(claude: &Path, content: &str) -> Result<String> {
 }
 
 /// Returns true if the file was translated, false if skipped (unchanged).
-fn translate_file(claude: &Path, input: &Path) -> Result<bool> {
+///
+/// `claude` is a lazily-resolved cache: None means not yet looked up.
+/// find_claude() is only called when a file actually needs translating,
+/// so running in CI with all hashes up-to-date works without claude installed.
+fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
     let name = input
         .file_stem()
         .and_then(|s| s.to_str())
@@ -134,7 +138,7 @@ fn translate_file(claude: &Path, input: &Path) -> Result<bool> {
         .with_context(|| format!("reading {}", input.display()))?;
     let current_hash = sha256_str(&content);
 
-    // Skip if unchanged since last translation
+    // Skip if unchanged since last translation — no claude needed
     if output.exists() && hash_file.exists() {
         let stored = std::fs::read_to_string(&hash_file)?;
         if stored.trim() == current_hash {
@@ -143,8 +147,14 @@ fn translate_file(claude: &Path, input: &Path) -> Result<bool> {
         }
     }
 
+    // Only resolve claude when we actually need to translate
+    if claude.is_none() {
+        *claude = Some(find_claude()?);
+    }
+    let claude_path = claude.as_ref().unwrap();
+
     println!("  translating {} → {} ...", input.display(), output.display());
-    let result = translate(claude, &content)?;
+    let result = translate(claude_path, &content)?;
 
     std::fs::write(&output, result)?;
     std::fs::write(&hash_file, current_hash)?;
@@ -154,7 +164,7 @@ fn translate_file(claude: &Path, input: &Path) -> Result<bool> {
 // ── subcommand: translate ──────────────────────────────────────────────────────
 
 pub fn cmd_translate(files: Vec<std::path::PathBuf>) -> Result<()> {
-    let claude = find_claude()?;
+    let mut claude: Option<PathBuf> = None; // resolved lazily, only if a file needs translating
     let mut translated = 0u32;
     let mut skipped = 0u32;
 
@@ -166,7 +176,7 @@ pub fn cmd_translate(files: Vec<std::path::PathBuf>) -> Result<()> {
             if name.ends_with(".th.md") || SKIP.contains(&name) {
                 continue;
             }
-            if translate_file(&claude, &path)? { translated += 1; } else { skipped += 1; }
+            if translate_file(&mut claude, &path)? { translated += 1; } else { skipped += 1; }
         }
     } else {
         // Specific files requested (e.g. from `mise run one -- GATE`)
@@ -175,7 +185,7 @@ pub fn cmd_translate(files: Vec<std::path::PathBuf>) -> Result<()> {
             if name.ends_with(".th.md") || SKIP.contains(&name) {
                 continue;
             }
-            if translate_file(&claude, path)? { translated += 1; } else { skipped += 1; }
+            if translate_file(&mut claude, path)? { translated += 1; } else { skipped += 1; }
         }
     }
 
