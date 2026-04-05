@@ -27,6 +27,26 @@ jobs:
         with:
           working_directory: quick
 
+      # Cache Cargo registry + compiled deps keyed on Cargo.lock.
+      # Invalidates when dependencies change; keeps the registry warm between runs.
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            quick/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('quick/Cargo.lock') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      # Cache downloaded fonts keyed on theme.typ content.
+      # Invalidates only when the font stack changes.
+      - name: Cache fonts
+        uses: actions/cache@v4
+        with:
+          path: quick/fonts
+          key: fonts-${{ hashFiles('quick/scripts/theme.typ') }}
+
       - name: Build quick-tool
         working-directory: quick
         run: mise run build-cli
