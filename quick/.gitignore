@@ -10,6 +10,6 @@ out/
 # Intermediate typst compile file
 _tmp.typ
 
-# Generated Thai translations — re-run to restore (source is *.md)
-*.th.md
-*.th.md.hash
+# Thai translations are committed alongside EN source so CI can build
+# PDFs without needing the claude CLI or ANTHROPIC_API_KEY.
+# Run `mise run translate` locally to regenerate after editing EN files.

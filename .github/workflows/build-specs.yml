@@ -1,0 +1,56 @@
+name: Build Specs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "quick/*.md"
+      - "quick/scripts/theme.typ"
+      - "quick/cli/src/**"
+      - "quick/cli/Cargo.toml"
+      - "quick/Cargo.lock"
+  workflow_dispatch: # allow manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+        with:
+          working_directory: quick
+
+      - name: Build quick-tool
+        working-directory: quick
+        run: mise run build-cli
+
+      - name: Download fonts
+        working-directory: quick
+        run: mise run fonts
+
+      - name: Build PDFs
+        working-directory: quick
+        run: mise run all
+
+      - name: Upload PDFs as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: specs-${{ github.sha }}
+          path: quick/out/*.pdf
+          retention-days: 90
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: specs-latest
+          name: "Latest Specs"
+          body: |
+            Auto-built from commit ${{ github.sha }}
+
+            **EN + Thai PDFs for all specs.**
+            Download the zip or individual files below.
+          files: quick/out/*.pdf
+          make_latest: true
