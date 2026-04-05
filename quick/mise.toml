@@ -98,7 +98,11 @@ run = "{{vars.QUICK_TOOL}} translate"
 [tasks.all]
 description = "Translate (if changed) then build EN + Thai PDFs (mise skips if outputs are up to date)"
 depends = ["translate"]
-sources  = ["{{env.QUICK_SPECS_DIR}}/[A-Z]*.th.md", "{{env.QUICK_SCRIPTS_DIR}}/theme.typ"]
+sources  = [
+  "{{env.QUICK_SPECS_DIR}}/[A-Z]*.th.md",
+  "{{env.QUICK_SCRIPTS_DIR}}/theme.typ",
+  "{{env.QUICK_IMAGES_DIR}}/**/*",
+]
 outputs  = ["{{env.QUICK_OUT_DIR}}/.build-stamp"]
 run = "{{vars.QUICK_TOOL}} build"
 
