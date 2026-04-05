@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - "quick/*.md"
+      - "quick/*.th.md"
       - "quick/scripts/theme.typ"
       - "quick/cli/src/**"
       - "quick/cli/Cargo.toml"
       - "quick/Cargo.lock"
+      - ".github/workflows/build-specs.yml"
   workflow_dispatch: # allow manual trigger from GitHub UI
 
 jobs:
