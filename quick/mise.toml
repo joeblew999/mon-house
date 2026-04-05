@@ -128,3 +128,30 @@ run = "{{vars.QUICK_TOOL}} themes test --all"
 description = "Full health check: wrapper, registry, file presence, compile round-trip"
 depends = ["build-cli", "fonts"]
 run = "{{vars.QUICK_TOOL}} themes check"
+
+# ── tests ───────────────────────────────────────────────────────────────────────
+
+[tasks.test]
+description = "Run all tests: unit (no tools) + integration E2E (requires pandoc, typst, fonts)"
+depends = ["build-cli", "fonts", "all"]
+run = """
+cargo test --manifest-path cli/Cargo.toml
+cargo test --manifest-path cli/Cargo.toml -- --ignored
+"""
+
+[tasks."test:unit"]
+description = "Run unit tests only — no pandoc/typst/fonts required; instant feedback"
+depends = ["build-cli"]
+run = "cargo test --manifest-path cli/Cargo.toml"
+
+[tasks."test:e2e"]
+description = "Run E2E integration tests only (requires pandoc, typst, fonts, all PDFs built)"
+depends = ["build-cli", "fonts", "all"]
+# --test-threads=1: tests share the quick/ directory (theme switches, PDFs, stamps)
+# and must run serially to avoid interference
+run = "cargo test --manifest-path cli/Cargo.toml -- --ignored --test-threads 1"
+
+[tasks."test:theme"]
+description = "Run E2E tests with a specific theme. Usage: mise run test:theme -- compact"
+depends = ["build-cli", "fonts", "all"]
+run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignored"

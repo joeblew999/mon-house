@@ -56,9 +56,12 @@ mise run fonts        # first time only — downloads fonts
 mise run watch        # ← start this. leave it running. edit files.
 ```
 
-`mise run watch` monitors `*.md` and `scripts/theme.typ` and runs:
-1. `mise run fonts` — downloads newly declared fonts (instant skip if unchanged)
-2. `mise run all` — translates changed specs, rebuilds affected PDFs
+`mise run watch` calls the Rust pipeline directly (no mise subprocess):
+1. `fonts::cmd_download()` — downloads newly declared fonts (hash + per-file skip)
+2. `translate::cmd_translate()` — SHA-256 hash skip; calls claude CLI only if changed
+3. `build::cmd_build()` — only runs if `out/.build-stamp` is older than any `.th.md` or `theme.typ`
+
+Watch also monitors `scripts/themes/*.typ` — editing a theme file triggers a full rebuild.
 
 ---
 
@@ -75,13 +78,19 @@ mise run watch        # ← start this. leave it running. edit files.
 
 ## Idempotency — how each task achieves it
 
-| Task | Layer 1 (mise) | Layer 2 (script) | Layer 3 (per item) |
+| Task | Layer 1 (mise stamp) | Layer 2 (Rust hash/exists) | Layer 3 (per item) |
 |---|---|---|---|
 | `fonts` | stamp newer than theme.typ → skip | hash + all files present → exit | skip existing .ttf files |
-| `translate` | — | SHA-256 hash in `.th.md.hash` → skip | — |
-| `all` | `.th.md` + `theme.typ` newer than `out/*.pdf` → skip | — | — |
+| `translate` | — | SHA-256 in `.th.md.hash` → skip | — |
+| `all` | `out/.build-stamp` newer than `.th.md` + `theme.typ` → skip | — | — |
+| `watch` | n/a (watch never exits) | same as fonts + translate | `needs_build_in()` stamp check |
 
-**Verify idempotency:** `mise run fonts:test` exercises all 3 layers of the fonts system. For the full pipeline, run `mise run watch` and save an unchanged file — nothing should rebuild.
+**Verify idempotency:**
+```bash
+mise run fonts:test      # all 3 layers: health + hash + per-file
+mise run test:unit       # 4 unit tests for needs_build timestamp logic
+mise run watch           # save an unchanged file — nothing should rebuild
+```
 
 ---
 
@@ -180,6 +189,61 @@ Use `TEMPLATE.md` as the starting point.
 - `typst` — compiles `.typ` → `.pdf`
 - `pandoc` — converts `.md` → `.typ`
 - `quick-tool` — built from `cli/` by `mise run build-cli`; handles fonts, translate, build, watch, new, clean
+
+---
+
+## Themes
+
+Switch between built-in themes without touching any spec files:
+
+```bash
+mise run themes:list                    # list all themes; shows active ▶
+mise run themes:switch -- minimal       # switch active theme
+mise run themes:switch -- compact       # compact layout, 9pt, tighter margins
+mise run themes:switch -- default       # restore default blue theme
+mise run themes:test-all                # compile test PDF for every theme
+mise run themes:check                   # full health: wrapper + compile round-trip
+```
+
+Adding a new theme: create `scripts/themes/newname.typ` with the same `conf()` signature,
+add an entry to `scripts/themes/registry.toml`, then `mise run themes:check`.
+
+---
+
+## Testing
+
+```bash
+# Fast — no tools needed; runs the 4 needs_build timestamp unit tests
+mise run test:unit
+
+# Full E2E — requires pandoc, typst, fonts, all PDFs built
+# Verifies actual side effects: PDFs exist and are non-empty, .th.md files present,
+# fonts/.done stamp valid, theme wrapper contains the correct import
+mise run test:e2e
+
+# E2E with a specific theme
+QUICK_TEST_THEME=compact mise run test:e2e
+QUICK_TEST_THEME=minimal mise run test:e2e
+
+# Both tiers
+mise run test
+```
+
+**Watch as the primary test workflow:** `mise run watch` is the most important test
+of the full system. When you save an unchanged file and NOTHING runs, all three
+idempotency layers are working. When you save a changed file and ONLY the affected
+spec rebuilds, the pipeline is correct.
+
+**E2E test coverage:**
+| Test | What side effect is verified |
+|---|---|
+| `tier2_translate_produces_th_md_files` | Every spec has a `.th.md`, non-empty |
+| `tier2_translate_is_idempotent` | Second translate produces `0 translated` |
+| `tier2_build_produces_pdfs_for_all_specs` | All 12 PDFs exist and are > 1 KB |
+| `tier2_themes_switch_updates_wrapper_file` | `scripts/theme.typ` imports the active theme |
+| `tier2_themes_test_all_every_theme_compiles` | All 3 themes produce valid PDFs |
+| `tier2_fonts_download_all_files_present` | All `.ttf` files present, `fonts/.done` exists |
+| `tier2_full_watch_pipeline_side_effects` | Complete fonts → translate → build → check |
 
 ---
 

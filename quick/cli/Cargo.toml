@@ -87,3 +87,7 @@ toml = { version = "0.8", features = ["parse"] }
 
 # Ergonomic errors
 anyhow = "1"
+
+[dev-dependencies]
+# Used by integration tests in tests/pipeline_e2e.rs to enumerate spec files
+glob = "0.3"

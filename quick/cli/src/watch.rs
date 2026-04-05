@@ -52,18 +52,25 @@ fn is_relevant(event: &Event) -> bool {
 ///
 /// Returns true if `out/.build-stamp` is missing or older than any
 /// `[A-Z]*.th.md` file or `scripts/theme.typ`.
-fn needs_build(theme_file: &Path) -> bool {
-    let stamp = Path::new("out/.build-stamp");
-    let stamp_mtime: SystemTime = match std::fs::metadata(stamp).and_then(|m| m.modified()) {
+///
+/// `dir` is the working directory root — CWD in production, a temp dir in tests.
+pub(crate) fn needs_build_in(theme_file: &Path, dir: &Path) -> bool {
+    let stamp = dir.join("out/.build-stamp");
+    let stamp_mtime: SystemTime = match std::fs::metadata(&stamp).and_then(|m| m.modified()) {
         Ok(t) => t,
         Err(_) => return true, // stamp absent → always build
     };
 
-    // Sources: theme.typ + all translated specs
+    // theme.typ is always a source
     let mut sources: Vec<PathBuf> = vec![theme_file.to_path_buf()];
-    if let Ok(entries) = glob::glob("[A-Z]*.th.md") {
-        for entry in entries.flatten() {
-            sources.push(entry);
+
+    // Glob .th.md files relative to dir
+    let pattern = dir.join("[A-Z]*.th.md");
+    if let Some(pat_str) = pattern.to_str() {
+        if let Ok(entries) = glob::glob(pat_str) {
+            for entry in entries.flatten() {
+                sources.push(entry);
+            }
         }
     }
 
@@ -73,6 +80,93 @@ fn needs_build(theme_file: &Path) -> bool {
             .map(|t| t > stamp_mtime)
             .unwrap_or(false) // source unreadable → treat as not stale
     })
+}
+
+fn needs_build(theme_file: &Path) -> bool {
+    needs_build_in(theme_file, Path::new("."))
+}
+
+// ── unit tests ─────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::thread::sleep;
+
+    /// Minimal inline temp-dir: no external crate needed.
+    struct TempDir(std::path::PathBuf);
+    impl TempDir {
+        fn new(suffix: &str) -> Self {
+            use std::sync::atomic::{AtomicU64, Ordering};
+            static CTR: AtomicU64 = AtomicU64::new(0);
+            let n = CTR.fetch_add(1, Ordering::Relaxed);
+            let p = std::env::temp_dir()
+                .join(format!("quick-watch-test-{}-{n}-{suffix}", std::process::id()));
+            std::fs::create_dir_all(&p).unwrap();
+            TempDir(p)
+        }
+        fn path(&self) -> &Path { &self.0 }
+    }
+    impl Drop for TempDir {
+        fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    }
+
+    #[test]
+    fn no_stamp_means_needs_build() {
+        let d = TempDir::new("no_stamp");
+        let theme = d.path().join("theme.typ");
+        std::fs::write(&theme, "// theme").unwrap();
+        assert!(needs_build_in(&theme, d.path()));
+    }
+
+    #[test]
+    fn newer_th_md_triggers_build() {
+        let d = TempDir::new("newer_th");
+        std::fs::create_dir(d.path().join("out")).unwrap();
+        let stamp = d.path().join("out/.build-stamp");
+        std::fs::write(&stamp, "").unwrap();
+        sleep(Duration::from_millis(50));
+
+        // .th.md written after stamp → stamp is stale
+        let th = d.path().join("SPEC.th.md");
+        std::fs::write(&th, "# Thai").unwrap();
+        let theme = d.path().join("theme.typ");
+        std::fs::write(&theme, "// theme").unwrap();
+
+        assert!(needs_build_in(&theme, d.path()));
+    }
+
+    #[test]
+    fn newer_theme_triggers_build() {
+        let d = TempDir::new("newer_theme");
+        std::fs::create_dir(d.path().join("out")).unwrap();
+        let stamp = d.path().join("out/.build-stamp");
+        std::fs::write(&stamp, "").unwrap();
+        sleep(Duration::from_millis(50));
+
+        // theme.typ written after stamp (e.g. themes:switch)
+        let theme = d.path().join("theme.typ");
+        std::fs::write(&theme, "// updated theme").unwrap();
+
+        assert!(needs_build_in(&theme, d.path()));
+    }
+
+    #[test]
+    fn fresh_stamp_means_no_build() {
+        let d = TempDir::new("fresh_stamp");
+        std::fs::create_dir(d.path().join("out")).unwrap();
+        let theme = d.path().join("theme.typ");
+        std::fs::write(&theme, "// theme").unwrap();
+        let th = d.path().join("SPEC.th.md");
+        std::fs::write(&th, "# Thai").unwrap();
+        sleep(Duration::from_millis(50));
+
+        // Stamp written last → all sources are older
+        let stamp = d.path().join("out/.build-stamp");
+        std::fs::write(&stamp, "").unwrap();
+
+        assert!(!needs_build_in(&theme, d.path()));
+    }
 }
 
 // ── subcommand: watch ──────────────────────────────────────────────────────────
