@@ -81,7 +81,7 @@ run = "{{vars.QUICK_TOOL}} translate"
 description = "Translate (if changed) then build EN + Thai PDFs (mise skips if outputs are up to date)"
 depends = ["translate"]
 sources  = ["[A-Z]*.th.md", "scripts/theme.typ"]
-outputs  = ["out/*.pdf"]
+outputs  = ["out/.build-stamp"]
 run = "{{vars.QUICK_TOOL}} build"
 
 [tasks.one]

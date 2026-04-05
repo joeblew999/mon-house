@@ -101,6 +101,8 @@ fn build_one(stem: &str, cfg: &Config) -> Result<()> {
 pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {
     std::fs::create_dir_all("out").context("creating out/")?;
 
+    let full_build = name.is_none();
+
     if let Some(stem) = name {
         build_one(&stem, cfg)?;
     } else {
@@ -122,6 +124,14 @@ pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {
             count += 1;
         }
         println!("✓ out/ updated ({count} spec(s))");
+    }
+
+    // Write stamp file only on a successful full build.
+    // tasks.all uses this as its output (not the glob out/*.pdf) so that
+    // `mise run one` — which builds a single spec without writing the stamp —
+    // cannot cause tasks.all to skip a full rebuild on next invocation.
+    if full_build {
+        std::fs::write("out/.build-stamp", "")?;
     }
 
     // Clean up intermediate file — ignore error (may not exist on failure)
