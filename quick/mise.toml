@@ -41,6 +41,9 @@ QUICK_SCRIPTS_DIR   = "scripts"
 # Spec source files (EN markdown)
 QUICK_SPECS_DIR     = "specs"
 
+# Template file used by `mise run new` to scaffold a new spec
+QUICK_TEMPLATE_FILE = "TEMPLATE.md"
+
 QUICK_GWFH_API      = "https://gwfh.mranftl.com/api/fonts"
 QUICK_WEIGHTS       = "400,700"
 

@@ -77,9 +77,13 @@ pub struct Config {
     #[arg(long, env = "QUICK_OUT_DIR", default_value = "out", global = true)]
     pub out_dir: PathBuf,
 
-    /// Directory containing EN spec .md files and TEMPLATE.md.
+    /// Directory containing EN spec .md files.
     #[arg(long, env = "QUICK_SPECS_DIR", default_value = "specs", global = true)]
     pub specs_dir: PathBuf,
+
+    /// Template file used by `new` to scaffold a spec (defaults to TEMPLATE.md at project root)
+    #[arg(long, env = "QUICK_TEMPLATE_FILE", global = true)]
+    pub template_file: Option<PathBuf>,
 }
 
 impl Config {
@@ -96,6 +100,11 @@ impl Config {
     /// Resolved theme wrapper: explicit --theme-file > <scripts_dir>/theme.typ
     pub fn resolved_theme_file(&self) -> PathBuf {
         self.theme_file.clone().unwrap_or_else(|| self.scripts_dir.join("theme.typ"))
+    }
+
+    /// Resolved template file: explicit --template-file > TEMPLATE.md at project root
+    pub fn resolved_template_file(&self) -> PathBuf {
+        self.template_file.clone().unwrap_or_else(|| PathBuf::from("TEMPLATE.md"))
     }
 
     /// Build-stamp path — written after a successful full build.
