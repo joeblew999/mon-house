@@ -39,6 +39,7 @@ pub fn sha256_hex(data: &[u8]) -> String {
 /// All paths are explicit — no Config dependency — so this can be tested with
 /// temp directories and called from any context. Pass `None` for `images_dir`
 /// when the images directory does not exist.
+#[cfg_attr(not(feature = "local"), allow(dead_code))]
 pub fn needs_build_in(
     theme_file: &Path,
     out_dir: &Path,

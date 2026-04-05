@@ -11,6 +11,7 @@ mod new;
 mod themes;
 mod translate;
 mod vfs;
+#[cfg(feature = "local")]
 mod watch;
 
 pub use config::Config;
@@ -50,6 +51,8 @@ enum Commands {
     },
     /// Watch *.md and scripts/theme.typ; runs fonts → translate → build directly (no mise needed).
     /// All three idempotency layers are preserved in Rust: hash checks, stamp mtime, per-file.
+    /// Local-dev only — not available on Cloudflare (no filesystem events on WASM).
+    #[cfg(feature = "local")]
     Watch,
     /// Create a new spec file from TEMPLATE.md
     New {
@@ -125,6 +128,7 @@ fn main() {
             translate::cmd_translate(&cfg, vec![path])
                 .and_then(|_| build::cmd_build(&cfg, Some(name)))
         }
+        #[cfg(feature = "local")]
         Commands::Watch => watch::cmd_watch(&cfg),
         Commands::New { name } => new::cmd_new(&cfg, &name),
         Commands::Clean => build::cmd_clean(&cfg),

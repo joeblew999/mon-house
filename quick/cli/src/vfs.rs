@@ -90,6 +90,7 @@ pub fn exists(path: &Path) -> bool {
 }
 
 /// Returns the last-modified time of a file or directory.
+#[cfg_attr(not(feature = "local"), allow(dead_code))]
 pub fn modified(path: &Path) -> Result<SystemTime> {
     std::fs::metadata(path)
         .and_then(|m| m.modified())

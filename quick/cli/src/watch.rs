@@ -30,6 +30,7 @@ use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 use anyhow::{Context, Result};
+#[cfg(feature = "local")]
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 
 use crate::{build, fonts, translate, vfs, Config};

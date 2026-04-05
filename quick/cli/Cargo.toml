@@ -79,14 +79,25 @@ dirs       = "5"   # cross-platform home dir — replaces ~ expansion
 glob       = "0.3" # file patterns — replaces bash `for f in [A-Z]*.md`
 urlencoding = "2"  # URL encode GWFH search query
 
-# File watching — powers `quick-tool watch`, replacing the watchexec external tool
-notify = "6"
+# File watching — local-dev only; not available on Cloudflare Workers (WASM has no OS events)
+# Gated behind the `local` feature — disable with --no-default-features for Cloudflare builds.
+notify = { version = "6", optional = true }
 
 # TOML parsing — theme registry
 toml = { version = "0.8", features = ["parse"] }
 
 # Ergonomic errors
 anyhow = "1"
+
+[features]
+# `local` enables OS-level subsystems that do not exist on Cloudflare Workers:
+#   - notify (file watching)       — no filesystem events on WASM
+#   - watch subcommand             — gated in main.rs / watch.rs
+#
+# Local CLI (default):   cargo build
+# Cloudflare Workers:    cargo build --no-default-features
+default = ["local"]
+local   = ["dep:notify"]
 
 [dev-dependencies]
 # Used by integration tests in tests/pipeline_e2e.rs to enumerate spec files
