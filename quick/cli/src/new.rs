@@ -61,8 +61,8 @@ pub fn cmd_new(cfg: &crate::Config, name: &str) -> Result<()> {
         bail!("{} already exists", path.display());
     }
 
-    // Prefer TEMPLATE.md in specs_dir; fall back to the embedded default
-    let template_path = cfg.specs_dir.join("TEMPLATE.md");
+    // Prefer TEMPLATE.md at root; fall back to the embedded default
+    let template_path = std::path::PathBuf::from("TEMPLATE.md");
     let content = if template_path.exists() {
         std::fs::read_to_string(&template_path)?
             .replace("Spec Title", name)

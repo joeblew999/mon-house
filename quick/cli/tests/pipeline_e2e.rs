@@ -33,6 +33,25 @@ fn quick_dir() -> PathBuf {
         .to_path_buf()
 }
 
+/// Resolve a QUICK_* env var to an absolute path rooted at quick_dir().
+/// Env vars may be relative (as set in mise.toml) or absolute (S3 mount).
+fn resolve_dir(env_var: &str, default: &str) -> PathBuf {
+    let raw = std::env::var(env_var).unwrap_or_else(|_| default.into());
+    let p = PathBuf::from(&raw);
+    if p.is_absolute() { p } else { quick_dir().join(p) }
+}
+
+fn font_dir() -> PathBuf {
+    if let Ok(v) = std::env::var("QUICK_FONT_DIR") {
+        let p = PathBuf::from(&v);
+        return if p.is_absolute() { p } else { quick_dir().join(p) };
+    }
+    resolve_dir("QUICK_RESOURCES_DIR", "resources").join("fonts")
+}
+
+fn out_dir()   -> PathBuf { resolve_dir("QUICK_OUT_DIR",   "out")   }
+fn specs_dir() -> PathBuf { resolve_dir("QUICK_SPECS_DIR", "specs") }
+
 fn quick_tool() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../target/release/quick-tool")
@@ -85,10 +104,9 @@ impl Drop for ThemeGuard {
     }
 }
 
-/// Collect all buildable spec stems from quick/specs/ — same filter as build.rs and translate.rs.
+/// Collect all buildable spec stems — same filter as build.rs and translate.rs.
 fn spec_stems() -> Vec<String> {
-    let dir = quick_dir();
-    let pattern = dir.join("specs/[A-Z]*.md").to_string_lossy().into_owned();
+    let pattern = specs_dir().join("[A-Z]*.md").to_string_lossy().into_owned();
     glob::glob(&pattern)
         .unwrap()
         .filter_map(|e| e.ok())
@@ -110,7 +128,7 @@ fn tier2_translate_produces_th_md_files() {
 
     // Side-effect check: every EN spec must have a corresponding .th.md
     for stem in spec_stems() {
-        let th_path = quick_dir().join("specs").join(format!("{stem}.th.md"));
+        let th_path = specs_dir().join(format!("{stem}.th.md"));
         assert!(th_path.exists(), "{stem}.th.md missing after translate");
 
         let content = fs::read_to_string(&th_path)
@@ -142,31 +160,30 @@ fn tier2_build_produces_pdfs_for_all_specs() {
     let out = qt(&["build"]);
     assert!(out.status.success(), "build failed: {}", stderr(&out));
 
-    let qdir = quick_dir();
     let stems = spec_stems();
     assert!(!stems.is_empty(), "no spec files found in quick/");
+    let odir = out_dir();
 
     for stem in &stems {
         // EN PDF
-        let en_pdf = qdir.join("out").join(format!("{stem}.pdf"));
+        let en_pdf = odir.join(format!("{stem}.pdf"));
         assert!(en_pdf.exists(),
-            "EN PDF missing: out/{stem}.pdf\nbuild output:\n{}", stdout(&out));
+            "EN PDF missing: {}\nbuild output:\n{}", en_pdf.display(), stdout(&out));
         let en_size = fs::metadata(&en_pdf).unwrap().len();
         assert!(en_size > 1024,
-            "out/{stem}.pdf suspiciously small ({en_size} bytes)");
+            "{} suspiciously small ({en_size} bytes)", en_pdf.display());
 
         // Thai PDF
-        let th_pdf = qdir.join("out").join(format!("{stem}.th.pdf"));
-        assert!(th_pdf.exists(),
-            "Thai PDF missing: out/{stem}.th.pdf");
+        let th_pdf = odir.join(format!("{stem}.th.pdf"));
+        assert!(th_pdf.exists(), "Thai PDF missing: {}", th_pdf.display());
         let th_size = fs::metadata(&th_pdf).unwrap().len();
         assert!(th_size > 1024,
-            "out/{stem}.th.pdf suspiciously small ({th_size} bytes)");
+            "{} suspiciously small ({th_size} bytes)", th_pdf.display());
     }
 
     // Stamp file must exist after a full build
-    let stamp = qdir.join("out/.build-stamp");
-    assert!(stamp.exists(), "out/.build-stamp missing after build");
+    let stamp = odir.join(".build-stamp");
+    assert!(stamp.exists(), "{} missing after build", stamp.display());
 
     println!(
         "✓ {n} EN + {n} Thai PDFs present for theme '{theme}'",
@@ -180,9 +197,11 @@ fn tier2_themes_switch_updates_wrapper_file() {
     let theme = std::env::var("QUICK_TEST_THEME").unwrap_or_else(|_| "minimal".into());
     let _guard = ThemeGuard::set(&theme);
 
-    // Side-effect: scripts/theme.typ must contain the import line for the active theme
-    let wrapper = fs::read_to_string(quick_dir().join("scripts/theme.typ"))
-        .expect("scripts/theme.typ not readable");
+    // Side-effect: theme wrapper must contain the import line for the active theme
+    let scripts = std::env::var("QUICK_SCRIPTS_DIR").unwrap_or_else(|_| "scripts".into());
+    let wrapper_path = quick_dir().join(scripts).join("theme.typ");
+    let wrapper = fs::read_to_string(&wrapper_path)
+        .unwrap_or_else(|_| panic!("{} not readable", wrapper_path.display()));
     assert!(
         wrapper.contains(&format!("themes/{theme}.typ")),
         "scripts/theme.typ does not import '{theme}':\n{wrapper}"
@@ -215,12 +234,12 @@ fn tier2_fonts_download_all_files_present() {
     let out = qt(&["fonts", "download"]);
     assert!(out.status.success(), "fonts download failed: {}", stderr(&out));
 
-    // Side-effect: every expected .ttf file must exist in fonts/
-    let fonts_dir = quick_dir().join("resources/fonts");
-    assert!(fonts_dir.exists(), "fonts/ directory missing");
+    // Side-effect: every expected .ttf file must exist in font_dir
+    let fdir = font_dir();
+    assert!(fdir.exists(), "{} directory missing", fdir.display());
 
     // At minimum: Inter, Noto Sans, Noto Sans Thai — 2 weights each = 6 files
-    let ttf_count = fs::read_dir(&fonts_dir)
+    let ttf_count = fs::read_dir(&fdir)
         .unwrap()
         .filter_map(|e| e.ok())
         .filter(|e| {
@@ -231,11 +250,11 @@ fn tier2_fonts_download_all_files_present() {
         })
         .count();
     assert!(ttf_count >= 6,
-        "expected at least 6 .ttf files in fonts/, found {ttf_count}");
+        "expected at least 6 .ttf files in {}, found {ttf_count}", fdir.display());
 
     // Stamp file must exist
-    let done = quick_dir().join("resources/fonts/.done");
-    assert!(done.exists(), "resources/fonts/.done stamp missing");
+    let done = fdir.join(".done");
+    assert!(done.exists(), "{} stamp missing", done.display());
 }
 
 #[test]
@@ -245,16 +264,19 @@ fn tier2_full_watch_pipeline_side_effects() {
     // Runs fonts → translate → build and verifies ALL side effects end-to-end.
     let theme = std::env::var("QUICK_TEST_THEME").unwrap_or_else(|_| "default".into());
     let _guard = ThemeGuard::set(&theme);
-    let qdir = quick_dir();
 
     // 1. fonts: succeeds + all .ttf files physically present + stamp exists
     // (We don't assert "up to date" because a prior test may have switched the theme,
     // invalidating the stamp — what matters is fonts are correct after this call.)
+    let fdir = font_dir();
+    let odir = out_dir();
+
     let f = qt(&["fonts", "download"]);
     assert!(f.status.success(), "fonts: {}", stderr(&f));
-    assert!(qdir.join("resources/fonts/.done").exists(), "resources/fonts/.done missing");
+    let done = fdir.join(".done");
+    assert!(done.exists(), "{} missing", done.display());
     // Verify at least the expected TTF count (3 families × 2 weights = 6)
-    let ttf_count = std::fs::read_dir(qdir.join("resources/fonts")).unwrap()
+    let ttf_count = std::fs::read_dir(&fdir).unwrap()
         .filter_map(|e| e.ok())
         .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("ttf"))
         .count();
@@ -266,19 +288,19 @@ fn tier2_full_watch_pipeline_side_effects() {
     assert!(stdout(&t).contains("0 translated"),
         "translate should skip everything:\n{}", stdout(&t));
     for stem in spec_stems() {
-        let th = qdir.join("specs").join(format!("{stem}.th.md"));
-        assert!(th.exists(), "specs/{stem}.th.md missing");
-        assert!(th.metadata().unwrap().len() > 50, "specs/{stem}.th.md too small");
+        let th = specs_dir().join(format!("{stem}.th.md"));
+        assert!(th.exists(), "{} missing", th.display());
+        assert!(th.metadata().unwrap().len() > 50, "{} too small", th.display());
     }
 
     // 3. build: all PDFs present, non-empty, stamp written
     let b = qt(&["build"]);
     assert!(b.status.success(), "build: {}", stderr(&b));
-    let stamp = qdir.join("out/.build-stamp");
-    assert!(stamp.exists(), "out/.build-stamp missing after build");
+    let stamp = odir.join(".build-stamp");
+    assert!(stamp.exists(), "{} missing after build", stamp.display());
     for stem in spec_stems() {
         for suffix in &["", ".th"] {
-            let pdf = qdir.join("out").join(format!("{stem}{suffix}.pdf"));
+            let pdf = odir.join(format!("{stem}{suffix}.pdf"));
             assert!(pdf.exists(), "{} missing", pdf.display());
             assert!(pdf.metadata().unwrap().len() > 1024,
                 "{} too small", pdf.display());

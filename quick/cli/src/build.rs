@@ -13,7 +13,7 @@
 /// and create two sources of truth that can drift.  The contract is:
 ///
 ///   mise layer 1  →  decides whether to run
-///   this code     →  actually runs pandoc + typst (no skipping)
+///   this code     →  actually runs typst (no skipping)
 ///
 /// The only place that needs its own idempotency is `quick-tool watch`, which
 /// calls the Rust functions directly and implements the stamp check itself.
@@ -28,27 +28,39 @@ const TMP: &str = "_tmp.typ";
 
 // ── internal helpers ───────────────────────────────────────────────────────────
 
-fn run_pandoc(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> {
-    // Pandoc requires forward slashes in -V template= even on Windows.
-    // Path::display() gives backslashes on Windows, so normalise explicitly.
-    let src_str = src.to_str()
-        .with_context(|| format!("source path '{}' contains non-UTF-8 characters", src.display()))?;
+/// Write a cmarker-based Typst wrapper that replaces the pandoc md→typ step.
+///
+/// cmarker parses frontmatter and renders CommonMark + GFM tables natively inside
+/// Typst — no external binary required.  The `scope: image` override is required
+/// because cmarker uses eval() internally, which would otherwise resolve image
+/// paths relative to the cmarker package directory rather than the project root.
+/// Closures defined in this wrapper resolve paths relative to _tmp.typ's location
+/// (the project CWD), which is correct.
+pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> {
+    // Forward slashes required in Typst import paths on all platforms (including Windows).
+    let src_fwd   = src.to_string_lossy().replace('\\', "/");
     let theme_fwd = theme.to_string_lossy().replace('\\', "/");
-    let status = Command::new("pandoc")
-        .args([
-            src_str,
-            "-t", "typst",
-            "--standalone",
-            "-V", &format!("template={theme_fwd}"),
-            "-V", &format!("lang={lang}"),
-            "-V", &format!("region={region}"),
-            "-o", TMP,
-        ])
-        .status()
-        .context("running pandoc — is it installed?")?;
-    if !status.success() {
-        bail!("pandoc failed for {}", src.display());
-    }
+
+    let wrapper = format!(
+        "#import \"{theme_fwd}\": *\n\
+         #import \"@preview/cmarker:0.1.8\": render-with-metadata\n\
+         \n\
+         #let (meta, body) = render-with-metadata(\n\
+           read(\"{src_fwd}\"),\n\
+           metadata-block: \"frontmatter-yaml\",\n\
+           scope: (image: (src, ..args) => image(src, ..args)),\n\
+         )\n\
+         #show: conf.with(\n\
+           title:  meta.at(\"title\",  default: \"\"),\n\
+           status: meta.at(\"status\", default: \"Draft\"),\n\
+           rev:    meta.at(\"rev\",    default: \"1\"),\n\
+           lang: \"{lang}\",\n\
+           region: \"{region}\",\n\
+         )\n\
+         #body\n"
+    );
+
+    std::fs::write(TMP, wrapper).context("writing _tmp.typ")?;
     Ok(())
 }
 
