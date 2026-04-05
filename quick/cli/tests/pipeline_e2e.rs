@@ -5,7 +5,7 @@
 /// **Tier 1 — unit logic (always run, no tools)**
 /// Lives in the src modules as `#[cfg(test)]`.  Run with `cargo test`.
 ///
-/// **Tier 2 — integration (marked `#[ignore]`, requires pandoc + typst + fonts)**
+/// **Tier 2 — integration (marked `#[ignore]`, requires typst + fonts)**
 /// These tests call the `quick-tool` binary from the real `quick/` directory
 /// and verify that the correct OUTPUT FILES exist and have sensible content.
 /// They DO NOT just check exit codes — they check side effects.

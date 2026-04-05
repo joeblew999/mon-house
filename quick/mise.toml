@@ -1,5 +1,4 @@
 [tools]
-pandoc = "latest"
 typst  = "latest"
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
@@ -131,24 +130,24 @@ depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} themes switch $@"
 
 [tasks."themes:test"]
-description = "Compile a test PDF with the current theme (verifies pandoc+typst round-trip)"
+description = "Compile a test PDF with the current theme (verifies cmarker+typst round-trip)"
 depends = ["build-cli", "fonts"]
 run = "{{vars.QUICK_TOOL}} themes test $@"
 
 [tasks."themes:test-all"]
-description = "Compile test PDFs for ALL themes in the registry"
+description = "Compile test PDFs for ALL themes in the registry (uses cmarker, no pandoc)"
 depends = ["build-cli", "fonts"]
 run = "{{vars.QUICK_TOOL}} themes test --all"
 
 [tasks."themes:check"]
-description = "Full health check: wrapper, registry, file presence, compile round-trip"
+description = "Full health check: wrapper, registry, file presence, compile round-trip (uses cmarker)"
 depends = ["build-cli", "fonts"]
 run = "{{vars.QUICK_TOOL}} themes check"
 
 # ── tests ───────────────────────────────────────────────────────────────────────
 
 [tasks.test]
-description = "Run all tests: unit (no tools) + integration E2E (requires pandoc, typst, fonts)"
+description = "Run all tests: unit (no tools) + integration E2E (requires typst, fonts)"
 depends = ["build-cli", "fonts", "all"]
 run = """
 cargo test --manifest-path cli/Cargo.toml
@@ -161,7 +160,7 @@ depends = ["build-cli"]
 run = "cargo test --manifest-path cli/Cargo.toml"
 
 [tasks."test:e2e"]
-description = "Run E2E integration tests only (requires pandoc, typst, fonts, all PDFs built)"
+description = "Run E2E integration tests only (requires typst, fonts, all PDFs built)"
 depends = ["build-cli", "fonts", "all"]
 # --test-threads=1: tests share the quick/ directory (theme switches, PDFs, stamps)
 # and must run serially to avoid interference

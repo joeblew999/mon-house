@@ -98,12 +98,12 @@ fn build_one(stem: &str, cfg: &Config) -> Result<()> {
     println!("→ {stem}");
 
     // EN PDF — _tmp.typ is compiled from quick/ CWD so image() paths resolve correctly
-    run_pandoc(&en_src, &cfg.resolved_theme_file(), "en", "US")?;
+    write_typ_wrapper(&en_src, &cfg.resolved_theme_file(), "en", "US")?;
     let en_pdf = cfg.out_dir.join(format!("{stem}.pdf"));
     run_typst(&cfg.resolved_font_dir(), en_pdf.to_str().context("out_dir path contains non-UTF-8")?)?;
 
     // Thai PDF
-    run_pandoc(&th_src, &cfg.resolved_theme_file(), "th", "TH")?;
+    write_typ_wrapper(&th_src, &cfg.resolved_theme_file(), "th", "TH")?;
     let th_pdf = cfg.out_dir.join(format!("{stem}.th.pdf"));
     run_typst(&cfg.resolved_font_dir(), th_pdf.to_str().context("out_dir path contains non-UTF-8")?)?;
 

@@ -7,7 +7,7 @@
 ///   // Active theme: default
 ///   #import "themes/default.typ": *
 ///
-/// Pandoc's generated `_tmp.typ` imports `conf` from `scripts/theme.typ`.
+/// The cmarker wrapper `_tmp.typ` imports `conf` from `scripts/theme.typ`.
 /// Because `scripts/theme.typ` wildcard-imports from the active theme file,
 /// `conf` (and `grid-images`) are re-exported automatically.
 ///
@@ -171,9 +171,6 @@ pub fn cmd_switch(cfg: &Config, name: &str) -> Result<()> {
 /// Test files use a `_theme_test_` prefix so they are never matched by the
 /// `[A-Z]*.md` glob patterns used by translate and build.
 fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf> {
-    // Forward-slash theme path for pandoc -V template= (required on Windows too)
-    let theme_fwd = theme_path.to_string_lossy().replace('\\', "/");
-
     // Minimal CommonMark spec document that exercises all theme elements:
     // cover block, H1/H2/H3, paragraph, table, blockquote, hr
     let md = "---\ntitle: Theme Test\nstatus: Draft\nrev: \"1\"\n---\n\n\
@@ -202,32 +199,18 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
 
     std::fs::write(&md_file, md)?;
 
-    let md_str  = md_file.to_str().context("md path contains non-UTF-8")?;
-    let typ_str = typ_file.to_str().context("typ path contains non-UTF-8")?;
-    let pdf_str = pdf_file.to_str().context("pdf path contains non-UTF-8")?;
-    let font_dir = cfg.resolved_font_dir();
-    let font_str = font_dir.to_str()
-        .context("font-dir path contains non-UTF-8")?;
-
-    // pandoc: md → typ
-    let pandoc = which::which("pandoc").context("pandoc not found in PATH")?;
-    let status = Command::new(&pandoc)
-        .args([
-            md_str,
-            "-t", "typst",
-            "--standalone",
-            "-V", &format!("template={theme_fwd}"),
-            "-V", "lang=en",
-            "-V", "region=US",
-            "-o", typ_str,
-        ])
-        .status()
-        .context("running pandoc")?;
-    if !status.success() {
-        bail!("pandoc failed for theme '{label}'");
-    }
+    // cmarker wrapper: md → typ (replaces pandoc)
+    crate::build::write_typ_wrapper(&md_file, theme_path, "en", "US")?;
+    // write_typ_wrapper always writes to _tmp.typ; rename to our labelled file
+    std::fs::rename("_tmp.typ", &typ_file)
+        .context("renaming _tmp.typ to theme test typ file")?;
 
     // typst: typ → pdf
+    let pdf_str  = pdf_file.to_str().context("pdf path contains non-UTF-8")?;
+    let typ_str  = typ_file.to_str().context("typ path contains non-UTF-8")?;
+    let font_dir = cfg.resolved_font_dir();
+    let font_str = font_dir.to_str().context("font-dir path contains non-UTF-8")?;
+
     let typst = which::which("typst").context("typst not found in PATH")?;
     let status = Command::new(&typst)
         .args([
@@ -368,7 +351,7 @@ pub fn cmd_check(cfg: &Config) -> Result<()> {
 
     // 5. Compile test
     if !active.is_empty() {
-        println!("Check 5: theme compiles with pandoc + typst");
+        println!("Check 5: theme compiles with typst");
         let theme_path = theme_file_path(cfg, &active);
         if theme_path.exists() {
             match compile_test(cfg, &theme_path, &active) {
