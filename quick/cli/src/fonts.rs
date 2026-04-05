@@ -15,9 +15,8 @@ use std::process::Command;
 use anyhow::{bail, Context, Result};
 use regex::Regex;
 use serde::Deserialize;
-use sha2::{Digest, Sha256};
 
-use crate::Config;
+use crate::{idempotency, Config};
 
 // ── shared helpers ─────────────────────────────────────────────────────────────
 
@@ -85,9 +84,7 @@ fn theme_hash(cfg: &Config) -> Result<String> {
     let path = font_source_file(cfg)?;
     let bytes = std::fs::read(&path)
         .with_context(|| format!("reading {}", path.display()))?;
-    let mut h = Sha256::new();
-    h.update(&bytes);
-    Ok(hex::encode(h.finalize()))
+    Ok(idempotency::sha256_hex(&bytes))
 }
 
 pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {

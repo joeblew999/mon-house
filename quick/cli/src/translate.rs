@@ -10,7 +10,6 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use anyhow::{bail, Context, Result};
-use sha2::{Digest, Sha256};
 
 
 const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
@@ -79,14 +78,6 @@ fn find_claude() -> Result<PathBuf> {
     bail!("claude CLI not found in PATH or VSCode extensions. Install Claude Code.")
 }
 
-// ── hashing ────────────────────────────────────────────────────────────────────
-
-fn sha256_str(text: &str) -> String {
-    let mut h = Sha256::new();
-    h.update(text.as_bytes());
-    hex::encode(h.finalize())
-}
-
 // ── translation ────────────────────────────────────────────────────────────────
 
 fn translate(claude: &Path, content: &str) -> Result<String> {
@@ -134,7 +125,7 @@ fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
 
     let content = std::fs::read_to_string(input)
         .with_context(|| format!("reading {}", input.display()))?;
-    let current_hash = sha256_str(&content);
+    let current_hash = crate::idempotency::sha256_hex(content.as_bytes());
 
     // Skip if unchanged since last translation — no claude needed
     if output.exists() && hash_file.exists() {

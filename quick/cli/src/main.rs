@@ -1,128 +1,18 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use clap::{Args, Parser, Subcommand};
+use clap::{Parser, Subcommand};
 
 mod build;
+mod config;
 mod fonts;
+mod idempotency;
 mod new;
 mod themes;
 mod translate;
 mod watch;
 
-/// Global configuration for quick-tool.
-///
-/// ## How mise passes variables to this binary
-///
-/// This follows the standard pattern for mise-compatible Rust tools
-/// (used by mise itself, fd, ripgrep, bat, and others):
-///
-/// 1. `mise.toml` declares values in the `[env]` section:
-///    ```toml
-///    [env]
-///    QUICK_FONT_DIR = "fonts"
-///    QUICK_THEME_FILE = "scripts/theme.typ"
-///    ```
-///    mise sets these as real environment variables for every subprocess it spawns.
-///
-/// 2. This struct reads them via clap's `env =` attribute.
-///    clap resolves precedence automatically:
-///    **CLI flag  >  env var  >  compiled default**
-///
-/// 3. To override for your machine without touching mise.toml:
-///    ```toml
-///    # mise.local.toml  (gitignored)
-///    [env]
-///    QUICK_FONT_DIR = "/tmp/my-fonts"
-///    ```
-///
-/// 4. When published as a mise plugin (`mise use cargo:quick-tool`),
-///    users configure it the same way — no plugin-specific API needed.
-///    The `env =` attribute means `--help` shows both the flag name
-///    and the env var name, so the interface is self-documenting.
-#[derive(Args, Clone, Debug)]
-pub struct Config {
-    /// Root directory for runtime assets (fonts, images).
-    /// Override to point at an S3 mount or shared volume without changing anything else.
-    #[arg(long, env = "QUICK_RESOURCES_DIR", default_value = "resources", global = true)]
-    pub resources_dir: PathBuf,
-
-    /// Directory where .ttf files are stored (defaults to <resources_dir>/fonts)
-    #[arg(long, env = "QUICK_FONT_DIR", global = true)]
-    pub font_dir: Option<PathBuf>,
-
-    /// Directory where spec images are stored (defaults to <resources_dir>/images)
-    #[arg(long, env = "QUICK_IMAGES_DIR", global = true)]
-    pub images_dir: Option<PathBuf>,
-
-    /// Directory containing theme.typ and themes/ (scripts, Typst sources).
-    /// Override to point at a shared or versioned scripts location.
-    #[arg(long, env = "QUICK_SCRIPTS_DIR", default_value = "scripts", global = true)]
-    pub scripts_dir: PathBuf,
-
-    /// Active theme wrapper file (defaults to <scripts_dir>/theme.typ)
-    #[arg(long, env = "QUICK_THEME_FILE", global = true)]
-    pub theme_file: Option<PathBuf>,
-
-    /// Google Web Fonts Helper API base URL
-    #[arg(long, env = "QUICK_GWFH_API", default_value = "https://gwfh.mranftl.com/api/fonts", global = true)]
-    pub gwfh_api: String,
-
-    /// Comma-separated font weights to download (e.g. "400,700")
-    #[arg(long, env = "QUICK_WEIGHTS", default_value = "400,700", global = true)]
-    pub weights: String,
-
-    /// Directory where generated PDFs are written.
-    /// Override to point at an S3 mount or shared volume.
-    #[arg(long, env = "QUICK_OUT_DIR", default_value = "out", global = true)]
-    pub out_dir: PathBuf,
-
-    /// Directory containing EN spec .md files.
-    #[arg(long, env = "QUICK_SPECS_DIR", default_value = "specs", global = true)]
-    pub specs_dir: PathBuf,
-
-    /// Template file used by `new` to scaffold a spec (defaults to TEMPLATE.md at project root)
-    #[arg(long, env = "QUICK_TEMPLATE_FILE", global = true)]
-    pub template_file: Option<PathBuf>,
-}
-
-impl Config {
-    /// Resolved font directory: explicit --font-dir > <resources_dir>/fonts
-    pub fn resolved_font_dir(&self) -> PathBuf {
-        self.font_dir.clone().unwrap_or_else(|| self.resources_dir.join("fonts"))
-    }
-
-    /// Resolved images directory: explicit --images-dir > <resources_dir>/images
-    pub fn resolved_images_dir(&self) -> PathBuf {
-        self.images_dir.clone().unwrap_or_else(|| self.resources_dir.join("images"))
-    }
-
-    /// Resolved theme wrapper: explicit --theme-file > <scripts_dir>/theme.typ
-    pub fn resolved_theme_file(&self) -> PathBuf {
-        self.theme_file.clone().unwrap_or_else(|| self.scripts_dir.join("theme.typ"))
-    }
-
-    /// Resolved template file: explicit --template-file > TEMPLATE.md at project root
-    pub fn resolved_template_file(&self) -> PathBuf {
-        self.template_file.clone().unwrap_or_else(|| PathBuf::from("TEMPLATE.md"))
-    }
-
-    /// Build-stamp path — written after a successful full build.
-    pub fn build_stamp(&self) -> PathBuf {
-        self.out_dir.join(".build-stamp")
-    }
-
-    pub fn parsed_weights(&self) -> Vec<u32> {
-        self.weights
-            .split(',')
-            .filter_map(|s| s.trim().parse().ok())
-            .collect()
-    }
-
-    pub fn done_file(&self) -> PathBuf {
-        self.resolved_font_dir().join(".done")
-    }
-}
+pub use config::Config;
 
 #[derive(Parser)]
 #[command(name = "quick-tool", about = "Font management and markdown translation for the quick/ spec pipeline")]

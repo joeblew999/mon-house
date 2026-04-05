@@ -83,7 +83,7 @@ fn classify(event: &Event) -> Option<TriggerKind> {
 fn needs_build(cfg: &Config) -> bool {
     let images_dir = cfg.resolved_images_dir();
     let images_opt = if images_dir.exists() { Some(images_dir.as_path()) } else { None };
-    build::needs_build_in(
+    crate::idempotency::needs_build_in(
         &cfg.resolved_theme_file(),
         &cfg.out_dir,
         &cfg.specs_dir,
