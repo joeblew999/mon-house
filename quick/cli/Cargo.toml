@@ -82,5 +82,8 @@ urlencoding = "2"  # URL encode GWFH search query
 # File watching — powers `quick-tool watch`, replacing the watchexec external tool
 notify = "6"
 
+# TOML parsing — theme registry
+toml = { version = "0.8", features = ["parse"] }
+
 # Ergonomic errors
 anyhow = "1"

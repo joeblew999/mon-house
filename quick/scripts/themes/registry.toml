@@ -1,0 +1,21 @@
+## Theme registry for quick-tool
+##
+## Each [[themes]] entry describes one available theme.
+## The `name` field must match a file called `{name}.typ` in this directory.
+##
+## Switch active theme:   quick-tool themes switch <name>
+## List all themes:       quick-tool themes list
+## Test current theme:    quick-tool themes test
+## Test all themes:       quick-tool themes test --all
+
+[[themes]]
+name        = "default"
+description = "Accent-blue theme with DRAFT watermark, tinted H1 blocks, and full header/footer chrome"
+
+[[themes]]
+name        = "minimal"
+description = "Clean black-and-white layout — no fills, no watermark; best for formal submissions"
+
+[[themes]]
+name        = "compact"
+description = "Teal palette, 9pt text, tighter margins and tables — fits more data per page"

@@ -98,3 +98,33 @@ run = "{{vars.QUICK_TOOL}} new"
 description = "Re-run on any .md or theme.typ change; fonts auto-downloaded if theme.typ changes"
 depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} watch"
+
+[tasks."themes:list"]
+description = "List all available themes with descriptions; marks the active one"
+depends = ["build-cli"]
+run = "{{vars.QUICK_TOOL}} themes list"
+
+[tasks."themes:current"]
+description = "Show the currently active theme name and file path"
+depends = ["build-cli"]
+run = "{{vars.QUICK_TOOL}} themes current"
+
+[tasks."themes:switch"]
+description = "Switch active theme. Usage: mise run themes:switch -- minimal"
+depends = ["build-cli"]
+run = "{{vars.QUICK_TOOL}} themes switch"
+
+[tasks."themes:test"]
+description = "Compile a test PDF with the current theme (verifies pandoc+typst round-trip)"
+depends = ["build-cli", "fonts"]
+run = "{{vars.QUICK_TOOL}} themes test"
+
+[tasks."themes:test-all"]
+description = "Compile test PDFs for ALL themes in the registry"
+depends = ["build-cli", "fonts"]
+run = "{{vars.QUICK_TOOL}} themes test --all"
+
+[tasks."themes:check"]
+description = "Full health check: wrapper, registry, file presence, compile round-trip"
+depends = ["build-cli", "fonts"]
+run = "{{vars.QUICK_TOOL}} themes check"

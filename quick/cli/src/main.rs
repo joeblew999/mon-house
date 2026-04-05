@@ -6,6 +6,7 @@ use clap::{Args, Parser, Subcommand};
 mod build;
 mod fonts;
 mod new;
+mod themes;
 mod translate;
 mod watch;
 
@@ -104,8 +105,8 @@ enum Commands {
         /// Spec stem (e.g. GATE — without .md extension)
         name: String,
     },
-    /// Watch *.md and scripts/theme.typ; re-run `mise run fonts && mise run all` on change.
-    /// Replaces the watchexec external tool. All mise idempotency layers are preserved.
+    /// Watch *.md and scripts/theme.typ; runs fonts → translate → build directly (no mise needed).
+    /// All three idempotency layers are preserved in Rust: hash checks, stamp mtime, per-file.
     Watch,
     /// Create a new spec file from TEMPLATE.md
     New {
@@ -114,6 +115,35 @@ enum Commands {
     },
     /// Remove the out/ directory
     Clean,
+    /// Theme registry — list, switch, test, and check Typst themes
+    Themes {
+        #[command(subcommand)]
+        cmd: ThemesCmd,
+    },
+}
+
+#[derive(Subcommand)]
+enum ThemesCmd {
+    /// List all available themes from registry.toml, showing which is active
+    List,
+    /// Show the currently active theme
+    Current,
+    /// Switch active theme (rewrites scripts/theme.typ)
+    Switch {
+        /// Theme name (e.g. minimal, compact, default)
+        name: String,
+    },
+    /// Compile a test PDF with the current (or named) theme
+    Test {
+        /// Theme name to test. If omitted, tests the active theme.
+        #[arg(long)]
+        name: Option<String>,
+        /// Test ALL themes in the registry
+        #[arg(long)]
+        all: bool,
+    },
+    /// Check theme wrapper, registry entry, and compile health
+    Check,
 }
 
 #[derive(Subcommand)]
@@ -152,9 +182,16 @@ fn main() {
             translate::cmd_translate(vec![path])
                 .and_then(|_| build::cmd_build(&cfg, Some(name)))
         }
-        Commands::Watch => watch::cmd_watch(),
+        Commands::Watch => watch::cmd_watch(&cfg),
         Commands::New { name } => new::cmd_new(&name),
         Commands::Clean => build::cmd_clean(),
+        Commands::Themes { cmd } => match cmd {
+            ThemesCmd::List => themes::cmd_list(&cfg),
+            ThemesCmd::Current => themes::cmd_current(&cfg),
+            ThemesCmd::Switch { name } => themes::cmd_switch(&cfg, &name),
+            ThemesCmd::Test { name, all } => themes::cmd_test(&cfg, name.as_deref(), all),
+            ThemesCmd::Check => themes::cmd_check(&cfg),
+        },
     };
     if let Err(e) = result {
         eprintln!("Error: {e:#}");

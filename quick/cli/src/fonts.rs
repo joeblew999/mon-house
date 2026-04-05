@@ -12,7 +12,7 @@ use std::io::Read;
 use std::path::PathBuf;
 use std::process::Command;
 
-use anyhow::{anyhow, bail, Context, Result};
+use anyhow::{bail, Context, Result};
 use regex::Regex;
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
@@ -29,19 +29,43 @@ fn theme_hash(cfg: &Config) -> Result<String> {
     Ok(hex::encode(h.finalize()))
 }
 
-fn parse_families(cfg: &Config) -> Result<Vec<String>> {
-    let text = std::fs::read_to_string(&cfg.theme_file)
-        .with_context(|| format!("reading {}", cfg.theme_file.display()))?;
-    let re = Regex::new(r#"font:\s*\(([^)]+)\)"#)?;
-    let caps = re
-        .captures(&text)
-        .ok_or_else(|| anyhow!("no 'font: (...)' declaration found in {}", cfg.theme_file.display()))?;
-    let families = caps[1]
+fn extract_font_stack(text: &str) -> Option<Vec<String>> {
+    let re = Regex::new(r#"font:\s*\(([^)]+)\)"#).ok()?;
+    let caps = re.captures(text)?;
+    let families: Vec<String> = caps[1]
         .split(',')
         .map(|s| s.trim().trim_matches('"').to_string())
         .filter(|s| !s.is_empty())
         .collect();
-    Ok(families)
+    if families.is_empty() { None } else { Some(families) }
+}
+
+pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
+    let text = std::fs::read_to_string(&cfg.theme_file)
+        .with_context(|| format!("reading {}", cfg.theme_file.display()))?;
+
+    // Direct font stack — plain theme file (legacy path or standalone theme)
+    if let Some(f) = extract_font_stack(&text) {
+        return Ok(f);
+    }
+
+    // Follow one level of `#import "path": *` — used by the import-wrapper theme.typ
+    let import_re = Regex::new(r#"#import\s+"([^"]+)""#)?;
+    if let Some(caps) = import_re.captures(&text) {
+        let import_path = &caps[1];
+        let base = cfg.theme_file.parent().unwrap_or_else(|| std::path::Path::new("."));
+        let imported = base.join(import_path);
+        if let Ok(imported_text) = std::fs::read_to_string(&imported) {
+            if let Some(f) = extract_font_stack(&imported_text) {
+                return Ok(f);
+            }
+        }
+    }
+
+    anyhow::bail!(
+        "no 'font: (...)' declaration found in {} or its imports",
+        cfg.theme_file.display()
+    )
 }
 
 fn family_to_gwfh_id(family: &str) -> String {
