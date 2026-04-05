@@ -21,43 +21,6 @@ use crate::Config;
 
 // ── shared helpers ─────────────────────────────────────────────────────────────
 
-/// Hash the file that actually contains the font stack declaration.
-///
-/// For a plain theme file: hashes the file itself.
-/// For an import-wrapper (scripts/theme.typ → themes/default.typ): hashes the
-/// imported file so that `themes switch` — which only rewrites the wrapper —
-/// does NOT invalidate the font stamp when the font stack hasn't changed.
-fn theme_hash(cfg: &Config) -> Result<String> {
-    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
-        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
-
-    // If the wrapper imports another file that has the font stack, hash that file.
-    let import_re = Regex::new(r#"#import\s+"([^"]+)""#)?;
-    if let Some(caps) = import_re.captures(&text) {
-        let import_path = &caps[1];
-        if !import_path.starts_with('/') && !import_path.starts_with('\\') && !import_path.contains("..") {
-            let theme = cfg.resolved_theme_file();
-            let base = theme.parent().unwrap_or_else(|| std::path::Path::new("."));
-            let imported = base.join(import_path);
-            if let Ok(bytes) = std::fs::read(&imported) {
-                // Check that the imported file actually contains the font stack
-                if extract_font_stack(&String::from_utf8_lossy(&bytes)).is_some() {
-                    let mut h = Sha256::new();
-                    h.update(&bytes);
-                    return Ok(hex::encode(h.finalize()));
-                }
-            }
-        }
-    }
-
-    // Fall back to hashing the theme file itself
-    let bytes = std::fs::read(&cfg.resolved_theme_file())
-        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
-    let mut h = Sha256::new();
-    h.update(&bytes);
-    Ok(hex::encode(h.finalize()))
-}
-
 fn extract_font_stack(text: &str) -> Option<Vec<String>> {
     let re = Regex::new(r#"font:\s*\(([^)]+)\)"#).ok()?;
     let caps = re.captures(text)?;
@@ -69,41 +32,70 @@ fn extract_font_stack(text: &str) -> Option<Vec<String>> {
     if families.is_empty() { None } else { Some(families) }
 }
 
-pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
-    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
-        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
+/// Return the path of the file that actually contains the `font: (...)` declaration.
+///
+/// The active theme wrapper (`scripts/theme.typ`) may just be a one-liner
+/// `#import "themes/default.typ": *` — in that case the font stack lives in the
+/// imported file.  This function follows that import one level deep (no recursion,
+/// no absolute paths, no traversals) and returns whichever file has the stack.
+///
+/// Both `theme_hash` and `parse_families` use this so the resolution logic lives
+/// in exactly one place.
+fn font_source_file(cfg: &Config) -> Result<std::path::PathBuf> {
+    let theme_file = cfg.resolved_theme_file();
+    let text = std::fs::read_to_string(&theme_file)
+        .with_context(|| format!("reading {}", theme_file.display()))?;
 
-    // Direct font stack — plain theme file (legacy path or standalone theme)
-    if let Some(f) = extract_font_stack(&text) {
-        return Ok(f);
+    // If the wrapper has a font stack directly, use it as-is
+    if extract_font_stack(&text).is_some() {
+        return Ok(theme_file);
     }
 
-    // Follow one level of `#import "path": *` — used by the import-wrapper theme.typ
+    // Follow one level of `#import "path": *`
     let import_re = Regex::new(r#"#import\s+"([^"]+)""#)?;
     if let Some(caps) = import_re.captures(&text) {
         let import_path = &caps[1];
-        // Reject absolute paths and traversals — only follow safe relative imports
         if import_path.starts_with('/') || import_path.starts_with('\\') || import_path.contains("..") {
             anyhow::bail!(
                 "refusing to follow unsafe import path '{}' in {}",
-                import_path,
-                cfg.resolved_theme_file().display()
+                import_path, theme_file.display()
             );
         }
-        let theme = cfg.resolved_theme_file();
-        let base = theme.parent().unwrap_or_else(|| std::path::Path::new("."));
+        let base = theme_file.parent().unwrap_or_else(|| std::path::Path::new("."));
         let imported = base.join(import_path);
         if let Ok(imported_text) = std::fs::read_to_string(&imported) {
-            if let Some(f) = extract_font_stack(&imported_text) {
-                return Ok(f);
+            if extract_font_stack(&imported_text).is_some() {
+                return Ok(imported);
             }
         }
     }
 
     anyhow::bail!(
         "no 'font: (...)' declaration found in {} or its imports",
-        cfg.resolved_theme_file().display()
+        theme_file.display()
     )
+}
+
+/// Hash the file that actually contains the font stack.
+///
+/// Switching themes rewrites the wrapper but not the theme file itself —
+/// hashing the source file means font stamps survive a `themes switch` when
+/// the font stack hasn't changed.
+fn theme_hash(cfg: &Config) -> Result<String> {
+    let path = font_source_file(cfg)?;
+    let bytes = std::fs::read(&path)
+        .with_context(|| format!("reading {}", path.display()))?;
+    let mut h = Sha256::new();
+    h.update(&bytes);
+    Ok(hex::encode(h.finalize()))
+}
+
+pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
+    let path = font_source_file(cfg)?;
+    let text = std::fs::read_to_string(&path)
+        .with_context(|| format!("reading {}", path.display()))?;
+    extract_font_stack(&text)
+        .ok_or_else(|| anyhow::anyhow!("no 'font: (...)' in {}", path.display()))
 }
 
 fn family_to_gwfh_id(family: &str) -> String {
