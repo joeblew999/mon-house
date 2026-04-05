@@ -12,9 +12,9 @@ rev: "1"
 
 พื้นที่รวม: 55 m²
 
-![สภาพเดิม 1](images/concrete-existing-01.jpeg)
+![สภาพเดิม 1](resources/images/concrete-existing-01.jpeg)
 
-![สภาพเดิม 2](images/concrete-existing-02.jpeg)
+![สภาพเดิม 2](resources/images/concrete-existing-02.jpeg)
 
 ## ขนาดพื้นที่
 

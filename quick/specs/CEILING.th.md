@@ -10,9 +10,9 @@ rev: "1"
 
 **ลำดับงาน: โครงสร้าง (คาน + กำแพง) → ฉนวน + ยิปซัมบอร์ดแผ่นเรียบ → โครงเฟรม Tray → บอร์ด Tray → เทปและยาแนว → ทาสี → LED Strip + ดาวน์ไลท์**
 
-![Ceiling - proposed reference](images/ceiling-proposed.jpeg)
+![Ceiling - proposed reference](resources/images/ceiling-proposed.jpeg)
 
-![Ceiling - existing condition](images/ceiling-existing-01.jpeg)
+![Ceiling - existing condition](resources/images/ceiling-existing-01.jpeg)
 
 ---
 

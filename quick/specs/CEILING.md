@@ -10,9 +10,9 @@ Living room expanded to 7m × 7m by removing load-bearing wall and installing st
 
 **Order of work: structural (beam + wall) → insulation + flat plasterboard → tray frame → board tray → tape + set → paint → LED strip + downlights.**
 
-![Ceiling - proposed reference](images/ceiling-proposed.jpeg)
+![Ceiling - proposed reference](resources/images/ceiling-proposed.jpeg)
 
-![Ceiling - existing condition](images/ceiling-existing-01.jpeg)
+![Ceiling - existing condition](resources/images/ceiling-existing-01.jpeg)
 
 ---
 

@@ -10,13 +10,13 @@ Approximately 10 years old. Flat garage roof. Gloss black finish on all steelwor
 
 **Order of work: structural repairs → new roof → paint everything.**
 
-![Roof - existing condition 1](images/metal-roof-existing-01.jpeg)
+![Roof - existing condition 1](resources/images/metal-roof-existing-01.jpeg)
 
-![Roof - existing condition 2](images/metal-roof-existing-02.jpeg)
+![Roof - existing condition 2](resources/images/metal-roof-existing-02.jpeg)
 
-![Roof - existing condition 3](images/metal-roof-existing-03.jpeg)
+![Roof - existing condition 3](resources/images/metal-roof-existing-03.jpeg)
 
-![Roof - existing condition 4](images/metal-roof-existing-04.jpeg)
+![Roof - existing condition 4](resources/images/metal-roof-existing-04.jpeg)
 
 
 ## Dimensions

@@ -8,19 +8,19 @@ rev: "1"
 
 Replace existing heavy rusty sliding gate with a lightweight aluminium gate.
 
-![Gate - existing condition 1](images/gate-existing-01.jpeg)
+![Gate - existing condition 1](resources/images/gate-existing-01.jpeg)
 
-![Gate - existing condition 2](images/gate-existing-02.jpeg)
+![Gate - existing condition 2](resources/images/gate-existing-02.jpeg)
 
-![Gate - existing condition 3](images/gate-existing-03.jpeg)
+![Gate - existing condition 3](resources/images/gate-existing-03.jpeg)
 
-![Gate - existing condition 4](images/gate-existing-04.jpeg)
+![Gate - existing condition 4](resources/images/gate-existing-04.jpeg)
 
-![Gate - existing condition 5](images/gate-existing-05.jpeg)
+![Gate - existing condition 5](resources/images/gate-existing-05.jpeg)
 
-![Gate - existing condition 6](images/gate-existing-06.jpeg)
+![Gate - existing condition 6](resources/images/gate-existing-06.jpeg)
 
-![Gate - existing condition 7](images/gate-existing-07.jpeg)
+![Gate - existing condition 7](resources/images/gate-existing-07.jpeg)
 
 **Spec: 3.5m wide × 1.5m high sliding gate. Space Black, fully aluminium, rust-free.**
 

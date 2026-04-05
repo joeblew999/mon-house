@@ -24,10 +24,26 @@ typst  = "latest"
 # `env =` attribute, so precedence is: CLI flag > env var > compiled default.
 # Override any of these in a local mise.local.toml without touching this file.
 [env]
-QUICK_FONT_DIR   = "fonts"
-QUICK_THEME_FILE = "scripts/theme.typ"
-QUICK_GWFH_API   = "https://gwfh.mranftl.com/api/fonts"
-QUICK_WEIGHTS    = "400,700"
+# ── Directory layout ──────────────────────────────────────────────────────────
+# Change these in mise.local.toml (gitignored) to point at S3 mounts, NFS
+# shares, or any path — the Rust binary reads them all via env vars.
+
+# Runtime assets (fonts, images) — could be an S3 mount
+QUICK_RESOURCES_DIR = "resources"
+QUICK_FONT_DIR      = "{{env.QUICK_RESOURCES_DIR}}/fonts"
+QUICK_IMAGES_DIR    = "{{env.QUICK_RESOURCES_DIR}}/images"
+
+# Generated PDF output — could be an S3 mount
+QUICK_OUT_DIR       = "out"
+
+# Typst theme scripts — versioned source, rarely changes
+QUICK_SCRIPTS_DIR   = "scripts"
+
+# Spec source files (EN markdown)
+QUICK_SPECS_DIR     = "specs"
+
+QUICK_GWFH_API      = "https://gwfh.mranftl.com/api/fonts"
+QUICK_WEIGHTS       = "400,700"
 
 # ── vars used in task run strings ─────────────────────────────────────────────
 [vars]
@@ -53,8 +69,8 @@ run = "cargo build --release --manifest-path cli/Cargo.toml"
 [tasks.fonts]
 description = "Download fonts declared in scripts/theme.typ into fonts/"
 depends  = ["build-cli"]
-sources  = ["scripts/theme.typ"]
-outputs  = ["fonts/.done"]
+sources  = ["{{env.QUICK_SCRIPTS_DIR}}/theme.typ"]
+outputs  = ["{{env.QUICK_FONT_DIR}}/.done"]
 run = "{{vars.QUICK_TOOL}} fonts download"
 
 [tasks."fonts:test"]
@@ -65,7 +81,7 @@ run = "{{vars.QUICK_TOOL}} fonts test-all"
 [tasks."fonts:search"]
 description = "Search GWFH registry by name. Usage: mise run fonts:search -- 'noto sans thai'"
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} fonts search"
+run = "{{vars.QUICK_TOOL}} fonts search $@"
 
 [tasks.clean]
 description = "Remove generated PDFs in out/"
@@ -80,19 +96,19 @@ run = "{{vars.QUICK_TOOL}} translate"
 [tasks.all]
 description = "Translate (if changed) then build EN + Thai PDFs (mise skips if outputs are up to date)"
 depends = ["translate"]
-sources  = ["[A-Z]*.th.md", "scripts/theme.typ"]
-outputs  = ["out/.build-stamp"]
+sources  = ["{{env.QUICK_SPECS_DIR}}/[A-Z]*.th.md", "{{env.QUICK_SCRIPTS_DIR}}/theme.typ"]
+outputs  = ["{{env.QUICK_OUT_DIR}}/.build-stamp"]
 run = "{{vars.QUICK_TOOL}} build"
 
 [tasks.one]
 description = "Translate (if changed) and build PDFs for a single file. Usage: mise run one -- GATE"
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} one"
+run = "{{vars.QUICK_TOOL}} one $@"
 
 [tasks.new]
 description = "Create a new spec file from TEMPLATE.md. Usage: mise run new -- SPECNAME"
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} new"
+run = "{{vars.QUICK_TOOL}} new $@"
 
 [tasks.watch]
 description = "Re-run on any .md or theme.typ change; fonts auto-downloaded if theme.typ changes"
@@ -112,12 +128,12 @@ run = "{{vars.QUICK_TOOL}} themes current"
 [tasks."themes:switch"]
 description = "Switch active theme. Usage: mise run themes:switch -- minimal"
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} themes switch"
+run = "{{vars.QUICK_TOOL}} themes switch $@"
 
 [tasks."themes:test"]
 description = "Compile a test PDF with the current theme (verifies pandoc+typst round-trip)"
 depends = ["build-cli", "fonts"]
-run = "{{vars.QUICK_TOOL}} themes test"
+run = "{{vars.QUICK_TOOL}} themes test $@"
 
 [tasks."themes:test-all"]
 description = "Compile test PDFs for ALL themes in the registry"

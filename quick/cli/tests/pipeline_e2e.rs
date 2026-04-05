@@ -85,19 +85,16 @@ impl Drop for ThemeGuard {
     }
 }
 
-/// Collect all buildable spec stems from quick/ — same filter as build.rs and translate.rs.
+/// Collect all buildable spec stems from quick/specs/ — same filter as build.rs and translate.rs.
 fn spec_stems() -> Vec<String> {
-    // Must match the SKIP list in build.rs and translate.rs exactly
-    const SKIP: &[&str] = &["CLAUDE.md", "README.md", "TEMPLATE.md"];
     let dir = quick_dir();
-    let pattern = dir.join("[A-Z]*.md").to_string_lossy().into_owned();
+    let pattern = dir.join("specs/[A-Z]*.md").to_string_lossy().into_owned();
     glob::glob(&pattern)
         .unwrap()
         .filter_map(|e| e.ok())
         .filter_map(|p| {
             let name = p.file_name()?.to_str()?.to_owned();
             if name.ends_with(".th.md") { return None; }
-            if SKIP.contains(&name.as_str()) { return None; }
             Some(p.file_stem()?.to_str()?.to_owned())
         })
         .collect()
@@ -113,7 +110,7 @@ fn tier2_translate_produces_th_md_files() {
 
     // Side-effect check: every EN spec must have a corresponding .th.md
     for stem in spec_stems() {
-        let th_path = quick_dir().join(format!("{stem}.th.md"));
+        let th_path = quick_dir().join("specs").join(format!("{stem}.th.md"));
         assert!(th_path.exists(), "{stem}.th.md missing after translate");
 
         let content = fs::read_to_string(&th_path)
@@ -219,7 +216,7 @@ fn tier2_fonts_download_all_files_present() {
     assert!(out.status.success(), "fonts download failed: {}", stderr(&out));
 
     // Side-effect: every expected .ttf file must exist in fonts/
-    let fonts_dir = quick_dir().join("fonts");
+    let fonts_dir = quick_dir().join("resources/fonts");
     assert!(fonts_dir.exists(), "fonts/ directory missing");
 
     // At minimum: Inter, Noto Sans, Noto Sans Thai — 2 weights each = 6 files
@@ -237,8 +234,8 @@ fn tier2_fonts_download_all_files_present() {
         "expected at least 6 .ttf files in fonts/, found {ttf_count}");
 
     // Stamp file must exist
-    let done = quick_dir().join("fonts/.done");
-    assert!(done.exists(), "fonts/.done stamp missing");
+    let done = quick_dir().join("resources/fonts/.done");
+    assert!(done.exists(), "resources/fonts/.done stamp missing");
 }
 
 #[test]
@@ -255,9 +252,9 @@ fn tier2_full_watch_pipeline_side_effects() {
     // invalidating the stamp — what matters is fonts are correct after this call.)
     let f = qt(&["fonts", "download"]);
     assert!(f.status.success(), "fonts: {}", stderr(&f));
-    assert!(qdir.join("fonts/.done").exists(), "fonts/.done missing");
+    assert!(qdir.join("resources/fonts/.done").exists(), "resources/fonts/.done missing");
     // Verify at least the expected TTF count (3 families × 2 weights = 6)
-    let ttf_count = std::fs::read_dir(qdir.join("fonts")).unwrap()
+    let ttf_count = std::fs::read_dir(qdir.join("resources/fonts")).unwrap()
         .filter_map(|e| e.ok())
         .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("ttf"))
         .count();
@@ -269,9 +266,9 @@ fn tier2_full_watch_pipeline_side_effects() {
     assert!(stdout(&t).contains("0 translated"),
         "translate should skip everything:\n{}", stdout(&t));
     for stem in spec_stems() {
-        let th = qdir.join(format!("{stem}.th.md"));
-        assert!(th.exists(), "{stem}.th.md missing");
-        assert!(th.metadata().unwrap().len() > 50, "{stem}.th.md too small");
+        let th = qdir.join("specs").join(format!("{stem}.th.md"));
+        assert!(th.exists(), "specs/{stem}.th.md missing");
+        assert!(th.metadata().unwrap().len() > 50, "specs/{stem}.th.md too small");
     }
 
     // 3. build: all PDFs present, non-empty, stamp written

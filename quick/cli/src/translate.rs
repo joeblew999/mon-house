@@ -12,8 +12,6 @@ use std::process::Command;
 use anyhow::{bail, Context, Result};
 use sha2::{Digest, Sha256};
 
-// Files that look like [A-Z]*.md but must never be translated
-const SKIP: &[&str] = &["CLAUDE.md", "README.md", "TEMPLATE.md"];
 
 const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
 
@@ -164,17 +162,19 @@ fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
 
 // ── subcommand: translate ──────────────────────────────────────────────────────
 
-pub fn cmd_translate(files: Vec<std::path::PathBuf>) -> Result<()> {
+pub fn cmd_translate(cfg: &crate::Config, files: Vec<std::path::PathBuf>) -> Result<()> {
     let mut claude: Option<PathBuf> = None; // resolved lazily, only if a file needs translating
     let mut translated = 0u32;
     let mut skipped = 0u32;
 
     if files.is_empty() {
-        // No args → translate all [A-Z]*.md (same scope as the original bash loop)
-        for entry in glob::glob("[A-Z]*.md").context("invalid glob pattern")? {
+        // No args → translate all [A-Z]*.md in specs_dir
+        let pattern = cfg.specs_dir.join("[A-Z]*.md");
+        let pattern_str = pattern.to_str().context("specs_dir path contains non-UTF-8")?;
+        for entry in glob::glob(pattern_str).context("invalid glob pattern")? {
             let path = entry.context("glob error")?;
             let name = path.file_name().and_then(|s| s.to_str()).unwrap_or_default();
-            if name.ends_with(".th.md") || SKIP.contains(&name) {
+            if name.ends_with(".th.md") {
                 continue;
             }
             if translate_file(&mut claude, &path)? { translated += 1; } else { skipped += 1; }
@@ -183,7 +183,7 @@ pub fn cmd_translate(files: Vec<std::path::PathBuf>) -> Result<()> {
         // Specific files requested (e.g. from `mise run one -- GATE`)
         for path in &files {
             let name = path.file_name().and_then(|s| s.to_str()).unwrap_or_default();
-            if name.ends_with(".th.md") || SKIP.contains(&name) {
+            if name.ends_with(".th.md") {
                 continue;
             }
             if translate_file(&mut claude, path)? { translated += 1; } else { skipped += 1; }

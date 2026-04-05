@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "quick/*.md"
-      - "quick/*.th.md"
+      - "quick/specs/*.md"
+      - "quick/specs/*.th.md"
       - "quick/scripts/theme.typ"
       - "quick/cli/src/**"
       - "quick/cli/Cargo.toml"
@@ -44,7 +44,7 @@ jobs:
       - name: Cache fonts
         uses: actions/cache@v4
         with:
-          path: quick/fonts
+          path: quick/resources/fonts
           key: fonts-${{ hashFiles('quick/scripts/theme.typ') }}
 
       - name: Build quick-tool

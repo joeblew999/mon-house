@@ -21,9 +21,38 @@ use crate::Config;
 
 // ── shared helpers ─────────────────────────────────────────────────────────────
 
+/// Hash the file that actually contains the font stack declaration.
+///
+/// For a plain theme file: hashes the file itself.
+/// For an import-wrapper (scripts/theme.typ → themes/default.typ): hashes the
+/// imported file so that `themes switch` — which only rewrites the wrapper —
+/// does NOT invalidate the font stamp when the font stack hasn't changed.
 fn theme_hash(cfg: &Config) -> Result<String> {
-    let bytes = std::fs::read(&cfg.theme_file)
-        .with_context(|| format!("reading {}", cfg.theme_file.display()))?;
+    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
+        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
+
+    // If the wrapper imports another file that has the font stack, hash that file.
+    let import_re = Regex::new(r#"#import\s+"([^"]+)""#)?;
+    if let Some(caps) = import_re.captures(&text) {
+        let import_path = &caps[1];
+        if !import_path.starts_with('/') && !import_path.starts_with('\\') && !import_path.contains("..") {
+            let theme = cfg.resolved_theme_file();
+            let base = theme.parent().unwrap_or_else(|| std::path::Path::new("."));
+            let imported = base.join(import_path);
+            if let Ok(bytes) = std::fs::read(&imported) {
+                // Check that the imported file actually contains the font stack
+                if extract_font_stack(&String::from_utf8_lossy(&bytes)).is_some() {
+                    let mut h = Sha256::new();
+                    h.update(&bytes);
+                    return Ok(hex::encode(h.finalize()));
+                }
+            }
+        }
+    }
+
+    // Fall back to hashing the theme file itself
+    let bytes = std::fs::read(&cfg.resolved_theme_file())
+        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
     let mut h = Sha256::new();
     h.update(&bytes);
     Ok(hex::encode(h.finalize()))
@@ -41,8 +70,8 @@ fn extract_font_stack(text: &str) -> Option<Vec<String>> {
 }
 
 pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
-    let text = std::fs::read_to_string(&cfg.theme_file)
-        .with_context(|| format!("reading {}", cfg.theme_file.display()))?;
+    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
+        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
 
     // Direct font stack — plain theme file (legacy path or standalone theme)
     if let Some(f) = extract_font_stack(&text) {
@@ -58,10 +87,11 @@ pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
             anyhow::bail!(
                 "refusing to follow unsafe import path '{}' in {}",
                 import_path,
-                cfg.theme_file.display()
+                cfg.resolved_theme_file().display()
             );
         }
-        let base = cfg.theme_file.parent().unwrap_or_else(|| std::path::Path::new("."));
+        let theme = cfg.resolved_theme_file();
+        let base = theme.parent().unwrap_or_else(|| std::path::Path::new("."));
         let imported = base.join(import_path);
         if let Ok(imported_text) = std::fs::read_to_string(&imported) {
             if let Some(f) = extract_font_stack(&imported_text) {
@@ -72,7 +102,7 @@ pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
 
     anyhow::bail!(
         "no 'font: (...)' declaration found in {} or its imports",
-        cfg.theme_file.display()
+        cfg.resolved_theme_file().display()
     )
 }
 
@@ -90,7 +120,7 @@ fn expected_files(cfg: &Config, families: &[String]) -> Vec<PathBuf> {
         .iter()
         .flat_map(|f| {
             let slug = family_to_filename_slug(f);
-            let dir = cfg.font_dir.clone();
+            let dir = cfg.resolved_font_dir().clone();
             weights
                 .iter()
                 .map(move |w| dir.join(format!("{}_{}.ttf", slug, w)))
@@ -179,8 +209,8 @@ fn fetch_gwfh(cfg: &Config, gwfh_id: &str, subsets: &[&str]) -> Result<Vec<(Stri
 }
 
 pub fn cmd_download(cfg: &Config) -> Result<()> {
-    if !cfg.theme_file.exists() {
-        bail!("{} not found. Run from the quick/ directory.", cfg.theme_file.display());
+    if !cfg.resolved_theme_file().exists() {
+        bail!("{} not found. Run from the quick/ directory.", cfg.resolved_theme_file().display());
     }
     let families = parse_families(cfg)?;
     let current_hash = theme_hash(cfg)?;
@@ -195,8 +225,8 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
         return Ok(());
     }
 
-    std::fs::create_dir_all(&cfg.font_dir)?;
-    println!("Font stack from {}: {families:?}\n", cfg.theme_file.display());
+    std::fs::create_dir_all(&cfg.resolved_font_dir())?;
+    println!("Font stack from {}: {families:?}\n", cfg.resolved_theme_file().display());
     let mut total_downloaded: u32 = 0;
     let mut total_skipped: u32 = 0;
     let mut fetch_errors: Vec<String> = Vec::new();
@@ -221,7 +251,7 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
             println!("  WARNING: no TTF variants found for weights {:?}", cfg.parsed_weights());
         }
         for (fname, url) in &pairs {
-            let dest = cfg.font_dir.join(fname);
+            let dest = cfg.resolved_font_dir().join(fname);
             if dest.exists() {
                 // Layer 3: skip existing files
                 println!("  ✓ {fname} (already exists, skipping)");
@@ -260,9 +290,9 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
 pub fn cmd_test(cfg: &Config) -> Result<()> {
     let mut failures: Vec<String> = Vec::new();
 
-    println!("Check 1: {} has parseable font stack", cfg.theme_file.display());
-    if !cfg.theme_file.exists() {
-        bail!("{} not found", cfg.theme_file.display());
+    println!("Check 1: {} has parseable font stack", cfg.resolved_theme_file().display());
+    if !cfg.resolved_theme_file().exists() {
+        bail!("{} not found", cfg.resolved_theme_file().display());
     }
     let families = match parse_families(cfg) {
         Ok(f) => {
@@ -272,7 +302,7 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
         Err(e) => bail!("  FAIL: {e}"),
     };
 
-    println!("Check 2: font files present in {}/", cfg.font_dir.display());
+    println!("Check 2: font files present in {}/", cfg.resolved_font_dir().display());
     for path in expected_files(cfg, &families) {
         let name = path.file_name().map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_else(|| path.display().to_string());
@@ -288,7 +318,7 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
     println!("Check 3: typst recognises each font family");
     let typst_bin = which::which("typst").context("typst not found in PATH")?;
     let output = Command::new(typst_bin)
-        .args(["fonts", "--font-path", cfg.font_dir.to_str().unwrap_or("fonts"), "--ignore-system-fonts"])
+        .args(["fonts", "--font-path", cfg.resolved_font_dir().to_str().unwrap_or("fonts"), "--ignore-system-fonts"])
         .output()
         .context("running typst fonts")?;
     let available: std::collections::HashSet<&str> = std::str::from_utf8(&output.stdout)?
@@ -314,7 +344,7 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
         let current = theme_hash(cfg)?;
         let stored = std::fs::read_to_string(&done)?;
         if stored.trim() == current {
-            println!("  PASS: stamp hash matches {}", cfg.theme_file.display());
+            println!("  PASS: stamp hash matches {}", cfg.resolved_theme_file().display());
         } else {
             println!("  FAIL: stamp hash mismatch — run `mise run fonts`");
             failures.push("stamp hash mismatch".to_string());
@@ -513,7 +543,7 @@ pub fn cmd_search(cfg: &Config, query: &str) -> Result<()> {
         println!("  weights: {weights:?}");
         println!("  subsets: {:?}", font.subsets);
         println!();
-        println!("  Add to {} font stack:", cfg.theme_file.display());
+        println!("  Add to {} font stack:", cfg.resolved_theme_file().display());
         println!("  ─────────────────────────────────────");
         println!(r#"  font: (..., "{}"),"#, font.family);
         println!();

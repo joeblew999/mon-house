@@ -1,6 +1,4 @@
 /// New subcommand — scaffold a new spec file from TEMPLATE.md.
-use std::path::PathBuf;
-
 use anyhow::{bail, Result};
 
 const DEFAULT_TEMPLATE: &str = "\
@@ -51,27 +49,29 @@ rev: \"1\"
 - Note two
 ";
 
-pub fn cmd_new(name: &str) -> Result<()> {
+pub fn cmd_new(cfg: &crate::Config, name: &str) -> Result<()> {
     // Reject path separators and traversals — spec names must be plain identifiers
     if name.contains('/') || name.contains('\\') || name.contains("..") || name.is_empty() {
         bail!("spec name must be a plain word (no slashes or dots), got: {name:?}");
     }
     let filename = format!("{}.md", name.to_uppercase());
-    let path = PathBuf::from(&filename);
+    let path = cfg.specs_dir.join(&filename);
+    std::fs::create_dir_all(&cfg.specs_dir).ok();
     if path.exists() {
-        bail!("{filename} already exists");
+        bail!("{} already exists", path.display());
     }
 
-    // Prefer the project's TEMPLATE.md; fall back to the embedded default
-    let content = if PathBuf::from("TEMPLATE.md").exists() {
-        std::fs::read_to_string("TEMPLATE.md")?
+    // Prefer TEMPLATE.md in specs_dir; fall back to the embedded default
+    let template_path = cfg.specs_dir.join("TEMPLATE.md");
+    let content = if template_path.exists() {
+        std::fs::read_to_string(&template_path)?
             .replace("Spec Title", name)
     } else {
         DEFAULT_TEMPLATE.replace("{TITLE}", name)
     };
 
     std::fs::write(&path, content)?;
-    println!("✓ created {filename}");
+    println!("✓ created {}", path.display());
     println!("  Edit it, then save — `mise run watch` will pick it up.");
     Ok(())
 }

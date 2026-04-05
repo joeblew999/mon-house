@@ -8,19 +8,19 @@ rev: "1"
 
 เปลี่ยนประตูบานเลื่อนเหล็กหนักที่เป็นสนิมด้วยประตูอะลูมิเนียมน้ำหนักเบา
 
-![Gate - existing condition 1](images/gate-existing-01.jpeg)
+![Gate - existing condition 1](resources/images/gate-existing-01.jpeg)
 
-![Gate - existing condition 2](images/gate-existing-02.jpeg)
+![Gate - existing condition 2](resources/images/gate-existing-02.jpeg)
 
-![Gate - existing condition 3](images/gate-existing-03.jpeg)
+![Gate - existing condition 3](resources/images/gate-existing-03.jpeg)
 
-![Gate - existing condition 4](images/gate-existing-04.jpeg)
+![Gate - existing condition 4](resources/images/gate-existing-04.jpeg)
 
-![Gate - existing condition 5](images/gate-existing-05.jpeg)
+![Gate - existing condition 5](resources/images/gate-existing-05.jpeg)
 
-![Gate - existing condition 6](images/gate-existing-06.jpeg)
+![Gate - existing condition 6](resources/images/gate-existing-06.jpeg)
 
-![Gate - existing condition 7](images/gate-existing-07.jpeg)
+![Gate - existing condition 7](resources/images/gate-existing-07.jpeg)
 
 **ข้อกำหนด: ประตูบานเลื่อนกว้าง 3.5 เมตร × สูง 1.5 เมตร สีดำอวกาศ วัสดุอะลูมิเนียมล้วน ไม่เป็นสนิม**
 

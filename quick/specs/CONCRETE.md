@@ -12,9 +12,9 @@ Single product: Crocodile Flex Shield from Thai Watsadu. Smooths, fills cracks, 
 
 Total area: 55 m²
 
-![Existing condition 1](images/concrete-existing-01.jpeg)
+![Existing condition 1](resources/images/concrete-existing-01.jpeg)
 
-![Existing condition 2](images/concrete-existing-02.jpeg)
+![Existing condition 2](resources/images/concrete-existing-02.jpeg)
 
 ## Dimensions
 

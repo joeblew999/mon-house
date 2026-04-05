@@ -54,8 +54,11 @@ fn is_relevant(event: &Event) -> bool {
 /// `[A-Z]*.th.md` file or `scripts/theme.typ`.
 ///
 /// `dir` is the working directory root — CWD in production, a temp dir in tests.
-pub(crate) fn needs_build_in(theme_file: &Path, dir: &Path) -> bool {
-    let stamp = dir.join("out/.build-stamp");
+/// `out_dir` and `specs_dir` are passed explicitly so they can be overridden
+/// via `QUICK_OUT_DIR` / `QUICK_SPECS_DIR` without hard-coding paths here.
+/// In tests, pass temp-dir sub-paths directly.
+pub(crate) fn needs_build_in(theme_file: &Path, out_dir: &Path, specs_dir: &Path) -> bool {
+    let stamp = out_dir.join(".build-stamp");
     let stamp_mtime: SystemTime = match std::fs::metadata(&stamp).and_then(|m| m.modified()) {
         Ok(t) => t,
         Err(_) => return true, // stamp absent → always build
@@ -64,8 +67,8 @@ pub(crate) fn needs_build_in(theme_file: &Path, dir: &Path) -> bool {
     // theme.typ is always a source
     let mut sources: Vec<PathBuf> = vec![theme_file.to_path_buf()];
 
-    // Glob .th.md files relative to dir
-    let pattern = dir.join("[A-Z]*.th.md");
+    // Glob .th.md files in specs_dir
+    let pattern = specs_dir.join("[A-Z]*.th.md");
     if let Some(pat_str) = pattern.to_str() {
         if let Ok(entries) = glob::glob(pat_str) {
             for entry in entries.flatten() {
@@ -82,8 +85,8 @@ pub(crate) fn needs_build_in(theme_file: &Path, dir: &Path) -> bool {
     })
 }
 
-fn needs_build(theme_file: &Path) -> bool {
-    needs_build_in(theme_file, Path::new("."))
+fn needs_build(cfg: &Config) -> bool {
+    needs_build_in(&cfg.resolved_theme_file(), &cfg.out_dir, &cfg.specs_dir)
 }
 
 // ── unit tests ─────────────────────────────────────────────────────────────────
@@ -116,24 +119,24 @@ mod tests {
         let d = TempDir::new("no_stamp");
         let theme = d.path().join("theme.typ");
         std::fs::write(&theme, "// theme").unwrap();
-        assert!(needs_build_in(&theme, d.path()));
+        assert!(needs_build_in(&theme, &d.path().join("out"), &d.path().join("specs")));
     }
 
     #[test]
     fn newer_th_md_triggers_build() {
         let d = TempDir::new("newer_th");
         std::fs::create_dir(d.path().join("out")).unwrap();
+        std::fs::create_dir(d.path().join("specs")).unwrap();
         let stamp = d.path().join("out/.build-stamp");
         std::fs::write(&stamp, "").unwrap();
         sleep(Duration::from_millis(50));
 
-        // .th.md written after stamp → stamp is stale
-        let th = d.path().join("SPEC.th.md");
+        let th = d.path().join("specs/SPEC.th.md");
         std::fs::write(&th, "# Thai").unwrap();
         let theme = d.path().join("theme.typ");
         std::fs::write(&theme, "// theme").unwrap();
 
-        assert!(needs_build_in(&theme, d.path()));
+        assert!(needs_build_in(&theme, &d.path().join("out"), &d.path().join("specs")));
     }
 
     #[test]
@@ -144,28 +147,27 @@ mod tests {
         std::fs::write(&stamp, "").unwrap();
         sleep(Duration::from_millis(50));
 
-        // theme.typ written after stamp (e.g. themes:switch)
         let theme = d.path().join("theme.typ");
         std::fs::write(&theme, "// updated theme").unwrap();
 
-        assert!(needs_build_in(&theme, d.path()));
+        assert!(needs_build_in(&theme, &d.path().join("out"), &d.path().join("specs")));
     }
 
     #[test]
     fn fresh_stamp_means_no_build() {
         let d = TempDir::new("fresh_stamp");
         std::fs::create_dir(d.path().join("out")).unwrap();
+        std::fs::create_dir(d.path().join("specs")).unwrap();
         let theme = d.path().join("theme.typ");
         std::fs::write(&theme, "// theme").unwrap();
-        let th = d.path().join("SPEC.th.md");
+        let th = d.path().join("specs/SPEC.th.md");
         std::fs::write(&th, "# Thai").unwrap();
         sleep(Duration::from_millis(50));
 
-        // Stamp written last → all sources are older
         let stamp = d.path().join("out/.build-stamp");
         std::fs::write(&stamp, "").unwrap();
 
-        assert!(!needs_build_in(&theme, d.path()));
+        assert!(!needs_build_in(&theme, &d.path().join("out"), &d.path().join("specs")));
     }
 }
 
@@ -182,24 +184,33 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
         .watch(Path::new("."), RecursiveMode::NonRecursive)
         .context("watching current directory")?;
 
-    if Path::new("scripts").exists() {
+    if cfg.scripts_dir.exists() {
         watcher
-            .watch(Path::new("scripts"), RecursiveMode::NonRecursive)
-            .context("watching scripts/")?;
+            .watch(&cfg.scripts_dir, RecursiveMode::NonRecursive)
+            .with_context(|| format!("watching {}/", cfg.scripts_dir.display()))?;
     }
 
-    // Watch scripts/themes/ — editing a theme file triggers a full rebuild
-    let themes_dir = cfg.theme_file
+    // Watch specs_dir — all EN source .md files live here
+    if cfg.specs_dir.exists() {
+        watcher
+            .watch(&cfg.specs_dir, RecursiveMode::NonRecursive)
+            .with_context(|| format!("watching {}/", cfg.specs_dir.display()))?;
+    }
+
+    // Watch <scripts_dir>/themes/ — editing a theme file triggers a full rebuild
+    let theme_file = cfg.resolved_theme_file();
+    let themes_dir = theme_file
         .parent()
-        .unwrap_or_else(|| Path::new("scripts"))
+        .unwrap_or(&cfg.scripts_dir)
         .join("themes");
     if themes_dir.exists() {
         watcher
             .watch(&themes_dir, RecursiveMode::NonRecursive)
-            .context("watching scripts/themes/")?;
+            .with_context(|| format!("watching {}/", themes_dir.display()))?;
     }
 
-    println!("Watching *.md, scripts/theme.typ, scripts/themes/*.typ — Ctrl+C to stop");
+    println!("Watching {0}/*.md, {1}/theme.typ, {1}/themes/*.typ — Ctrl+C to stop",
+        cfg.specs_dir.display(), cfg.scripts_dir.display());
     println!("Pipeline: fonts → translate → build (all idempotent, no mise required)\n");
 
     // None = never triggered yet, so the first event always fires immediately.
@@ -234,12 +245,12 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
                     }
 
                     // Step 2: translate (layer 2 inside cmd_translate)
-                    if let Err(e) = translate::cmd_translate(vec![]) {
+                    if let Err(e) = translate::cmd_translate(cfg, vec![]) {
                         eprintln!("  translate error: {e:#}");
                     }
 
                     // Step 3: build only if sources are newer than stamp (layer 1)
-                    if needs_build(&cfg.theme_file) {
+                    if needs_build(cfg) {
                         if let Err(e) = build::cmd_build(cfg, None) {
                             eprintln!("  build error: {e:#}");
                         }

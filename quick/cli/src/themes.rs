@@ -46,7 +46,7 @@ struct Registry {
 }
 
 fn themes_dir(cfg: &Config) -> PathBuf {
-    cfg.theme_file
+    cfg.resolved_theme_file()
         .parent()
         .unwrap_or_else(|| Path::new("scripts"))
         .join("themes")
@@ -65,8 +65,8 @@ fn load_registry(cfg: &Config) -> Result<Registry> {
 
 /// Parse the active theme name from the `// Active theme: <name>` comment.
 pub fn active_theme_name(cfg: &Config) -> Result<String> {
-    let text = std::fs::read_to_string(&cfg.theme_file)
-        .with_context(|| format!("reading {}", cfg.theme_file.display()))?;
+    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
+        .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
     for line in text.lines() {
         let trimmed = line.trim();
         if let Some(rest) = trimmed.strip_prefix("// Active theme:") {
@@ -76,7 +76,7 @@ pub fn active_theme_name(cfg: &Config) -> Result<String> {
     bail!(
         "could not find '// Active theme: <name>' in {}.\n\
          Run `quick-tool themes switch default` to initialise.",
-        cfg.theme_file.display()
+        cfg.resolved_theme_file().display()
     )
 }
 
@@ -116,7 +116,7 @@ pub fn cmd_current(cfg: &Config) -> Result<()> {
     let exists = if path.exists() { "✓" } else { "✗ FILE MISSING" };
     println!("Active theme: {name}  {exists}");
     println!("File:         {}", path.display());
-    println!("Wrapper:      {}", cfg.theme_file.display());
+    println!("Wrapper:      {}", cfg.resolved_theme_file().display());
     Ok(())
 }
 
@@ -148,11 +148,11 @@ pub fn cmd_switch(cfg: &Config, name: &str) -> Result<()> {
          #import \"themes/{name}.typ\": *\n"
     );
 
-    std::fs::write(&cfg.theme_file, wrapper)
-        .with_context(|| format!("writing {}", cfg.theme_file.display()))?;
+    std::fs::write(&cfg.resolved_theme_file(), wrapper)
+        .with_context(|| format!("writing {}", cfg.resolved_theme_file().display()))?;
 
     println!("✓ Switched to theme: {name}");
-    println!("  {}", cfg.theme_file.display());
+    println!("  {}", cfg.resolved_theme_file().display());
     println!();
     println!("Next steps:");
     println!("  • If fonts changed: mise run fonts  (or quick-tool fonts download)");
@@ -205,7 +205,8 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
     let md_str  = md_file.to_str().context("md path contains non-UTF-8")?;
     let typ_str = typ_file.to_str().context("typ path contains non-UTF-8")?;
     let pdf_str = pdf_file.to_str().context("pdf path contains non-UTF-8")?;
-    let font_str = cfg.font_dir.to_str()
+    let font_dir = cfg.resolved_font_dir();
+    let font_str = font_dir.to_str()
         .context("font-dir path contains non-UTF-8")?;
 
     // pandoc: md → typ
@@ -314,12 +315,12 @@ pub fn cmd_check(cfg: &Config) -> Result<()> {
     let mut failures: Vec<String> = Vec::new();
 
     // 1. Wrapper file exists
-    println!("Check 1: wrapper {} exists", cfg.theme_file.display());
-    if cfg.theme_file.exists() {
+    println!("Check 1: wrapper {} exists", cfg.resolved_theme_file().display());
+    if cfg.resolved_theme_file().exists() {
         println!("  PASS");
     } else {
         println!("  FAIL: file missing");
-        failures.push(format!("{} missing", cfg.theme_file.display()));
+        failures.push(format!("{} missing", cfg.resolved_theme_file().display()));
     }
 
     // 2. Active theme name is readable

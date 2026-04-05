@@ -10,13 +10,13 @@ rev: "1"
 
 **ลำดับงาน: ซ่อมโครงสร้าง → ติดตั้งหลังคาใหม่ → ทาสีทั้งหมด**
 
-![หลังคา - สภาพปัจจุบัน 1](images/metal-roof-existing-01.jpeg)
+![หลังคา - สภาพปัจจุบัน 1](resources/images/metal-roof-existing-01.jpeg)
 
-![หลังคา - สภาพปัจจุบัน 2](images/metal-roof-existing-02.jpeg)
+![หลังคา - สภาพปัจจุบัน 2](resources/images/metal-roof-existing-02.jpeg)
 
-![หลังคา - สภาพปัจจุบัน 3](images/metal-roof-existing-03.jpeg)
+![หลังคา - สภาพปัจจุบัน 3](resources/images/metal-roof-existing-03.jpeg)
 
-![หลังคา - สภาพปัจจุบัน 4](images/metal-roof-existing-04.jpeg)
+![หลังคา - สภาพปัจจุบัน 4](resources/images/metal-roof-existing-04.jpeg)
 
 
 ## ขนาด
