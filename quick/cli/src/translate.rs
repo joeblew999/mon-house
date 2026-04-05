@@ -151,7 +151,8 @@ fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
     if claude.is_none() {
         *claude = Some(find_claude()?);
     }
-    let claude_path = claude.as_ref().unwrap();
+    // Safe: we just set it in the if-block above; ? would have returned on error
+    let claude_path = claude.as_ref().expect("claude is Some: set just above");
 
     println!("  translating {} → {} ...", input.display(), output.display());
     let result = translate(claude_path, &content)?;

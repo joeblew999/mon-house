@@ -52,6 +52,10 @@ rev: \"1\"
 ";
 
 pub fn cmd_new(name: &str) -> Result<()> {
+    // Reject path separators and traversals — spec names must be plain identifiers
+    if name.contains('/') || name.contains('\\') || name.contains("..") || name.is_empty() {
+        bail!("spec name must be a plain word (no slashes or dots), got: {name:?}");
+    }
     let filename = format!("{}.md", name.to_uppercase());
     let path = PathBuf::from(&filename);
     if path.exists() {

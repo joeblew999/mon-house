@@ -121,15 +121,18 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
                 if ready {
                     last_trigger = Some(now);
 
-                    // Drain buffered events before running
-                    while rx.try_recv().is_ok() {}
-
+                    // Print the triggering filename BEFORE draining — the drain
+                    // discards subsequent events so `event.paths` is the one that
+                    // actually matters.
                     let names: Vec<_> = event
                         .paths
                         .iter()
                         .filter_map(|p| p.file_name()?.to_str().map(str::to_owned))
                         .collect();
                     println!("↺  {}", names.join(", "));
+
+                    // Drain any additional events buffered during debounce window
+                    while rx.try_recv().is_ok() {}
 
                     // Step 1: fonts (layers 2+3 inside cmd_download)
                     if let Err(e) = fonts::cmd_download(cfg) {

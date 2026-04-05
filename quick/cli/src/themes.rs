@@ -202,17 +202,23 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
 
     std::fs::write(&md_file, md)?;
 
+    let md_str  = md_file.to_str().context("md path contains non-UTF-8")?;
+    let typ_str = typ_file.to_str().context("typ path contains non-UTF-8")?;
+    let pdf_str = pdf_file.to_str().context("pdf path contains non-UTF-8")?;
+    let font_str = cfg.font_dir.to_str()
+        .context("font-dir path contains non-UTF-8")?;
+
     // pandoc: md → typ
     let pandoc = which::which("pandoc").context("pandoc not found in PATH")?;
     let status = Command::new(&pandoc)
         .args([
-            md_file.to_str().unwrap_or(""),
+            md_str,
             "-t", "typst",
             "--standalone",
             "-V", &format!("template={theme_fwd}"),
             "-V", "lang=en",
             "-V", "region=US",
-            "-o", typ_file.to_str().unwrap_or(""),
+            "-o", typ_str,
         ])
         .status()
         .context("running pandoc")?;
@@ -227,9 +233,9 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
             "compile",
             "--ignore-system-fonts",
             "--font-path",
-            cfg.font_dir.to_str().unwrap_or("fonts"),
-            typ_file.to_str().unwrap_or(""),
-            pdf_file.to_str().unwrap_or(""),
+            font_str,
+            typ_str,
+            pdf_str,
         ])
         .status()
         .context("running typst")?;

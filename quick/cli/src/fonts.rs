@@ -53,6 +53,14 @@ pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
     let import_re = Regex::new(r#"#import\s+"([^"]+)""#)?;
     if let Some(caps) = import_re.captures(&text) {
         let import_path = &caps[1];
+        // Reject absolute paths and traversals — only follow safe relative imports
+        if import_path.starts_with('/') || import_path.starts_with('\\') || import_path.contains("..") {
+            anyhow::bail!(
+                "refusing to follow unsafe import path '{}' in {}",
+                import_path,
+                cfg.theme_file.display()
+            );
+        }
         let base = cfg.theme_file.parent().unwrap_or_else(|| std::path::Path::new("."));
         let imported = base.join(import_path);
         if let Ok(imported_text) = std::fs::read_to_string(&imported) {
@@ -191,6 +199,7 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
     println!("Font stack from {}: {families:?}\n", cfg.theme_file.display());
     let mut total_downloaded: u32 = 0;
     let mut total_skipped: u32 = 0;
+    let mut fetch_errors: Vec<String> = Vec::new();
 
     for family in &families {
         let gwfh_id = family_to_gwfh_id(family);
@@ -199,7 +208,12 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
         let pairs = match fetch_gwfh(cfg, &gwfh_id, &subsets) {
             Ok(p) => p,
             Err(e) => {
+                // Collect the error — don't write the stamp at the end.
+                // Silently continuing here would let a partial font set get
+                // stamped as complete, breaking typst compilation silently.
+                let msg = format!("GWFH fetch failed for '{family}': {e}");
                 println!("  ERROR: {e}");
+                fetch_errors.push(msg);
                 continue;
             }
         };
@@ -214,7 +228,13 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
                 total_skipped += 1;
             } else {
                 let data = http_get_bytes(url)?;
-                std::fs::write(&dest, &data)?;
+                // Atomic write: write to .tmp then rename so a crash/disk-full
+                // can never leave a silently-truncated font file behind.
+                let tmp = dest.with_extension("tmp");
+                std::fs::write(&tmp, &data)
+                    .with_context(|| format!("writing {}", tmp.display()))?;
+                std::fs::rename(&tmp, &dest)
+                    .with_context(|| format!("renaming {} → {}", tmp.display(), dest.display()))?;
                 println!("  ✓ {fname} ({} KB)", data.len() / 1024);
                 total_downloaded += 1;
             }
@@ -223,7 +243,15 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
     }
 
     println!("Done. {total_downloaded} downloaded, {total_skipped} skipped.");
-    std::fs::write(done, format!("{current_hash}\n"))?;
+
+    // Only write the stamp when every family was fetched successfully.
+    // A partial stamp would cause the next run to skip re-fetching missing fonts.
+    if fetch_errors.is_empty() {
+        std::fs::write(done, format!("{current_hash}\n"))?;
+    } else {
+        let msg = fetch_errors.join("\n  • ");
+        bail!("Font download incomplete — stamp NOT written.\n  • {msg}");
+    }
     Ok(())
 }
 
@@ -246,12 +274,14 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
 
     println!("Check 2: font files present in {}/", cfg.font_dir.display());
     for path in expected_files(cfg, &families) {
-        let name = path.file_name().unwrap().to_string_lossy();
+        let name = path.file_name().map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_else(|| path.display().to_string());
         if path.exists() {
             println!("  PASS: {name}");
         } else {
+            let msg = format!("missing: {}", path.display());
             println!("  FAIL: {name} missing");
-            failures.push(format!("missing file: {}", path.display()));
+            failures.push(msg);
         }
     }
 
@@ -335,6 +365,24 @@ fn assert_output(label: &str, output: &str, expected: &str, failures: &mut Vec<S
     }
 }
 
+/// RAII guard that restores the .done stamp and optionally one font file on drop.
+/// Owns all paths and data so it can restore state even if the surrounding scope panics.
+struct IdempotencyGuard {
+    done_path: std::path::PathBuf,
+    original_stamp: String,
+    victim: Option<(std::path::PathBuf, Vec<u8>)>,
+}
+impl Drop for IdempotencyGuard {
+    fn drop(&mut self) {
+        let _ = std::fs::write(&self.done_path, &self.original_stamp);
+        if let Some((path, data)) = &self.victim {
+            if !path.exists() {
+                let _ = std::fs::write(path, data);
+            }
+        }
+    }
+}
+
 pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
     let families = parse_families(cfg)?;
     let done = cfg.done_file();
@@ -343,6 +391,13 @@ pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
     println!("Setup: ensuring fonts are downloaded...");
     run_download_subprocess()?;
     let original_stamp = std::fs::read_to_string(&done)?;
+
+    // Guard restores stamp (and victim file) on any exit path — panic, error, or Ctrl+C.
+    let mut guard = IdempotencyGuard {
+        done_path: done.clone(),
+        original_stamp: original_stamp.clone(),
+        victim: None,
+    };
 
     // Layer 2a: everything valid → skip with no network calls
     println!("\nLayer 2 — hash match, all files present → skip");
@@ -359,20 +414,26 @@ pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
     println!("\nLayer 2 — hash mismatch → runs but no downloads");
     std::fs::write(&done, "badhash\n")?;
     let out = run_download_subprocess()?;
-    std::fs::write(&done, &original_stamp)?;
+    std::fs::write(&done, &original_stamp)?; // restore early (guard also does this on drop)
     assert_output("queries GWFH (hash mismatch triggers run)", &out, "Querying GWFH", &mut failures);
     assert_output("skips all files (already exist)", &out, "already exists, skipping", &mut failures);
     assert_output("zero downloads", &out, "0 downloaded", &mut failures);
 
     // Layer 3: bad stamp + one file deleted → downloads exactly that file
     println!("\nLayer 3 — one file deleted → downloads only that file");
-    let victim = &expected_files(cfg, &families)[0];
-    let victim_data = std::fs::read(victim)?;
-    let victim_name = victim.file_name().unwrap().to_string_lossy().into_owned();
-    std::fs::remove_file(victim)?;
+    let victim = expected_files(cfg, &families).into_iter().next()
+        .context("no font files configured")?;
+    let victim_data = std::fs::read(&victim)?;
+    let victim_name = victim.file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_else(|| victim.display().to_string());
+    // Register victim in guard BEFORE deleting so drop() can restore it
+    guard.victim = Some((victim.clone(), victim_data.clone()));
+    std::fs::remove_file(&victim)?;
     std::fs::write(&done, "badhash\n")?;
     let out = run_download_subprocess()?;
-    std::fs::write(victim, &victim_data)?; // restore
+    // Restore explicitly — guard is a safety net, not the primary path
+    std::fs::write(&victim, &victim_data)?;
     std::fs::write(&done, &original_stamp)?;
     assert_output(&format!("downloads missing {victim_name}"), &out, &victim_name, &mut failures);
     assert_output("only 1 downloaded", &out, "1 downloaded", &mut failures);

@@ -33,10 +33,12 @@ const TMP: &str = "_tmp.typ";
 fn run_pandoc(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> {
     // Pandoc requires forward slashes in -V template= even on Windows.
     // Path::display() gives backslashes on Windows, so normalise explicitly.
+    let src_str = src.to_str()
+        .with_context(|| format!("source path '{}' contains non-UTF-8 characters", src.display()))?;
     let theme_fwd = theme.to_string_lossy().replace('\\', "/");
     let status = Command::new("pandoc")
         .args([
-            src.to_str().unwrap_or(""),
+            src_str,
             "-t", "typst",
             "--standalone",
             "-V", &format!("template={theme_fwd}"),
@@ -53,12 +55,14 @@ fn run_pandoc(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> 
 }
 
 fn run_typst(font_dir: &Path, out: &str) -> Result<()> {
+    let font_dir_str = font_dir.to_str()
+        .with_context(|| format!("font-dir '{}' contains non-UTF-8 characters", font_dir.display()))?;
     let status = Command::new("typst")
         .args([
             "compile",
             "--ignore-system-fonts",
             "--font-path",
-            font_dir.to_str().unwrap_or("fonts"),
+            font_dir_str,
             TMP,
             out,
         ])
