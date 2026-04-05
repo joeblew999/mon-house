@@ -1,0 +1,86 @@
+[package]
+name = "quick-tool"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.75"   # minimum version — clap 4 + anyhow 1 require ~1.70
+
+description = "Bilingual construction spec pipeline: font management and markdown translation"
+license = "MIT"
+repository = "https://github.com/joeblew999/mon-house"
+homepage   = "https://github.com/joeblew999/mon-house"
+keywords   = ["typst", "pdf", "translation", "fonts", "mise"]
+categories = ["command-line-utilities", "development-tools"]
+
+# ── How to install via mise ────────────────────────────────────────────────────
+#
+# Once published to crates.io (cargo publish --manifest-path cli/Cargo.toml):
+#   mise use cargo:quick-tool          # installs from crates.io
+#
+# From git (works because quick/Cargo.toml is a workspace root):
+#   mise use cargo:joeblew999/mon-house  # GitHub shorthand
+#   # or full URL:
+#   mise use 'cargo:https://github.com/joeblew999/mon-house'
+#
+# From a local checkout (e.g. in CI or development):
+#   mise use cargo:path:quick/cli      # from repo root
+#   mise use cargo:path:cli            # from quick/ directory
+#
+# After installation the binary is in mise's shims PATH as 'quick-tool'.
+# The mise.toml [tools] entry becomes:
+#   [tools]
+#   "cargo:quick-tool" = "0.1"
+#
+# ── mise variable passing (the standard pattern) ──────────────────────────────
+#
+# mise [env] sets real OS environment variables for every subprocess it spawns.
+# clap reads them via env = "VAR_NAME" with precedence:
+#   CLI flag  >  env var (set by mise [env])  >  compiled default
+#
+# Override for one machine without touching mise.toml:
+#   # mise.local.toml  (gitignored)
+#   [env]
+#   QUICK_FONT_DIR = "/tmp/my-fonts"
+# ──────────────────────────────────────────────────────────────────────────────
+
+# Files that add no value to a published crate
+exclude = [
+    "target/",
+    "fonts/",
+    "out/",
+    "*.th.md",
+    "*.th.md.hash",
+]
+
+[[bin]]
+name = "quick-tool"
+path = "src/main.rs"
+
+[dependencies]
+# CLI — "env" feature lets clap read env vars, auto-documented in --help
+clap = { version = "4", features = ["derive", "env"] }
+
+# HTTP — sync, no async needed; both scripts are sequential
+ureq = { version = "2", features = ["json"] }
+
+# JSON — GWFH API responses
+serde     = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Hashing — SHA-256 stamp files for idempotency layers 2 and 3
+sha2 = "0.10"
+hex  = "0.4"
+
+# Regex — parse `font: (...)` stack from theme.typ
+regex = "1"
+
+# Cross-platform helpers (replace manual shell/Python equivalents):
+which      = "6"   # find executables in PATH — replaces find_claude() PATH loop
+dirs       = "5"   # cross-platform home dir — replaces ~ expansion
+glob       = "0.3" # file patterns — replaces bash `for f in [A-Z]*.md`
+urlencoding = "2"  # URL encode GWFH search query
+
+# File watching — powers `quick-tool watch`, replacing the watchexec external tool
+notify = "6"
+
+# Ergonomic errors
+anyhow = "1"

@@ -1,0 +1,20 @@
+# Workspace root for the quick/ Rust tooling.
+#
+# Having this file here is what makes git-based mise installs work:
+#
+#   mise use cargo:joeblew999/mon-house
+#   mise use 'cargo:https://github.com/joeblew999/mon-house'
+#
+# Without a workspace root cargo can't find the crate when installing from git,
+# because it starts traversal at the repository root (which is a Go project
+# with no Cargo.toml).  This file is the Rust entry point for the repo.
+#
+# Local path installs (from repo root):
+#   mise use cargo:path:quick/cli
+#
+# Note: the parent directory (mon-house/) is a Go project and has no
+# Cargo.toml.  This workspace intentionally sits one level down.
+
+[workspace]
+members  = ["cli"]
+resolver = "2"
