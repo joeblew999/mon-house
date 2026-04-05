@@ -21,7 +21,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{http, idempotency, vfs};
 
-const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
+/// Shared by the CLI and the Cloudflare Worker (`cf/`).
+pub const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
 
 Rules:
 - Translate ALL English text to Thai
@@ -36,29 +37,29 @@ Rules:
 // ── Claude Messages API types ──────────────────────────────────────────────────
 
 #[derive(Serialize)]
-struct ApiRequest<'a> {
-    model: &'a str,
-    max_tokens: u32,
-    system: &'a str,
-    messages: Vec<ApiMessage<'a>>,
+pub struct ApiRequest<'a> {
+    pub model: &'a str,
+    pub max_tokens: u32,
+    pub system: &'a str,
+    pub messages: Vec<ApiMessage<'a>>,
 }
 
 #[derive(Serialize)]
-struct ApiMessage<'a> {
-    role: &'a str,
-    content: &'a str,
+pub struct ApiMessage<'a> {
+    pub role: &'a str,
+    pub content: &'a str,
 }
 
 #[derive(Deserialize)]
-struct ApiResponse {
-    content: Vec<ApiContent>,
+pub struct ApiResponse {
+    pub content: Vec<ApiContent>,
 }
 
 #[derive(Deserialize)]
-struct ApiContent {
+pub struct ApiContent {
     #[serde(rename = "type")]
-    kind: String,
-    text: Option<String>,
+    pub kind: String,
+    pub text: Option<String>,
 }
 
 // ── Translation backends ───────────────────────────────────────────────────────
@@ -161,7 +162,7 @@ fn call_claude_cli(claude: &Path, content: &str) -> Result<String> {
 }
 
 /// Strip surrounding whitespace and markdown code fences if Claude wrapped the output.
-fn clean_output(raw: String) -> String {
+pub fn clean_output(raw: String) -> String {
     let trimmed = raw.trim().to_string();
     if trimmed.starts_with("```") {
         let lines: Vec<&str> = trimmed.lines().collect();

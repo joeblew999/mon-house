@@ -17,4 +17,8 @@
 
 [workspace]
 members  = ["cli"]
+# cf/ is a cdylib targeting wasm32-unknown-unknown (Cloudflare Workers).
+# The `worker` crate does not compile for native targets, so cf/ is excluded
+# from the workspace — build it separately with worker-build from quick/cf/.
+exclude  = ["cf"]
 resolver = "2"

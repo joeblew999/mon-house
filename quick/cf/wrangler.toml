@@ -1,0 +1,24 @@
+name               = "quick-worker"
+main               = "build/worker/shim.mjs"
+compatibility_date = "2024-09-23"
+
+# Build the Rust cdylib to WASM using worker-build.
+# First-time setup: cargo install worker-build
+[build]
+command = "worker-build --release"
+
+# ── Worker variables ─────────────────────────────────────────────────────────
+# Non-secret config exposed to the Worker as env vars.
+# Override per-environment in [env.staging] / [env.production] blocks below.
+[vars]
+QUICK_CLAUDE_MODEL = "claude-opus-4-6"
+
+# ── Secrets ─────────────────────────────────────────────────────────────────
+# ANTHROPIC_API_KEY is a secret — set it with:
+#   wrangler secret put ANTHROPIC_API_KEY
+# Never put secrets in this file.
+
+# ── Local dev overrides ─────────────────────────────────────────────────────
+# wrangler dev reads secrets from .dev.vars (gitignored).
+# Create quick/cf/.dev.vars with:
+#   ANTHROPIC_API_KEY=sk-ant-...
