@@ -50,27 +50,27 @@ rev: \"1\"
 ";
 
 pub fn cmd_new(cfg: &crate::Config, name: &str) -> Result<()> {
+    use crate::vfs;
     // Reject path separators and traversals — spec names must be plain identifiers
     if name.contains('/') || name.contains('\\') || name.contains("..") || name.is_empty() {
         bail!("spec name must be a plain word (no slashes or dots), got: {name:?}");
     }
     let filename = format!("{}.md", name.to_uppercase());
     let path = cfg.specs_dir.join(&filename);
-    std::fs::create_dir_all(&cfg.specs_dir).ok();
-    if path.exists() {
+    let _ = vfs::create_dir_all(&cfg.specs_dir);
+    if vfs::exists(&path) {
         bail!("{} already exists", path.display());
     }
 
     // Prefer configured template file; fall back to the embedded default
     let template_path = cfg.resolved_template_file();
-    let content = if template_path.exists() {
-        std::fs::read_to_string(&template_path)?
-            .replace("Spec Title", name)
+    let content = if vfs::exists(&template_path) {
+        vfs::read_to_string(&template_path)?.replace("Spec Title", name)
     } else {
         DEFAULT_TEMPLATE.replace("{TITLE}", name)
     };
 
-    std::fs::write(&path, content)?;
+    vfs::write(&path, content.as_bytes())?;
     println!("✓ created {}", path.display());
     println!("  Edit it, then save — `mise run watch` will pick it up.");
     Ok(())

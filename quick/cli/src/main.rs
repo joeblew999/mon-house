@@ -10,6 +10,7 @@ mod idempotency;
 mod new;
 mod themes;
 mod translate;
+mod vfs;
 mod watch;
 
 pub use config::Config;

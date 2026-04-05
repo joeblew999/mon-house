@@ -30,7 +30,7 @@ use std::process::Command;
 use anyhow::{bail, Context, Result};
 use serde::Deserialize;
 
-use crate::Config;
+use crate::{vfs, Config};
 
 // ── registry ───────────────────────────────────────────────────────────────────
 
@@ -58,14 +58,14 @@ fn registry_path(cfg: &Config) -> PathBuf {
 
 fn load_registry(cfg: &Config) -> Result<Registry> {
     let path = registry_path(cfg);
-    let text = std::fs::read_to_string(&path)
+    let text = vfs::read_to_string(&path)
         .with_context(|| format!("reading registry {}", path.display()))?;
     toml::from_str(&text).with_context(|| format!("parsing {}", path.display()))
 }
 
 /// Parse the active theme name from the `// Active theme: <name>` comment.
 pub fn active_theme_name(cfg: &Config) -> Result<String> {
-    let text = std::fs::read_to_string(&cfg.resolved_theme_file())
+    let text = vfs::read_to_string(&cfg.resolved_theme_file())
         .with_context(|| format!("reading {}", cfg.resolved_theme_file().display()))?;
     for line in text.lines() {
         let trimmed = line.trim();
@@ -96,7 +96,7 @@ pub fn cmd_list(cfg: &Config) -> Result<()> {
     println!("  {}", "-".repeat(70));
 
     for t in &reg.themes {
-        let file_exists = dir.join(format!("{}.typ", t.name)).exists();
+        let file_exists = vfs::exists(&dir.join(format!("{}.typ", t.name)));
         let marker = if t.name == active { "▶" } else { " " };
         let file_ok = if file_exists { "✓" } else { "✗ MISSING" };
         println!("  {marker} {:<10}  {:<6}  {}", t.name, file_ok, t.description);
@@ -113,7 +113,7 @@ pub fn cmd_list(cfg: &Config) -> Result<()> {
 pub fn cmd_current(cfg: &Config) -> Result<()> {
     let name = active_theme_name(cfg)?;
     let path = theme_file_path(cfg, &name);
-    let exists = if path.exists() { "✓" } else { "✗ FILE MISSING" };
+    let exists = if vfs::exists(&path) { "✓" } else { "✗ FILE MISSING" };
     println!("Active theme: {name}  {exists}");
     println!("File:         {}", path.display());
     println!("Wrapper:      {}", cfg.resolved_theme_file().display());
@@ -136,7 +136,7 @@ pub fn cmd_switch(cfg: &Config, name: &str) -> Result<()> {
     }
 
     let target = theme_file_path(cfg, name);
-    if !target.exists() {
+    if !vfs::exists(&target) {
         bail!("{} not found. The theme file is missing.", target.display());
     }
 
@@ -148,7 +148,7 @@ pub fn cmd_switch(cfg: &Config, name: &str) -> Result<()> {
          #import \"themes/{name}.typ\": *\n"
     );
 
-    std::fs::write(&cfg.resolved_theme_file(), wrapper)
+    vfs::write(&cfg.resolved_theme_file(), wrapper.as_bytes())
         .with_context(|| format!("writing {}", cfg.resolved_theme_file().display()))?;
 
     println!("✓ Switched to theme: {name}");
@@ -197,12 +197,12 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
     // Clean up on exit regardless of success/failure
     let _cleanup = Cleanup(vec![md_file.clone(), typ_file.clone()]);
 
-    std::fs::write(&md_file, md)?;
+    vfs::write(&md_file, md.as_bytes())?;
 
     // cmarker wrapper: md → typ (replaces pandoc)
     crate::build::write_typ_wrapper(&md_file, theme_path, "en", "US")?;
     // write_typ_wrapper always writes to _tmp.typ; rename to our labelled file
-    std::fs::rename("_tmp.typ", &typ_file)
+    vfs::rename(std::path::Path::new("_tmp.typ"), &typ_file)
         .context("renaming _tmp.typ to theme test typ file")?;
 
     // typst: typ → pdf
@@ -235,7 +235,7 @@ struct Cleanup(Vec<PathBuf>);
 impl Drop for Cleanup {
     fn drop(&mut self) {
         for p in &self.0 {
-            let _ = std::fs::remove_file(p);
+            let _ = vfs::remove_file(p);
         }
     }
 }
@@ -277,7 +277,7 @@ pub fn cmd_test(cfg: &Config, name: Option<&str>, all: bool) -> Result<()> {
             None => active_theme_name(cfg)?,
         };
         let theme_path = theme_file_path(cfg, &target_name);
-        if !theme_path.exists() {
+        if !vfs::exists(&theme_path) {
             bail!("{} not found", theme_path.display());
         }
         println!("Testing theme '{target_name}'...");
@@ -299,7 +299,7 @@ pub fn cmd_check(cfg: &Config) -> Result<()> {
 
     // 1. Wrapper file exists
     println!("Check 1: wrapper {} exists", cfg.resolved_theme_file().display());
-    if cfg.resolved_theme_file().exists() {
+    if vfs::exists(&cfg.resolved_theme_file()) {
         println!("  PASS");
     } else {
         println!("  FAIL: file missing");
@@ -324,7 +324,7 @@ pub fn cmd_check(cfg: &Config) -> Result<()> {
     if !active.is_empty() {
         let path = theme_file_path(cfg, &active);
         println!("Check 3: theme file {} exists", path.display());
-        if path.exists() {
+        if vfs::exists(&path) {
             println!("  PASS");
         } else {
             println!("  FAIL: file missing");
@@ -353,7 +353,7 @@ pub fn cmd_check(cfg: &Config) -> Result<()> {
     if !active.is_empty() {
         println!("Check 5: theme compiles with typst");
         let theme_path = theme_file_path(cfg, &active);
-        if theme_path.exists() {
+        if vfs::exists(&theme_path) {
             match compile_test(cfg, &theme_path, &active) {
                 Ok(pdf) => println!("  PASS  ({})", pdf.display()),
                 Err(e) => {

@@ -22,22 +22,14 @@ use std::process::Command;
 
 use anyhow::{bail, Context, Result};
 
-use crate::Config;
+use crate::{vfs, Config};
 
 const TMP: &str = "_tmp.typ";
 
 // ── internal helpers ───────────────────────────────────────────────────────────
 
 /// Write a cmarker-based Typst wrapper that replaces the pandoc md→typ step.
-///
-/// cmarker parses frontmatter and renders CommonMark + GFM tables natively inside
-/// Typst — no external binary required.  The `scope: image` override is required
-/// because cmarker uses eval() internally, which would otherwise resolve image
-/// paths relative to the cmarker package directory rather than the project root.
-/// Closures defined in this wrapper resolve paths relative to _tmp.typ's location
-/// (the project CWD), which is correct.
 pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> {
-    // Forward slashes required in Typst import paths on all platforms (including Windows).
     let src_fwd   = src.to_string_lossy().replace('\\', "/");
     let theme_fwd = theme.to_string_lossy().replace('\\', "/");
 
@@ -60,8 +52,7 @@ pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> 
          #body\n"
     );
 
-    std::fs::write(TMP, wrapper).context("writing _tmp.typ")?;
-    Ok(())
+    vfs::write(Path::new(TMP), wrapper.as_bytes())
 }
 
 fn run_typst(font_dir: &Path, out: &str) -> Result<()> {
@@ -88,21 +79,19 @@ fn build_one(stem: &str, cfg: &Config) -> Result<()> {
     let en_src = cfg.specs_dir.join(format!("{stem}.md"));
     let th_src = cfg.specs_dir.join(format!("{stem}.th.md"));
 
-    if !en_src.exists() {
+    if !vfs::exists(&en_src) {
         bail!("{} not found", en_src.display());
     }
-    if !th_src.exists() {
+    if !vfs::exists(&th_src) {
         bail!("{} not found — run `quick-tool translate` first", th_src.display());
     }
 
     println!("→ {stem}");
 
-    // EN PDF — _tmp.typ is compiled from quick/ CWD so image() paths resolve correctly
     write_typ_wrapper(&en_src, &cfg.resolved_theme_file(), "en", "US")?;
     let en_pdf = cfg.out_dir.join(format!("{stem}.pdf"));
     run_typst(&cfg.resolved_font_dir(), en_pdf.to_str().context("out_dir path contains non-UTF-8")?)?;
 
-    // Thai PDF
     write_typ_wrapper(&th_src, &cfg.resolved_theme_file(), "th", "TH")?;
     let th_pdf = cfg.out_dir.join(format!("{stem}.th.pdf"));
     run_typst(&cfg.resolved_font_dir(), th_pdf.to_str().context("out_dir path contains non-UTF-8")?)?;
@@ -113,8 +102,7 @@ fn build_one(stem: &str, cfg: &Config) -> Result<()> {
 // ── subcommand: build ──────────────────────────────────────────────────────────
 
 pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {
-    std::fs::create_dir_all(&cfg.out_dir)
-        .with_context(|| format!("creating {}/", cfg.out_dir.display()))?;
+    vfs::create_dir_all(&cfg.out_dir)?;
 
     let full_build = name.is_none();
 
@@ -124,13 +112,9 @@ pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {
         let mut count = 0u32;
         let pattern = cfg.specs_dir.join("[A-Z]*.md");
         let pattern_str = pattern.to_str().context("specs_dir path contains non-UTF-8")?;
-        for entry in glob::glob(pattern_str).context("invalid glob pattern")? {
-            let path = entry.context("glob error")?;
+        for path in vfs::glob(pattern_str)? {
             let fname = path.file_name().and_then(|s| s.to_str()).unwrap_or_default();
-            // Skip generated .th.md files — only EN sources trigger a build
-            if fname.ends_with(".th.md") {
-                continue;
-            }
+            if fname.ends_with(".th.md") { continue; }
             let stem = path.file_stem().and_then(|s| s.to_str()).unwrap_or_default();
             build_one(stem, cfg)?;
             count += 1;
@@ -138,29 +122,23 @@ pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {
         println!("✓ {} updated ({count} spec(s))", cfg.out_dir.display());
     }
 
-    // Write stamp file only on a successful full build.
-    // tasks.all uses this as its output (not the glob out/*.pdf) so that
-    // `mise run one` — which builds a single spec without writing the stamp —
-    // cannot cause tasks.all to skip a full rebuild on next invocation.
     if full_build {
-        std::fs::write(cfg.build_stamp(), "")?;
+        vfs::write(&cfg.build_stamp(), b"")?;
     }
 
     // Clean up intermediate file — ignore error (may not exist on failure)
-    let _ = std::fs::remove_file(TMP);
+    let _ = vfs::remove_file(Path::new(TMP));
     Ok(())
 }
 
 // ── subcommand: clean ──────────────────────────────────────────────────────────
 
 pub fn cmd_clean(cfg: &Config) -> Result<()> {
-    if cfg.out_dir.exists() {
-        std::fs::remove_dir_all(&cfg.out_dir)
-            .with_context(|| format!("removing {}/", cfg.out_dir.display()))?;
+    if vfs::exists(&cfg.out_dir) {
+        vfs::remove_dir_all(&cfg.out_dir)?;
         println!("✓ cleaned {}/", cfg.out_dir.display());
     } else {
         println!("✓ nothing to clean");
     }
     Ok(())
 }
-

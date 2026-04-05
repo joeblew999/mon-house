@@ -16,7 +16,7 @@ use anyhow::{bail, Context, Result};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{idempotency, Config};
+use crate::{idempotency, vfs, Config};
 
 // ── shared helpers ─────────────────────────────────────────────────────────────
 
@@ -42,8 +42,7 @@ fn extract_font_stack(text: &str) -> Option<Vec<String>> {
 /// in exactly one place.
 fn font_source_file(cfg: &Config) -> Result<std::path::PathBuf> {
     let theme_file = cfg.resolved_theme_file();
-    let text = std::fs::read_to_string(&theme_file)
-        .with_context(|| format!("reading {}", theme_file.display()))?;
+    let text = vfs::read_to_string(&theme_file)?;
 
     // If the wrapper has a font stack directly, use it as-is
     if extract_font_stack(&text).is_some() {
@@ -62,7 +61,7 @@ fn font_source_file(cfg: &Config) -> Result<std::path::PathBuf> {
         }
         let base = theme_file.parent().unwrap_or_else(|| std::path::Path::new("."));
         let imported = base.join(import_path);
-        if let Ok(imported_text) = std::fs::read_to_string(&imported) {
+        if let Ok(imported_text) = vfs::read_to_string(&imported) {
             if extract_font_stack(&imported_text).is_some() {
                 return Ok(imported);
             }
@@ -82,15 +81,13 @@ fn font_source_file(cfg: &Config) -> Result<std::path::PathBuf> {
 /// the font stack hasn't changed.
 fn theme_hash(cfg: &Config) -> Result<String> {
     let path = font_source_file(cfg)?;
-    let bytes = std::fs::read(&path)
-        .with_context(|| format!("reading {}", path.display()))?;
+    let bytes = vfs::read_bytes(&path)?;
     Ok(idempotency::sha256_hex(&bytes))
 }
 
 pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
     let path = font_source_file(cfg)?;
-    let text = std::fs::read_to_string(&path)
-        .with_context(|| format!("reading {}", path.display()))?;
+    let text = vfs::read_to_string(&path)?;
     extract_font_stack(&text)
         .ok_or_else(|| anyhow::anyhow!("no 'font: (...)' in {}", path.display()))
 }
@@ -118,7 +115,7 @@ fn expected_files(cfg: &Config, families: &[String]) -> Vec<PathBuf> {
 }
 
 fn all_files_present(cfg: &Config, families: &[String]) -> bool {
-    expected_files(cfg, families).iter().all(|p| p.exists())
+    expected_files(cfg, families).iter().all(|p| vfs::exists(p))
 }
 
 fn http_get_bytes(url: &str) -> Result<Vec<u8>> {
@@ -198,7 +195,7 @@ fn fetch_gwfh(cfg: &Config, gwfh_id: &str, subsets: &[&str]) -> Result<Vec<(Stri
 }
 
 pub fn cmd_download(cfg: &Config) -> Result<()> {
-    if !cfg.resolved_theme_file().exists() {
+    if !vfs::exists(&cfg.resolved_theme_file()) {
         bail!("{} not found. Run from the quick/ directory.", cfg.resolved_theme_file().display());
     }
     let families = parse_families(cfg)?;
@@ -206,15 +203,15 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
 
     // Layer 2: skip if theme unchanged AND all files on disk
     let done = cfg.done_file();
-    if done.exists()
-        && std::fs::read_to_string(&done)?.trim() == current_hash
+    if vfs::exists(&done)
+        && vfs::read_to_string(&done)?.trim() == current_hash
         && all_files_present(cfg, &families)
     {
         println!("✓ fonts up to date (theme.typ unchanged, all files present)");
         return Ok(());
     }
 
-    std::fs::create_dir_all(&cfg.resolved_font_dir())?;
+    vfs::create_dir_all(&cfg.resolved_font_dir())?;
     println!("Font stack from {}: {families:?}\n", cfg.resolved_theme_file().display());
     let mut total_downloaded: u32 = 0;
     let mut total_skipped: u32 = 0;
@@ -241,19 +238,14 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
         }
         for (fname, url) in &pairs {
             let dest = cfg.resolved_font_dir().join(fname);
-            if dest.exists() {
+            if vfs::exists(&dest) {
                 // Layer 3: skip existing files
                 println!("  ✓ {fname} (already exists, skipping)");
                 total_skipped += 1;
             } else {
                 let data = http_get_bytes(url)?;
-                // Atomic write: write to .tmp then rename so a crash/disk-full
-                // can never leave a silently-truncated font file behind.
-                let tmp = dest.with_extension("tmp");
-                std::fs::write(&tmp, &data)
-                    .with_context(|| format!("writing {}", tmp.display()))?;
-                std::fs::rename(&tmp, &dest)
-                    .with_context(|| format!("renaming {} → {}", tmp.display(), dest.display()))?;
+                // Atomic write via vfs: write to .tmp then rename
+                vfs::write_atomic(&dest, &data)?;
                 println!("  ✓ {fname} ({} KB)", data.len() / 1024);
                 total_downloaded += 1;
             }
@@ -266,7 +258,7 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
     // Only write the stamp when every family was fetched successfully.
     // A partial stamp would cause the next run to skip re-fetching missing fonts.
     if fetch_errors.is_empty() {
-        std::fs::write(done, format!("{current_hash}\n"))?;
+        vfs::write(&done, format!("{current_hash}\n").as_bytes())?;
     } else {
         let msg = fetch_errors.join("\n  • ");
         bail!("Font download incomplete — stamp NOT written.\n  • {msg}");
@@ -280,7 +272,7 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
     let mut failures: Vec<String> = Vec::new();
 
     println!("Check 1: {} has parseable font stack", cfg.resolved_theme_file().display());
-    if !cfg.resolved_theme_file().exists() {
+    if !vfs::exists(&cfg.resolved_theme_file()) {
         bail!("{} not found", cfg.resolved_theme_file().display());
     }
     let families = match parse_families(cfg) {
@@ -295,7 +287,7 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
     for path in expected_files(cfg, &families) {
         let name = path.file_name().map(|n| n.to_string_lossy().into_owned())
             .unwrap_or_else(|| path.display().to_string());
-        if path.exists() {
+        if vfs::exists(&path) {
             println!("  PASS: {name}");
         } else {
             let msg = format!("missing: {}", path.display());
@@ -326,12 +318,12 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
 
     println!("Check 4: stamp valid");
     let done = cfg.done_file();
-    if !done.exists() {
+    if !vfs::exists(&done) {
         println!("  FAIL: {} missing — run `mise run fonts`", done.display());
         failures.push(format!("{} missing", done.display()));
     } else {
         let current = theme_hash(cfg)?;
-        let stored = std::fs::read_to_string(&done)?;
+        let stored = vfs::read_to_string(&done)?;
         if stored.trim() == current {
             println!("  PASS: stamp hash matches {}", cfg.resolved_theme_file().display());
         } else {
@@ -393,10 +385,10 @@ struct IdempotencyGuard {
 }
 impl Drop for IdempotencyGuard {
     fn drop(&mut self) {
-        let _ = std::fs::write(&self.done_path, &self.original_stamp);
+        let _ = vfs::write(&self.done_path, self.original_stamp.as_bytes());
         if let Some((path, data)) = &self.victim {
-            if !path.exists() {
-                let _ = std::fs::write(path, data);
+            if !vfs::exists(path) {
+                let _ = vfs::write(path, data.as_slice());
             }
         }
     }
@@ -409,7 +401,7 @@ pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
 
     println!("Setup: ensuring fonts are downloaded...");
     run_download_subprocess()?;
-    let original_stamp = std::fs::read_to_string(&done)?;
+    let original_stamp = vfs::read_to_string(&done)?;
 
     // Guard restores stamp (and victim file) on any exit path — panic, error, or Ctrl+C.
     let mut guard = IdempotencyGuard {
@@ -431,9 +423,9 @@ pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
 
     // Layer 2b: bad stamp, files intact → re-runs but downloads nothing
     println!("\nLayer 2 — hash mismatch → runs but no downloads");
-    std::fs::write(&done, "badhash\n")?;
+    vfs::write(&done, b"badhash\n")?;
     let out = run_download_subprocess()?;
-    std::fs::write(&done, &original_stamp)?; // restore early (guard also does this on drop)
+    vfs::write(&done, original_stamp.as_bytes())?; // restore early (guard also does this on drop)
     assert_output("queries GWFH (hash mismatch triggers run)", &out, "Querying GWFH", &mut failures);
     assert_output("skips all files (already exist)", &out, "already exists, skipping", &mut failures);
     assert_output("zero downloads", &out, "0 downloaded", &mut failures);
@@ -442,18 +434,18 @@ pub fn cmd_idempotency(cfg: &Config) -> Result<()> {
     println!("\nLayer 3 — one file deleted → downloads only that file");
     let victim = expected_files(cfg, &families).into_iter().next()
         .context("no font files configured")?;
-    let victim_data = std::fs::read(&victim)?;
+    let victim_data = vfs::read_bytes(&victim)?;
     let victim_name = victim.file_name()
         .map(|n| n.to_string_lossy().into_owned())
         .unwrap_or_else(|| victim.display().to_string());
     // Register victim in guard BEFORE deleting so drop() can restore it
     guard.victim = Some((victim.clone(), victim_data.clone()));
-    std::fs::remove_file(&victim)?;
-    std::fs::write(&done, "badhash\n")?;
+    vfs::remove_file(&victim)?;
+    vfs::write(&done, b"badhash\n")?;
     let out = run_download_subprocess()?;
     // Restore explicitly — guard is a safety net, not the primary path
-    std::fs::write(&victim, &victim_data)?;
-    std::fs::write(&done, &original_stamp)?;
+    vfs::write(&victim, &victim_data)?;
+    vfs::write(&done, original_stamp.as_bytes())?;
     assert_output(&format!("downloads missing {victim_name}"), &out, &victim_name, &mut failures);
     assert_output("only 1 downloaded", &out, "1 downloaded", &mut failures);
 

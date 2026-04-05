@@ -32,7 +32,7 @@ use std::time::{Duration, Instant};
 use anyhow::{Context, Result};
 use notify::{Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 
-use crate::{build, fonts, translate, Config};
+use crate::{build, fonts, translate, vfs, Config};
 
 // ── event classification ───────────────────────────────────────────────────────
 
@@ -82,7 +82,7 @@ fn classify(event: &Event) -> Option<TriggerKind> {
 /// Thin wrapper: extracts paths from cfg and delegates to `build::needs_build_in`.
 fn needs_build(cfg: &Config) -> bool {
     let images_dir = cfg.resolved_images_dir();
-    let images_opt = if images_dir.exists() { Some(images_dir.as_path()) } else { None };
+    let images_opt = if vfs::exists(&images_dir) { Some(images_dir.as_path()) } else { None };
     crate::idempotency::needs_build_in(
         &cfg.resolved_theme_file(),
         &cfg.out_dir,
@@ -106,14 +106,14 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
         .context("watching current directory")?;
 
     // specs/ — EN source .md files
-    if cfg.specs_dir.exists() {
+    if vfs::exists(&cfg.specs_dir) {
         watcher
             .watch(&cfg.specs_dir, RecursiveMode::NonRecursive)
             .with_context(|| format!("watching {}/", cfg.specs_dir.display()))?;
     }
 
     // scripts/ and scripts/themes/ — theme wrappers and definitions
-    if cfg.scripts_dir.exists() {
+    if vfs::exists(&cfg.scripts_dir) {
         watcher
             .watch(&cfg.scripts_dir, RecursiveMode::NonRecursive)
             .with_context(|| format!("watching {}/", cfg.scripts_dir.display()))?;
@@ -123,7 +123,7 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
         .parent()
         .unwrap_or(&cfg.scripts_dir)
         .join("themes");
-    if themes_dir.exists() {
+    if vfs::exists(&themes_dir) {
         watcher
             .watch(&themes_dir, RecursiveMode::NonRecursive)
             .with_context(|| format!("watching {}/", themes_dir.display()))?;
@@ -131,7 +131,7 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
 
     // images/ — recursive so subdirectories (e.g. resources/images/gate/) are covered
     let images_dir = cfg.resolved_images_dir();
-    if images_dir.exists() {
+    if vfs::exists(&images_dir) {
         watcher
             .watch(&images_dir, RecursiveMode::Recursive)
             .with_context(|| format!("watching {}/", images_dir.display()))?;

@@ -11,6 +11,8 @@ use std::process::Command;
 
 use anyhow::{bail, Context, Result};
 
+use crate::vfs;
+
 
 const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
 
@@ -123,13 +125,12 @@ fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
     let output = input.with_file_name(format!("{name}.th.md"));
     let hash_file = input.with_file_name(format!("{name}.th.md.hash"));
 
-    let content = std::fs::read_to_string(input)
-        .with_context(|| format!("reading {}", input.display()))?;
+    let content = vfs::read_to_string(input)?;
     let current_hash = crate::idempotency::sha256_hex(content.as_bytes());
 
     // Skip if unchanged since last translation — no claude needed
-    if output.exists() && hash_file.exists() {
-        let stored = std::fs::read_to_string(&hash_file)?;
+    if vfs::exists(&output) && vfs::exists(&hash_file) {
+        let stored = vfs::read_to_string(&hash_file)?;
         if stored.trim() == current_hash {
             println!("  skip {} (unchanged)", input.display());
             return Ok(false);
@@ -146,8 +147,8 @@ fn translate_file(claude: &mut Option<PathBuf>, input: &Path) -> Result<bool> {
     println!("  translating {} → {} ...", input.display(), output.display());
     let result = translate(claude_path, &content)?;
 
-    std::fs::write(&output, result)?;
-    std::fs::write(&hash_file, current_hash)?;
+    vfs::write(&output, result.as_bytes())?;
+    vfs::write(&hash_file, current_hash.as_bytes())?;
     Ok(true)
 }
 
@@ -162,12 +163,9 @@ pub fn cmd_translate(cfg: &crate::Config, files: Vec<std::path::PathBuf>) -> Res
         // No args → translate all [A-Z]*.md in specs_dir
         let pattern = cfg.specs_dir.join("[A-Z]*.md");
         let pattern_str = pattern.to_str().context("specs_dir path contains non-UTF-8")?;
-        for entry in glob::glob(pattern_str).context("invalid glob pattern")? {
-            let path = entry.context("glob error")?;
+        for path in vfs::glob(pattern_str)? {
             let name = path.file_name().and_then(|s| s.to_str()).unwrap_or_default();
-            if name.ends_with(".th.md") {
-                continue;
-            }
+            if name.ends_with(".th.md") { continue; }
             if translate_file(&mut claude, &path)? { translated += 1; } else { skipped += 1; }
         }
     } else {

@@ -15,6 +15,8 @@ use std::time::SystemTime;
 
 use sha2::{Digest, Sha256};
 
+use crate::vfs;
+
 // ── L2: content hashing ────────────────────────────────────────────────────────
 
 /// SHA-256 hash of arbitrary bytes, returned as a lowercase hex string.
@@ -44,7 +46,7 @@ pub fn needs_build_in(
     images_dir: Option<&Path>,
 ) -> bool {
     let stamp = out_dir.join(".build-stamp");
-    let stamp_mtime: SystemTime = match std::fs::metadata(&stamp).and_then(|m| m.modified()) {
+    let stamp_mtime: SystemTime = match vfs::modified(&stamp) {
         Ok(t) => t,
         Err(_) => return true, // stamp absent → always build
     };
@@ -54,10 +56,8 @@ pub fn needs_build_in(
     // .th.md translated specs
     let pattern = specs_dir.join("[A-Z]*.th.md");
     if let Some(pat_str) = pattern.to_str() {
-        if let Ok(entries) = glob::glob(pat_str) {
-            for entry in entries.flatten() {
-                sources.push(entry);
-            }
+        if let Ok(entries) = vfs::glob(pat_str) {
+            sources.extend(entries);
         }
     }
 
@@ -66,18 +66,15 @@ pub fn needs_build_in(
         for ext in &["jpg", "jpeg", "png", "gif", "webp", "svg"] {
             let pattern = img_dir.join(format!("**/*.{ext}"));
             if let Some(pat_str) = pattern.to_str() {
-                if let Ok(entries) = glob::glob(pat_str) {
-                    for entry in entries.flatten() {
-                        sources.push(entry);
-                    }
+                if let Ok(entries) = vfs::glob(pat_str) {
+                    sources.extend(entries);
                 }
             }
         }
     }
 
     sources.iter().any(|src| {
-        std::fs::metadata(src)
-            .and_then(|m| m.modified())
+        vfs::modified(src)
             .map(|t| t > stamp_mtime)
             .unwrap_or(false)
     })
