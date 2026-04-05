@@ -58,9 +58,10 @@ Every directory is an env var. Override any of them in `mise.local.toml`
 | `QUICK_FONT_DIR` | `resources/fonts` | Downloaded `.ttf` files | ✓ |
 | `QUICK_IMAGES_DIR` | `resources/images` | Spec images | ✓ |
 | `QUICK_OUT_DIR` | `out` | Generated PDFs | ✓ |
-| `QUICK_SPECS_DIR` | `specs` | EN source markdown + TEMPLATE.md | ✓ |
+| `QUICK_SPECS_DIR` | `specs` | EN source markdown files | ✓ |
 | `QUICK_SCRIPTS_DIR` | `scripts` | Typst theme code | — |
 | `QUICK_THEME_FILE` | `scripts/theme.typ` | Active theme wrapper | — |
+| `QUICK_TEMPLATE_FILE` | `TEMPLATE.md` | Scaffold template for `mise run new` | — |
 
 **To point `out/` and assets at S3 mounts** (example `mise.local.toml`):
 ```toml
@@ -236,10 +237,12 @@ Or manually: copy `specs/TEMPLATE.md` → `specs/NEWSPEC.md`, fill in content, s
 
 ## Adding a New Configurable Path
 
-If a new directory is needed (e.g. `QUICK_ARCHIVE_DIR`):
+If a new directory or file path is needed (e.g. `QUICK_ARCHIVE_DIR`):
 
-1. Add the field to `Config` in `cli/src/main.rs` with `#[arg(env = "QUICK_ARCHIVE_DIR", default_value = "archive")]`
-2. Add a resolver method if it derives from another dir (e.g. `resolved_archive_dir()`)
+1. Add the field to `Config` in `cli/src/main.rs`:
+   - Required path with a default: `#[arg(long, env = "QUICK_ARCHIVE_DIR", default_value = "archive", global = true)] pub archive_dir: PathBuf`
+   - Optional path (derives from another): `#[arg(long, env = "QUICK_ARCHIVE_DIR", global = true)] pub archive_dir: Option<PathBuf>`
+2. If optional, add a resolver method: `pub fn resolved_archive_dir(&self) -> PathBuf { self.archive_dir.clone().unwrap_or_else(|| self.out_dir.join("archive")) }`
 3. Add the env var to `mise.toml [env]` with a comment explaining what it points at
 4. Use `cfg.archive_dir` (or `cfg.resolved_archive_dir()`) everywhere in Rust — never a string literal
 
