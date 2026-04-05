@@ -5,6 +5,7 @@ use clap::{Parser, Subcommand};
 
 mod build;
 mod config;
+mod http;
 mod fonts;
 mod idempotency;
 mod new;

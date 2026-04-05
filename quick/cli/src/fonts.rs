@@ -8,7 +8,6 @@
 ///   Layer 2 — SHA-256 hash + all files present (script level)
 ///   Layer 3 — per-file exists check (download loop)
 use std::collections::HashMap;
-use std::io::Read;
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -16,7 +15,7 @@ use anyhow::{bail, Context, Result};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{idempotency, vfs, Config};
+use crate::{http, idempotency, vfs, Config};
 
 // ── shared helpers ─────────────────────────────────────────────────────────────
 
@@ -118,24 +117,6 @@ fn all_files_present(cfg: &Config, families: &[String]) -> bool {
     expected_files(cfg, families).iter().all(|p| vfs::exists(p))
 }
 
-fn http_get_bytes(url: &str) -> Result<Vec<u8>> {
-    println!("    ↓ {url}");
-    let resp = ureq::get(url)
-        .set("User-Agent", "typst-font-manager/1.0")
-        .call()
-        .with_context(|| format!("GET {url}"))?;
-    let mut bytes = Vec::new();
-    resp.into_reader().read_to_end(&mut bytes)?;
-    Ok(bytes)
-}
-
-fn http_get_json<T: serde::de::DeserializeOwned>(url: &str) -> Result<T> {
-    let resp = ureq::get(url)
-        .set("User-Agent", "typst-font-manager/1.0")
-        .call()
-        .with_context(|| format!("GET {url}"))?;
-    Ok(resp.into_json()?)
-}
 
 // ── subcommand: download ───────────────────────────────────────────────────────
 
@@ -177,7 +158,7 @@ struct GwfhFontDetail {
 fn fetch_gwfh(cfg: &Config, gwfh_id: &str, subsets: &[&str]) -> Result<Vec<(String, String)>> {
     let url = format!("{}/{}?subsets={}&formats=ttf", cfg.gwfh_api, gwfh_id, subsets.join(","));
     println!("  Querying GWFH: {url}");
-    let detail: GwfhFontDetail = http_get_json(&url)?;
+    let detail: GwfhFontDetail = http::get_json(&url)?;
     let weights = cfg.parsed_weights();
     let weight_set: std::collections::HashSet<String> =
         weights.iter().map(|w| w.to_string()).collect();
@@ -243,7 +224,8 @@ pub fn cmd_download(cfg: &Config) -> Result<()> {
                 println!("  ✓ {fname} (already exists, skipping)");
                 total_skipped += 1;
             } else {
-                let data = http_get_bytes(url)?;
+                println!("    ↓ {url}");
+                let data = http::get_bytes(url)?;
                 // Atomic write via vfs: write to .tmp then rename
                 vfs::write_atomic(&dest, &data)?;
                 println!("  ✓ {fname} ({} KB)", data.len() / 1024);
@@ -481,7 +463,7 @@ pub fn cmd_search(cfg: &Config, query: &str) -> Result<()> {
     let url = format!("{}?search={}", cfg.gwfh_api, urlencoding::encode(query));
     println!("Searching GWFH registry for: '{query}'");
     println!("API: {url}\n");
-    let results: Vec<GwfhSearchResult> = http_get_json(&url)?;
+    let results: Vec<GwfhSearchResult> = http::get_json(&url)?;
 
     let query_words: Vec<&str> = query.split_whitespace().collect();
     let mut matches: Vec<&GwfhSearchResult> = results

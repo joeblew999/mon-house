@@ -1,5 +1,7 @@
 [tools]
-typst  = "latest"
+typst           = "latest"
+node            = "lts"       # required by wrangler
+"npm:wrangler"  = "latest"    # Cloudflare Workers CLI
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
 #              all functionality is now in the Rust CLI (cli/)
@@ -46,6 +48,11 @@ QUICK_TEMPLATE_FILE = "TEMPLATE.md"
 
 QUICK_GWFH_API      = "https://gwfh.mranftl.com/api/fonts"
 QUICK_WEIGHTS       = "400,700"
+
+# ── Cloudflare ────────────────────────────────────────────────────────────────
+# Override in mise.local.toml (gitignored) — never commit CF credentials here.
+# CF_API_TOKEN and CF_ACCOUNT_ID are read by wrangler automatically from env.
+CF_WORKER_DIR = "cf"   # where the Cloudflare Worker project will live
 
 # ── vars used in task run strings ─────────────────────────────────────────────
 [vars]
@@ -177,3 +184,23 @@ run = "cargo test --manifest-path cli/Cargo.toml -- --ignored --test-threads 1"
 description = "Run E2E tests with a specific theme. Usage: mise run test:theme -- compact"
 depends = ["build-cli", "fonts", "all"]
 run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignored"
+
+# ── Cloudflare tasks ───────────────────────────────────────────────────────────
+
+[tasks."cf:login"]
+description = "Authenticate with Cloudflare (opens browser)"
+run = "wrangler login"
+
+[tasks."cf:whoami"]
+description = "Show currently authenticated Cloudflare account"
+run = "wrangler whoami"
+
+[tasks."cf:dev"]
+description = "Run the Cloudflare Worker locally. Usage: mise run cf:dev"
+dir = "{{env.CF_WORKER_DIR}}"
+run = "wrangler dev"
+
+[tasks."cf:deploy"]
+description = "Deploy the Cloudflare Worker to production"
+dir = "{{env.CF_WORKER_DIR}}"
+run = "wrangler deploy"

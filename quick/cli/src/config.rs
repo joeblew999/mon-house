@@ -53,6 +53,17 @@ pub struct Config {
     /// Template file used by `new` to scaffold a spec (defaults to TEMPLATE.md at project root)
     #[arg(long, env = "QUICK_TEMPLATE_FILE", global = true)]
     pub template_file: Option<PathBuf>,
+
+    /// Claude model used by the API translation backend.
+    /// Has no effect when the CLI backend is used (ANTHROPIC_API_KEY absent, local feature only).
+    #[arg(long, env = "QUICK_CLAUDE_MODEL", default_value = "claude-opus-4-6", global = true)]
+    pub claude_model: String,
+
+    /// Anthropic API key. When set, translation uses the Messages API directly (works everywhere,
+    /// including Cloudflare). When absent and the `local` feature is enabled, falls back to the
+    /// claude CLI subprocess.
+    #[arg(long, env = "ANTHROPIC_API_KEY", global = true)]
+    pub anthropic_api_key: Option<String>,
 }
 
 impl Config {

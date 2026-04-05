@@ -62,6 +62,8 @@ Every directory is an env var. Override any of them in `mise.local.toml`
 | `QUICK_SCRIPTS_DIR` | `scripts` | Typst theme code | — |
 | `QUICK_THEME_FILE` | `scripts/theme.typ` | Active theme wrapper | — |
 | `QUICK_TEMPLATE_FILE` | `TEMPLATE.md` | Scaffold template for `mise run new` | — |
+| `ANTHROPIC_API_KEY` | *(none)* | Enables REST translation backend (required on Cloudflare) | — |
+| `QUICK_CLAUDE_MODEL` | `claude-opus-4-6` | Model used by the API translation backend | — |
 
 **To point `out/` and assets at S3 mounts** (example `mise.local.toml`):
 ```toml
@@ -104,7 +106,7 @@ mise run watch        # ← start this. leave it running. edit files.
 
 `mise run watch` calls the Rust pipeline directly (no mise subprocess):
 1. `fonts::cmd_download()` — downloads newly declared fonts (hash + per-file skip)
-2. `translate::cmd_translate()` — SHA-256 hash skip; calls claude CLI only if changed
+2. `translate::cmd_translate()` — SHA-256 hash skip; calls Claude API or CLI only if changed
 3. `build::cmd_build()` — only runs if `out/.build-stamp` is older than any `.th.md` or `theme.typ`
 
 Watch monitors `QUICK_SPECS_DIR`, `QUICK_SCRIPTS_DIR`, and `QUICK_SCRIPTS_DIR/themes/`.
@@ -239,12 +241,62 @@ Or manually: copy `specs/TEMPLATE.md` → `specs/NEWSPEC.md`, fill in content, s
 
 If a new directory or file path is needed (e.g. `QUICK_ARCHIVE_DIR`):
 
-1. Add the field to `Config` in `cli/src/main.rs`:
+1. Add the field to `Config` in **`cli/src/config.rs`** (not `main.rs`):
    - Required path with a default: `#[arg(long, env = "QUICK_ARCHIVE_DIR", default_value = "archive", global = true)] pub archive_dir: PathBuf`
    - Optional path (derives from another): `#[arg(long, env = "QUICK_ARCHIVE_DIR", global = true)] pub archive_dir: Option<PathBuf>`
-2. If optional, add a resolver method: `pub fn resolved_archive_dir(&self) -> PathBuf { self.archive_dir.clone().unwrap_or_else(|| self.out_dir.join("archive")) }`
+2. If optional, add a resolver method in the same file: `pub fn resolved_archive_dir(&self) -> PathBuf { self.archive_dir.clone().unwrap_or_else(|| self.out_dir.join("archive")) }`
 3. Add the env var to `mise.toml [env]` with a comment explaining what it points at
 4. Use `cfg.archive_dir` (or `cfg.resolved_archive_dir()`) everywhere in Rust — never a string literal
+
+---
+
+## CLI Source Architecture (`cli/src/`)
+
+The binary is structured around four single-responsibility abstraction modules
+that must be kept pure. Everything else calls into them — never around them.
+
+### Abstraction modules (swap these for Cloudflare ports)
+
+| Module | Responsibility | Cloudflare swap |
+|---|---|---|
+| `vfs.rs` | **All filesystem I/O** — read, write, glob, mtime, atomic write | R2 / KV / WASM shim |
+| `http.rs` | **All outbound HTTP** — `get_bytes`, `get_json`, `post_json` | `fetch()` API |
+| `config.rs` | **All configurable paths** — every `QUICK_*` field + resolver methods | (same) |
+| `idempotency.rs` | **All skip logic** — `sha256_hex`, `needs_build_in` | (same) |
+
+**Rule**: no other module may call `std::fs`, `ureq`, or open a literal path directly.
+Every file operation goes through `vfs`, every HTTP call through `http`.
+
+### Feature flags (`cli/Cargo.toml`)
+
+| Feature | Default | What it enables |
+|---|---|---|
+| `local` | ✓ on | `notify` (file watching), `dirs` (VSCode path lookup), `watch` subcommand |
+| *(none)* | — | `--no-default-features` → Cloudflare-compatible build |
+
+Build for Cloudflare: `cargo build --no-default-features`
+
+### Translation backends (`translate.rs`)
+
+`TranslateBackend` is resolved lazily — only when a file actually needs translating.
+CI with committed `.th.md.hash` stamps works without any key or binary installed.
+
+| Backend | Selected when | Works on |
+|---|---|---|
+| `Api` | `ANTHROPIC_API_KEY` is set | Everywhere (local + Cloudflare) |
+| `Cli` | No API key, `local` feature enabled | Local desktop only |
+
+To force the API backend locally: set `ANTHROPIC_API_KEY` in `mise.local.toml`.
+
+### Watch triggers (`watch.rs`, `local` feature only)
+
+`TriggerKind` determines what pipeline runs on each file-save:
+
+| Changed file | `TriggerKind` | Pipeline |
+|---|---|---|
+| `scripts/theme.typ` or `scripts/themes/*.typ` | `Theme` | fonts → build |
+| `specs/[A-Z]*.md` | `Spec` | translate → build |
+| `resources/images/**` | `Image` | build only |
 
 ---
 

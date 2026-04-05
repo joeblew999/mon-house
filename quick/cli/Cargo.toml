@@ -74,10 +74,16 @@ hex  = "0.4"
 regex = "1"
 
 # Cross-platform helpers (replace manual shell/Python equivalents):
-which      = "6"   # find executables in PATH — replaces find_claude() PATH loop
-dirs       = "5"   # cross-platform home dir — replaces ~ expansion
 glob       = "0.3" # file patterns — replaces bash `for f in [A-Z]*.md`
 urlencoding = "2"  # URL encode GWFH search query
+
+# Find executables in PATH — used by fonts (typst), themes (typst), translate (claude CLI).
+# fonts/themes are always local-only; translate's claude-CLI path is gated behind `local`.
+which = "6"
+
+# Cross-platform home dir — only needed for VSCode extension discovery in translate.rs.
+# Gated behind `local` feature; omitted on Cloudflare builds.
+dirs = { version = "5", optional = true }
 
 # File watching — local-dev only; not available on Cloudflare Workers (WASM has no OS events)
 # Gated behind the `local` feature — disable with --no-default-features for Cloudflare builds.
@@ -97,7 +103,7 @@ anyhow = "1"
 # Local CLI (default):   cargo build
 # Cloudflare Workers:    cargo build --no-default-features
 default = ["local"]
-local   = ["dep:notify"]
+local   = ["dep:notify", "dep:dirs"]
 
 [dev-dependencies]
 # Used by integration tests in tests/pipeline_e2e.rs to enumerate spec files
