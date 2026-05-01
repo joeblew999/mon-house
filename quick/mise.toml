@@ -15,6 +15,7 @@ node                   = "lts"       # required by wrangler
 "npm:wrangler"         = "4.87.0"    # Cloudflare Workers CLI
 "github:jdx/fnox"      = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
 "cargo:worker-build"   = "0.8.1"     # workers-rs WASM bundler — used by quick-compiler/
+"cargo:cargo-leptos"   = "0.2"       # leptos compound build (SSR Worker + hydrate browser)
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
 #              all functionality is now in the Rust CLI (cli/)
@@ -292,19 +293,17 @@ description = "cargo check the workers-rs crate against wasm32"
 run = "cargo check -p quick-compiler --target wasm32-unknown-unknown"
 
 [tasks."worker:build"]
-description = "Build quick-compiler.wasm via worker-build + aggressive wasm-opt -Oz"
-# CF runtime is V8-based and doesn't accept newer WASM proposals (GC, custom
-# descriptors, exact-heap-types). Disable them so wasm-opt outputs WASM-MVP-ish
-# bytecode CF can actually run. --converge runs the opt pipeline until no more
-# size savings — without it we don't fit under 10 MiB.
+description = "Build quick-compiler.wasm via worker-build + wasm-opt -Oz --mvp-features-only --converge"
+# CF Workers run V8 which only accepts MVP-ish WASM (rejects GC, custom
+# descriptors, exact-heap-types — error 10021 'invalid heap type'). Use
+# wasm-opt's --mvp-features flag to constrain output to MVP, and --converge
+# to keep iterating optimisations until size stops shrinking.
 run = """
 cd crates/quick-compiler && worker-build --release
-wasm-opt -Oz --strip-debug --strip-producers --vacuum --converge \
-  --disable-gc --disable-reference-types --disable-typed-function-references \
-  --disable-custom-descriptors \
+wasm-opt -Oz --mvp-features --strip-debug --strip-producers --vacuum --converge \
   build/index_bg.wasm -o build/index_bg.wasm.opt
 mv build/index_bg.wasm.opt build/index_bg.wasm
-echo "✓ wasm size after -Oz:"
+echo "✓ wasm size after -Oz --mvp-features --converge:"
 ls -la build/index_bg.wasm
 echo -n "  gzipped: " && gzip -c build/index_bg.wasm | wc -c
 """

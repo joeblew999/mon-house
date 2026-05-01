@@ -3,28 +3,21 @@ name    = "quick-compiler"
 version = "0.1.0"
 edition = "2021"
 publish = false
-description = "Cloudflare Worker: compiles typst source to PDF via typst-as-lib + workers-rs"
+description = "Cloudflare Worker (workers-rs): typst → PDF compile API"
 
 [lib]
 crate-type = ["cdylib"]
 
 [dependencies]
-# typst engine + PDF exporter — pure Rust, compiles clean to wasm32-unknown-unknown
 typst        = "0.14"
 typst-pdf    = "0.14"
 typst-as-lib = { version = "0.15", default-features = false }
 
-# Cloudflare Workers runtime
 worker       = "0.8"
-
-# Required by the worker runtime — provides JS-backed randomness on wasm32
 getrandom    = { version = "0.2", features = ["js"] }
-
-# Better panic messages in CF logs
 console_error_panic_hook = "0.1"
 
 [profile.release]
-# Aggressive size optimisation for the Worker bundle (CF Paid limit: 10 MB gzipped).
 opt-level     = "z"
 lto           = true
 codegen-units = 1
