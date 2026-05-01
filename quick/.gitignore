@@ -22,3 +22,18 @@ cf/.dev.vars
 
 # Worker build output
 cf/build/
+cf/dist/
+
+# Wrangler local state and cache (per-machine, never commit)
+.wrangler/
+cf/.wrangler/
+
+# Node — per-machine package installs
+cf/node_modules/
+local/node_modules/
+
+# Claude Code per-machine settings
+.claude/
+
+# Local research / cloned reference repos (never commit)
+.src/
