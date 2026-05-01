@@ -211,8 +211,7 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
     let font_dir = cfg.resolved_font_dir();
     let font_str = font_dir.to_str().context("font-dir path contains non-UTF-8")?;
 
-    let typst = which::which("typst").context("typst not found in PATH")?;
-    let status = Command::new(&typst)
+    let status = Command::new("typst")
         .args([
             "compile",
             "--ignore-system-fonts",
@@ -222,7 +221,7 @@ fn compile_test(cfg: &Config, theme_path: &Path, label: &str) -> Result<PathBuf>
             pdf_str,
         ])
         .status()
-        .context("running typst")?;
+        .context("running `typst compile` — is typst installed and on PATH?")?;
     if !status.success() {
         bail!("typst compile failed for theme '{label}'");
     }

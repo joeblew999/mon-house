@@ -279,11 +279,10 @@ pub fn cmd_test(cfg: &Config) -> Result<()> {
     }
 
     println!("Check 3: typst recognises each font family");
-    let typst_bin = which::which("typst").context("typst not found in PATH")?;
-    let output = Command::new(typst_bin)
+    let output = Command::new("typst")
         .args(["fonts", "--font-path", cfg.resolved_font_dir().to_str().unwrap_or("fonts"), "--ignore-system-fonts"])
         .output()
-        .context("running typst fonts")?;
+        .context("running `typst fonts` — is typst installed and on PATH?")?;
     let available: std::collections::HashSet<&str> = std::str::from_utf8(&output.stdout)?
         .lines()
         .map(str::trim)
