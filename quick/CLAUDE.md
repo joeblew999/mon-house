@@ -435,6 +435,20 @@ Wrangler is installed via mise: `"npm:wrangler" = "latest"` (requires `node = "l
 
 The Worker handles translate requests — receives EN spec content, calls the Claude API (via `ANTHROPIC_API_KEY`), returns Thai translation. The central `@cloudflare/shell` Workspace (SQLite + R2) acts as shared FS so local devs, CI, and contractors all read/write the same state.
 
+### Future: investigate workers-rs + typst-as-lib WASM path
+
+We currently run typst via a **CF Container** (`typst_compiler` in [wrangler.toml](cf/wrangler.toml)) because typst-CLI compiled to WASM is ~11.3 MB gzipped — just over the 10 MB Workers Paid bundle limit. Containers require Workers Paid ($5/mo).
+
+A future cleanup worth investigating:
+
+- Build a **stripped typst-as-lib WASM** (no Leptos, no `web-sys`, just `typst` + `typst-pdf` + `worker` crate bindings) — reference: [automataIA/wasm-typst-studio-rs](https://github.com/automataIA/wasm-typst-studio-rs).
+- Realistic estimate: 7–10 MB gzipped after stripping the SPA framework. Likely fits Workers Paid.
+- Win: removes the Container dependency, simplifies deploy (single `wrangler deploy`, no Docker), better cold-start once warmed.
+- Caveat: still requires Workers Paid (free tier 1 MB limit unreachable). Cold start on the first request will parse multi-MB of WASM.
+- Non-goal: free-tier deploy. Free-tier means CF Worker does only translate; PDFs build in CI (the `main` branch shape).
+
+Don't take on this work until Container path is stable and merged.
+
 ---
 
 ## Fresh Machine Setup
