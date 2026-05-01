@@ -11,7 +11,7 @@
 //   upload spec → hash check → translate → store .th.md → TODO: Typst WASM → PDF
 
 import { Agent, callable, type Connection } from "agents";
-import { getContainer } from "@cloudflare/containers";
+// import { getContainer } from "@cloudflare/containers"; // disabled — see runCompile
 import { Workspace, type FileInfo } from "@cloudflare/shell";
 import { translate } from "./translate";
 import type { ClientMessage, AgentEvent } from "./types";
@@ -86,38 +86,45 @@ export class PipelineAgent extends Agent<Env> {
   }
 
   private async runCompile(name: string) {
-    this.emit({ type: "progress", message: `compiling ${name}.th.md → PDF…` });
+    // Container compile disabled in this deploy — see wrangler.toml comment.
+    // PDFs are produced by GitHub Actions on push to main and published to the
+    // specs-latest GitHub Release. To restore in-Worker compile, uncomment the
+    // [[containers]] block in wrangler.toml and the body below.
+    this.emit({
+      type: "error",
+      message: `PDF compile disabled on this Worker (${name}). PDFs are built by GitHub Actions; see specs-latest release.`,
+    });
+    return;
 
-    const thai = await this.workspace.readFile(`/specs/${name}.th.md`);
-    if (!thai) {
-      this.emit({ type: "error", message: `${name}.th.md not found — translate must run first` });
-      return;
-    }
-
-    try {
-      const container = getContainer(this.env.typst_compiler, "shared");
-      const resp = await container.fetch("http://container/compile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, content: thai }),
-        signal: AbortSignal.timeout(90_000), // 90 s — container cold start can be slow
-      });
-
-      if (!resp.ok) {
-        const err = await resp.text();
-        this.emit({ type: "error", message: `typst compile failed: ${err}` });
-        return;
-      }
-
-      const pdfBytes = await resp.arrayBuffer();
-      await this.workspace.writeFileBytes(`/pdfs/${name}.th.pdf`, pdfBytes);
-
-      // Broadcast PDF to all watchers as base64
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
-      this.emit({ type: "pdf", name, bytes: b64 });
-    } catch (e) {
-      this.emit({ type: "error", message: `container error: ${e}` });
-    }
+    // const thai = await this.workspace.readFile(`/specs/${name}.th.md`);
+    // if (!thai) {
+    //   this.emit({ type: "error", message: `${name}.th.md not found — translate must run first` });
+    //   return;
+    // }
+    //
+    // try {
+    //   const container = getContainer(this.env.typst_compiler, "shared");
+    //   const resp = await container.fetch("http://container/compile", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ name, content: thai }),
+    //     signal: AbortSignal.timeout(90_000),
+    //   });
+    //
+    //   if (!resp.ok) {
+    //     const err = await resp.text();
+    //     this.emit({ type: "error", message: `typst compile failed: ${err}` });
+    //     return;
+    //   }
+    //
+    //   const pdfBytes = await resp.arrayBuffer();
+    //   await this.workspace.writeFileBytes(`/pdfs/${name}.th.pdf`, pdfBytes);
+    //
+    //   const b64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
+    //   this.emit({ type: "pdf", name, bytes: b64 });
+    // } catch (e) {
+    //   this.emit({ type: "error", message: `container error: ${e}` });
+    // }
   }
 
   private async servePdf(conn: Connection, name: string) {

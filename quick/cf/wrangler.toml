@@ -21,26 +21,29 @@ remote  = true
 name       = "PipelineAgent"
 class_name = "PipelineAgent"
 
-[[durable_objects.bindings]]
-name       = "typst_compiler"
-class_name = "TypstCompiler"
+# ── Container — DISABLED in this deploy ──────────────────────────────────────
+# typst PDF compilation runs in GitHub Actions instead (see .github/workflows/build-specs.yml).
+# Re-enable when the typst-WASM-on-client spike (see CLAUDE.md) is done, or when
+# the CF Container registry push issue is resolved. To re-enable: uncomment the
+# DO binding + [[containers]] block + add a v4 migration adding TypstCompiler back,
+# uncomment the import in src/index.ts, and uncomment the runCompile body in
+# src/agent.ts.
+#
+# [[durable_objects.bindings]]
+# name       = "typst_compiler"
+# class_name = "TypstCompiler"
+#
+# [[containers]]
+# name          = "typst_compiler"
+# class_name    = "TypstCompiler"
+# image         = "./Dockerfile.compiler"
+# instance_type = "basic"
 
+# Migration history — clean slate as of 2026-05-01 (worker deleted + redeployed
+# after a partial Container deploy left the DO state inconsistent).
 [[migrations]]
 tag                = "v1"
 new_sqlite_classes = ["PipelineAgent"]
-
-[[migrations]]
-tag                = "v2"
-new_sqlite_classes = ["TypstCompiler"]
-
-# ── Container ─────────────────────────────────────────────────────────────────
-# Runs quick-tool serve + typst inside a Docker container.
-# `mise run cf:prepare` copies cli/ + scripts/ + resources/fonts/ into cf/ first.
-[[containers]]
-name          = "typst_compiler"
-class_name    = "TypstCompiler"
-image         = "./Dockerfile.compiler"
-instance_type = "basic"
 
 # ── R2 ────────────────────────────────────────────────────────────────────────
 [[r2_buckets]]
