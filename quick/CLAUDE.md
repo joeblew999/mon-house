@@ -435,19 +435,38 @@ Wrangler is installed via mise: `"npm:wrangler" = "latest"` (requires `node = "l
 
 The Worker handles translate requests — receives EN spec content, calls the Claude API (via `ANTHROPIC_API_KEY`), returns Thai translation. The central `@cloudflare/shell` Workspace (SQLite + R2) acts as shared FS so local devs, CI, and contractors all read/write the same state.
 
-### Future: investigate workers-rs + typst-as-lib WASM path
+### TODO — spike: client-side typst WASM (fat client, thin worker)
 
-We currently run typst via a **CF Container** (`typst_compiler` in [wrangler.toml](cf/wrangler.toml)) because typst-CLI compiled to WASM is ~11.3 MB gzipped — just over the 10 MB Workers Paid bundle limit. Containers require Workers Paid ($5/mo).
+Reference impl: [automataIA/wasm-typst-studio-rs](https://github.com/automataIA/wasm-typst-studio-rs)
+— typst compiled to WASM running **in the browser** (via Leptos + `typst-as-lib`),
+not on the Worker. The 11.3 MB gzipped WASM ships once, the browser caches it,
+and typst compilation happens on the user's machine. Zero CF compute used for
+typst.
 
-A future cleanup worth investigating:
+This inverts the current wip architecture. Instead of:
 
-- Build a **stripped typst-as-lib WASM** (no Leptos, no `web-sys`, just `typst` + `typst-pdf` + `worker` crate bindings) — reference: [automataIA/wasm-typst-studio-rs](https://github.com/automataIA/wasm-typst-studio-rs).
-- Realistic estimate: 7–10 MB gzipped after stripping the SPA framework. Likely fits Workers Paid.
-- Win: removes the Container dependency, simplifies deploy (single `wrangler deploy`, no Docker), better cold-start once warmed.
-- Caveat: still requires Workers Paid (free tier 1 MB limit unreachable). Cold start on the first request will parse multi-MB of WASM.
-- Non-goal: free-tier deploy. Free-tier means CF Worker does only translate; PDFs build in CI (the `main` branch shape).
+| | Current wip | Proposed (post-spike) |
+|---|---|---|
+| typst PDF compile | CF Container ($5/mo) | **Browser** (free CDN asset) |
+| Translate (Claude API) | CF Worker | CF Worker (unchanged — keeps API key off client) |
+| Realtime collab | Durable Object | optional (skip for single-user) |
+| PDF storage | Container → R2 | **Browser → R2** (or none) |
+| CF tier required | Workers Paid + Containers | Workers free tier ✓ |
 
-Don't take on this work until Container path is stable and merged.
+**Spike goal**: prove the fat-client / thin-worker architecture is viable for
+this use case, then decide whether to rip the Container out of `quick/cf/`.
+
+**Spike scope** (timebox ~1 day):
+1. Clone `automataIA/wasm-typst-studio-rs`; confirm it loads in a browser, edits, and renders our bigger spec PDFs (multi-page, images, Thai fonts).
+2. Strip the demo SPA → keep only the typst engine bindings; integrate into the existing Vite React UI in `cf/src/client.tsx`.
+3. Verify Thai font support — `noto_sans_thai_*` must be loadable as bytes (probably embedded or fetched from `/fonts/`).
+4. Wire the Worker down to translate-only: drop `typst_compiler` Container, drop `PipelineAgent` DO if collab isn't required, keep just the `/translate` endpoint.
+5. Measure the browser bundle, browser compile time on a real spec, and confirm CF Worker bundle drops well under 1 MB compressed.
+
+**Non-goals during spike**: production polish, multi-user collab, mobile. Just
+prove the architecture works for the single-user-with-builder flow.
+
+Don't take on this spike until the Container path is stable and merged.
 
 ---
 
