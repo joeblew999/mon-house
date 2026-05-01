@@ -13,8 +13,7 @@ This is the high level things to do NOW so that it is functionally better that w
 - Gate wheels and bottom steel of gate, because we will paint water
 - Gate electric motor. will need power. Need proper fuse for Motor ???
 
-
-- Windows: Screw all windows fully closed and fully seal them, so that air conditioning works better
+- Windows: Rather than replace them, for now, just screw all windows fully closed and fully seal them, so that air conditioning works better
 - Ceiling: Insulation in suspended ceiling, so that air condition works better ?
 
 - New Power Outlet outside. For washing machine x 2 . Need this because windows will be sealed !!
