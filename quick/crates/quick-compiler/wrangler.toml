@@ -3,8 +3,11 @@ main                = "build/worker/shim.mjs"
 compatibility_date  = "2026-04-05"
 workers_dev         = true
 
-[build]
-command = "worker-build --release"
+# No [build] block — wrangler's default worker-build invocation re-runs
+# wasm-opt with milder settings than our `mise run worker:build` pipeline,
+# undoing the size shave needed to fit under CF's 10 MiB limit. Run
+# `mise run worker:build` (which does worker-build + aggressive wasm-opt)
+# before `wrangler deploy`.
 
 [observability]
 enabled            = true
