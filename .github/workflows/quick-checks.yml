@@ -1,0 +1,88 @@
+name: Quick Checks
+
+# Lightweight sanity checks that complement build-specs.yml:
+#   - TypeScript typecheck for cf/ and local/
+#   - Rust feature-combo portability check for cli/
+# These catch regressions that build-specs.yml's PDF pipeline doesn't.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "quick/cf/**"
+      - "quick/local/**"
+      - "quick/cli/**"
+      - "quick/Cargo.toml"
+      - "quick/Cargo.lock"
+      - ".github/workflows/quick-checks.yml"
+  pull_request:
+    paths:
+      - "quick/cf/**"
+      - "quick/local/**"
+      - "quick/cli/**"
+      - "quick/Cargo.toml"
+      - "quick/Cargo.lock"
+  workflow_dispatch:
+
+jobs:
+  typecheck-ts:
+    name: TS typecheck (cf/ + local/)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          working_directory: quick
+
+      - name: Install cf/ deps
+        working-directory: quick/cf
+        run: npm ci
+
+      - name: Typecheck cf/
+        working-directory: quick/cf
+        run: npx tsc --noEmit
+
+      - name: Install local/ deps
+        working-directory: quick/local
+        run: npm ci
+
+      - name: Typecheck local/
+        working-directory: quick/local
+        run: npx tsc --noEmit
+
+  rust-feature-combos:
+    name: Rust portability (default | --no-default-features | container)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v2
+        with:
+          working_directory: quick
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            quick/target
+          key: cargo-checks-${{ runner.os }}-${{ hashFiles('quick/Cargo.lock') }}
+          restore-keys: cargo-checks-${{ runner.os }}-
+
+      - name: cargo check (default — local)
+        working-directory: quick
+        run: cargo check --manifest-path cli/Cargo.toml
+
+      - name: cargo check (--no-default-features — portability)
+        working-directory: quick
+        run: cargo check --manifest-path cli/Cargo.toml --no-default-features
+
+      - name: cargo check (--features container)
+        working-directory: quick
+        run: cargo check --manifest-path cli/Cargo.toml --no-default-features --features container
+
+      - name: cargo test (unit only)
+        working-directory: quick
+        run: cargo test --manifest-path cli/Cargo.toml

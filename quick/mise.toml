@@ -284,6 +284,15 @@ run = "wrangler whoami"
 description = "Authenticate with Cloudflare (opens browser)"
 run = "wrangler login"
 
+[tasks."prove:bindings"]
+# Project-local override of the shared library task: wrangler.toml lives at
+# quick/cf/, not quick/, so we run the dry-run from inside cf/. Other
+# prove:* tasks (secrets/access-policy/deployed) don't apply — quick/ uses
+# only ANTHROPIC_API_KEY, no CF Access, no D1.
+description = "Confirm the deployed Worker's bindings via wrangler --dry-run (no upload)"
+dir = "{{env.CF_WORKER_DIR}}"
+run = "wrangler deploy --dry-run --outdir /tmp/quick-dryrun 2>&1 | grep -E '^Binding|^Total Upload|env\\.|^\\s+env\\.' | head -20"
+
 [tasks."prove:all"]
 description = "Run all applicable prove:* checks. quick/ has no CF Access / fnox / D1, so only prove:bindings runs."
 depends = ["prove:bindings"]
