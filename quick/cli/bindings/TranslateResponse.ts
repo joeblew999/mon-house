@@ -3,8 +3,4 @@
 /**
  * Success response from `POST /translate`.
  */
-export type TranslateResponse = { 
-/**
- * Translated Thai markdown.
- */
-thai: string, };
+export type TranslateResponse = { thai: string, };

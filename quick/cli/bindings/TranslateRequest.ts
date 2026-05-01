@@ -3,8 +3,4 @@
 /**
  * Request body for `POST /translate`.
  */
-export type TranslateRequest = { 
-/**
- * EN construction-spec markdown to translate.
- */
-content: string, };
+export type TranslateRequest = { content: string, };
