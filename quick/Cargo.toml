@@ -16,7 +16,7 @@
 # Cargo.toml.  This workspace intentionally sits one level down.
 
 [workspace]
-members  = ["cli"]
+members  = ["cli", "crates/quick-compiler"]
 # cf/ is a TypeScript Worker (Vite + Hono + Agents SDK) — no Cargo.toml lives
 # there. The exclude is harmless; preserved in case a future workers-rs migration
 # (see CLAUDE.md) reintroduces a Rust crate at quick/cf/.

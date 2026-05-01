@@ -10,10 +10,11 @@
 includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.7.1"]
 
 [tools]
-typst                = "latest"
-node                 = "lts"       # required by wrangler
-"npm:wrangler"       = "latest"    # Cloudflare Workers CLI
-"github:jdx/fnox"    = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
+typst                  = "latest"
+node                   = "lts"       # required by wrangler
+"npm:wrangler"         = "latest"    # Cloudflare Workers CLI
+"github:jdx/fnox"      = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
+"cargo:worker-build"   = "0.8.1"     # workers-rs WASM bundler — used by quick-compiler/
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
 #              all functionality is now in the Rust CLI (cli/)
@@ -283,6 +284,33 @@ run = "wrangler whoami"
 [tasks.login]
 description = "Authenticate with Cloudflare (opens browser)"
 run = "wrangler login"
+
+# ── workers-rs (quick-compiler/) — Rust Worker that compiles typst → PDF ─────
+
+[tasks."worker:check"]
+description = "cargo check the workers-rs crate against wasm32"
+run = "cargo check -p quick-compiler --target wasm32-unknown-unknown"
+
+[tasks."worker:build"]
+description = "Build quick-compiler.wasm via worker-build"
+run = "cd crates/quick-compiler && worker-build --release"
+
+[tasks."worker:dev"]
+description = "Run quick-compiler locally with wrangler dev"
+run = "cd crates/quick-compiler && wrangler dev"
+
+[tasks."worker:deploy"]
+description = "Deploy quick-compiler to Cloudflare"
+depends = ["cf:token-check"]
+run = "cd crates/quick-compiler && wrangler deploy"
+
+[tasks."worker:tail"]
+description = "Tail logs from deployed quick-compiler"
+run = "cd crates/quick-compiler && wrangler tail"
+
+[tasks."worker:health"]
+description = "Curl GET /health on the deployed quick-compiler"
+run = "curl -sf https://quick-compiler.gedw99.workers.dev/health && echo"
 
 [tasks."prove:bindings"]
 # Project-local override of the shared library task: wrangler.toml lives at
