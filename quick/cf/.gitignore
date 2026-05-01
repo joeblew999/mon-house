@@ -1,0 +1,5 @@
+# Wrangler build output
+build/
+
+# Local dev secrets — copy from .dev.vars.example and fill in
+.dev.vars

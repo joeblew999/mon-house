@@ -5,7 +5,7 @@
 /// | Layer | Primitive         | Used by                        |
 /// |-------|-------------------|--------------------------------|
 /// | L1    | `needs_build_in`  | watch (via `needs_build`)      |
-/// | L2    | `sha256_hex`      | fonts (theme hash), translate  |
+/// | L2    | `blake3_hex`      | fonts (theme hash), translate  |
 /// | L3    | per-file exists   | fonts (inside cmd_download)    |
 ///
 /// L3 is trivial (`Path::exists()`) so it stays inline at the call site.
@@ -13,20 +13,17 @@
 use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
-use sha2::{Digest, Sha256};
-
 use crate::vfs;
 
 // ── L2: content hashing ────────────────────────────────────────────────────────
 
-/// SHA-256 hash of arbitrary bytes, returned as a lowercase hex string.
+/// BLAKE3 hash of arbitrary bytes, returned as a lowercase hex string.
 ///
 /// Used by fonts (hashing the theme source file) and translate (hashing EN
 /// spec content) — both store the result in a stamp file to detect changes.
-pub fn sha256_hex(data: &[u8]) -> String {
-    let mut h = Sha256::new();
-    h.update(data);
-    hex::encode(h.finalize())
+/// Faster than SHA-256 and compiles to WASM natively.
+pub fn blake3_hex(data: &[u8]) -> String {
+    blake3::hash(data).to_hex().to_string()
 }
 
 // ── L1: build stamp check ──────────────────────────────────────────────────────
@@ -185,10 +182,10 @@ mod tests {
     }
 
     #[test]
-    fn sha256_hex_is_deterministic() {
-        let a = sha256_hex(b"hello");
-        let b = sha256_hex(b"hello");
-        let c = sha256_hex(b"world");
+    fn blake3_hex_is_deterministic() {
+        let a = blake3_hex(b"hello");
+        let b = blake3_hex(b"hello");
+        let c = blake3_hex(b"world");
         assert_eq!(a, b);
         assert_ne!(a, c);
         assert_eq!(a.len(), 64); // 32 bytes → 64 hex chars

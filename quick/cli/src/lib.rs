@@ -8,7 +8,7 @@
 /// |----------------|-----------------------|
 /// | `config`       | shared Config type    |
 /// | `http`         | stubs only (CF uses worker::Fetch) |
-/// | `idempotency`  | `sha256_hex` (pure)   |
+/// | `idempotency`  | `blake3_hex` (pure)   |
 /// | `translate`    | types, prompt, clean  |
 /// | `vfs`          | stubs only (CF uses R2/KV) |
 ///

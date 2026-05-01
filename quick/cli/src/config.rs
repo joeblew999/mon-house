@@ -64,6 +64,14 @@ pub struct Config {
     /// claude CLI subprocess.
     #[arg(long, env = "ANTHROPIC_API_KEY", global = true)]
     pub anthropic_api_key: Option<String>,
+
+    /// URL of the quick-worker Cloudflare Worker translate endpoint.
+    /// When set, translation POSTs to this URL instead of calling Claude.
+    /// Takes priority over ANTHROPIC_API_KEY and the CLI backend.
+    /// Example: https://quick-worker.gedw99.workers.dev/translate
+    #[arg(long, env = "QUICK_TRANSLATE_URL", global = true)]
+    pub translate_url: Option<String>,
+
 }
 
 impl Config {

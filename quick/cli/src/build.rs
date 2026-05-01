@@ -99,6 +99,21 @@ fn build_one(stem: &str, cfg: &Config) -> Result<()> {
     Ok(())
 }
 
+/// Compile only the Thai PDF for a single spec — no EN source required.
+/// Used by the `serve` subcommand inside the CF Container.
+pub fn compile_th(stem: &str, cfg: &Config) -> Result<()> {
+    let th_src = cfg.specs_dir.join(format!("{stem}.th.md"));
+    if !vfs::exists(&th_src) {
+        bail!("{} not found", th_src.display());
+    }
+    vfs::create_dir_all(&cfg.out_dir)?;
+    write_typ_wrapper(&th_src, &cfg.resolved_theme_file(), "th", "TH")?;
+    let th_pdf = cfg.out_dir.join(format!("{stem}.th.pdf"));
+    run_typst(&cfg.resolved_font_dir(), th_pdf.to_str().context("out_dir path contains non-UTF-8")?)?;
+    let _ = vfs::remove_file(Path::new(TMP));
+    Ok(())
+}
+
 // ── subcommand: build ──────────────────────────────────────────────────────────
 
 pub fn cmd_build(cfg: &Config, name: Option<String>) -> Result<()> {

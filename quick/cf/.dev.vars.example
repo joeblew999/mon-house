@@ -1,0 +1,5 @@
+# Local dev secrets for `wrangler dev` / `mise run cf:dev`.
+# Copy to .dev.vars (gitignored) and fill in your key.
+# When ANTHROPIC_API_KEY is set, translate uses Claude instead of CF Workers AI.
+
+ANTHROPIC_API_KEY=sk-ant-...

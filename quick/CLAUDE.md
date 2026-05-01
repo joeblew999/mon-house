@@ -303,8 +303,10 @@ To force the API backend locally: set `ANTHROPIC_API_KEY` in `mise.local.toml`.
 ## Tools (installed by mise)
 
 - `typst` — compiles `.typ` → `.pdf`
-- `pandoc` — converts `.md` → `.typ`
 - `quick-tool` — built from `cli/` by `mise run build-cli`; handles fonts, translate, build, watch, new, clean
+
+**No pandoc.** Markdown is parsed natively inside Typst via `@preview/cmarker:0.1.8`.
+The pipeline is: `*.md` → `[cmarker inside Typst]` → `typst compile` → `.pdf`.
 
 ---
 
@@ -332,7 +334,7 @@ add an entry to `scripts/themes/registry.toml`, then `mise run themes:check`.
 # Fast — no tools needed; runs the 4 needs_build timestamp unit tests
 mise run test:unit
 
-# Full E2E — requires pandoc, typst, fonts, all PDFs built
+# Full E2E — requires typst, fonts, all PDFs built
 # Verifies actual side effects: PDFs exist and are non-empty, .th.md files present,
 # fonts/.done stamp valid, theme wrapper contains the correct import
 mise run test:e2e
@@ -381,19 +383,57 @@ mise run clean                          # remove out/
 
 ## Image Grids in Specs
 
-To show two images side-by-side in a spec, use a raw Typst block:
+To show two images side-by-side in a spec, use a cmarker raw Typst block:
 
-````markdown
-```{=typst}
+```markdown
+<!--raw-typst
 #grid-images(
   image("resources/images/gate/before.jpg"),
   image("resources/images/gate/after.jpg"),
 )
+-->
 ```
-````
 
-`grid-images` is defined in `scripts/theme.typ`. Note: `image()` paths are relative
-to the working directory (`quick/`), which is where `_tmp.typ` is compiled.
+`grid-images` is defined in `scripts/theme.typ`. Image paths are relative to
+`quick/` (where `_tmp.typ` is compiled). The `<!--raw-typst ... -->` HTML comment
+syntax is how cmarker passes literal Typst through to the compiler — it replaces
+the old pandoc `{=typst}` raw block syntax.
+
+---
+
+## Cloudflare Worker (`quick/cf/`)
+
+The pipeline can run on Cloudflare Workers as well as locally. The CF Worker lives at `quick/cf/`.
+
+### Architecture — shared lib pattern
+
+`cli/` is a **lib + bin**. Shared code (compiled with `--no-default-features`) is used by both targets:
+
+| Layer | Local CLI | CF Worker |
+|---|---|---|
+| Shared types + logic | `cli/src/lib.rs` | same crate |
+| HTTP transport | `ureq` (`native-http` feature) | `worker::Fetch` (async, in `cf/src/`) |
+| FS | `std::fs` via `vfs.rs` | R2 / KV (swap `vfs.rs`) |
+| File watch | `notify` (`local` feature) | n/a |
+
+Build for Cloudflare: `cargo build --no-default-features` (drops `notify`, `dirs`, watch subcommand).
+
+### Deploy
+
+```bash
+cd quick/cf
+wrangler secret put ANTHROPIC_API_KEY   # one-time
+mise run cf:login       # authenticate wrangler
+mise run cf:whoami      # verify account
+mise run cf:dev         # local dev mode
+mise run cf:deploy      # deploy to Cloudflare
+```
+
+Wrangler is installed via mise: `"npm:wrangler" = "latest"` (requires `node = "lts"`).
+
+### What runs on CF
+
+The Worker handles translate requests — receives EN spec content, calls the Claude API (via `ANTHROPIC_API_KEY`), returns Thai translation. The central `@cloudflare/shell` Workspace (SQLite + R2) acts as shared FS so local devs, CI, and contractors all read/write the same state.
 
 ---
 
@@ -402,7 +442,7 @@ to the working directory (`quick/`), which is where `_tmp.typ` is compiled.
 ```bash
 git clone ...
 cd quick
-mise install            # installs pandoc, typst, quick-tool (built from cli/)
+mise install            # installs typst + quick-tool (built from cli/)
 mise run fonts          # downloads fonts
 mise run "fonts:test"   # verify fonts healthy
 mise run watch          # start working

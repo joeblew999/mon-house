@@ -52,7 +52,20 @@ QUICK_WEIGHTS       = "400,700"
 # ── Cloudflare ────────────────────────────────────────────────────────────────
 # Override in mise.local.toml (gitignored) — never commit CF credentials here.
 # CF_API_TOKEN and CF_ACCOUNT_ID are read by wrangler automatically from env.
-CF_WORKER_DIR = "cf"   # where the Cloudflare Worker project will live
+CF_WORKER_DIR = "cf"   # where the Cloudflare Worker project lives
+
+# CF Worker Agent WebSocket endpoint.
+# Local dev (mise run cf:dev):   ws://localhost:8787/agents/PipelineAgent/default
+# Production (deployed worker):  wss://quick-worker.gedw99.workers.dev/agents/PipelineAgent/default
+# Unset: local pipeline (translate via claude CLI / ANTHROPIC_API_KEY, build via typst).
+
+# CF PipelineAgent WebSocket URL — when set, `mise run watch` sends spec files
+# to the Agent over WebSocket and receives translated .th.md (+ PDFs) back.
+# NOTE: URL uses kebab-case of binding name: PipelineAgent → pipeline-agent
+# Local dev:   ws://localhost:8787/agents/pipeline-agent/default
+# Production:  wss://quick-worker.gedw99.workers.dev/agents/pipeline-agent/default
+# QUICK_AGENT_URL = "ws://localhost:8787/agents/pipeline-agent/default"
+# QUICK_AGENT_URL = "wss://quick-worker.gedw99.workers.dev/agents/pipeline-agent/default"
 
 # ── vars used in task run strings ─────────────────────────────────────────────
 [vars]
@@ -68,6 +81,12 @@ QUICK_TOOL = "target/release/quick-tool"
 # QUICK_TOOL = "target/release/quick-tool.exe"
 
 # ── tasks ──────────────────────────────────────────────────────────────────────
+
+[tasks.codegen]
+description = "Generate TypeScript bindings from Rust types (cli/bindings/*.ts)"
+sources  = ["cli/src/translate.rs"]
+outputs  = ["cli/bindings/TranslateRequest.ts", "cli/bindings/TranslateResponse.ts", "cli/bindings/ErrorResponse.ts"]
+run = "cargo test --lib export_bindings --manifest-path cli/Cargo.toml"
 
 [tasks.build-cli]
 description = "Compile quick-tool (Rust) — skipped automatically if sources unchanged"
@@ -118,15 +137,25 @@ description = "Translate (if changed) and build PDFs for a single file. Usage: m
 depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} one $@"
 
+[tasks.run]
+description = "Send a single spec to the CF PipelineAgent (translate + PDF). Requires mise run cf:dev. Usage: mise run run -- GATE"
+dir = "local"
+run = "npm run run-spec -- $@"
+
 [tasks.new]
 description = "Create a new spec file from TEMPLATE.md. Usage: mise run new -- SPECNAME"
 depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} new $@"
 
 [tasks.watch]
-description = "Re-run on any .md or theme.typ change; fonts auto-downloaded if theme.typ changes"
+description = "Watch specs/*.md via TypeScript AgentClient — sends changed files to CF PipelineAgent, writes .th.md + PDFs back. Requires mise run cf:dev running first."
+dir = "local"
+run = "npm run watch"
+
+[tasks."watch:local"]
+description = "Watch + build entirely locally (no Agent) — fonts → translate → build via Rust CLI. Use when offline or for local-only testing."
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} watch"
+run = "{{vars.QUICK_TOOL}} translate && {{vars.QUICK_TOOL}} build"
 
 [tasks."themes:list"]
 description = "List all available themes with descriptions; marks the active one"
@@ -196,11 +225,40 @@ description = "Show currently authenticated Cloudflare account"
 run = "wrangler whoami"
 
 [tasks."cf:dev"]
-description = "Run the Cloudflare Worker locally. Usage: mise run cf:dev"
+description = "Run everything locally: Vite dev server (React UI) + miniflare Worker + Container in Docker. AI binding calls real CF via remote=true in wrangler.toml."
+depends = ["cf:prepare"]
 dir = "{{env.CF_WORKER_DIR}}"
-run = "wrangler dev"
+# `vite dev` starts the React dev server and proxies Worker requests to miniflare.
+# DOs + R2 + Container run locally; AI binding calls real CF Workers AI (remote=true in wrangler.toml).
+# Persisted state in cf/.wrangler/state/ (gitignored).
+# Open http://localhost:5173 for the React UI.
+run = "npm run dev"
+
+[tasks."cf:prepare"]
+description = "Copy cli/ + scripts/ + fonts into cf/ so Docker build context is self-contained"
+depends = ["build-cli", "fonts"]
+run = """
+cp -r cli     {{env.CF_WORKER_DIR}}/cli
+cp    Cargo.toml Cargo.lock  {{env.CF_WORKER_DIR}}/
+cp -r scripts {{env.CF_WORKER_DIR}}/scripts
+mkdir -p {{env.CF_WORKER_DIR}}/resources/fonts
+cp -r {{env.QUICK_RESOURCES_DIR}}/fonts/. {{env.CF_WORKER_DIR}}/resources/fonts/
+"""
+
+[tasks."cf:prepare:clean"]
+description = "Remove files copied by cf:prepare (keeps cf/ tidy after deploy)"
+run = """
+rm -rf  {{env.CF_WORKER_DIR}}/cli
+rm -f   {{env.CF_WORKER_DIR}}/Cargo.toml
+rm -f   {{env.CF_WORKER_DIR}}/Cargo.lock
+rm -rf  {{env.CF_WORKER_DIR}}/scripts
+rm -rf  {{env.CF_WORKER_DIR}}/resources
+"""
 
 [tasks."cf:deploy"]
-description = "Deploy the Cloudflare Worker to production"
-dir = "{{env.CF_WORKER_DIR}}"
-run = "wrangler deploy"
+description = "Prepare build context, vite build + wrangler deploy Worker + Container to Cloudflare, then clean up"
+run = """
+mise run cf:prepare
+cd {{env.CF_WORKER_DIR}} && npm run deploy
+mise run cf:prepare:clean
+"""

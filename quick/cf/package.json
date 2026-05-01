@@ -1,0 +1,40 @@
+{
+  "name": "quick-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "deploy": "vite build && wrangler deploy",
+    "types": "wrangler types env.d.ts --include-runtime false"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "latest",
+    "@cloudflare/containers": "latest",
+    "@cloudflare/shell": "*",
+    "@openai/agents": "latest",
+    "@openai/agents-extensions": "latest",
+    "agents": "*",
+    "ai": "^6.0.143",
+    "hono": "^4.12.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "workers-ai-provider": "^3.1.9",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.31.0",
+    "@cloudflare/workers-types": "^4",
+    "@tailwindcss/vite": "^4",
+    "@types/node": "^25.5.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "agents": "*",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
+    "wrangler": "^4.79.0"
+  }
+}

@@ -1,24 +1,72 @@
 name               = "quick-worker"
-main               = "build/worker/shim.mjs"
-compatibility_date = "2024-09-23"
+main               = "src/index.ts"
+compatibility_date = "2026-04-05"
+compatibility_flags = ["nodejs_compat"]
 
-# Build the Rust cdylib to WASM using worker-build.
-# First-time setup: cargo install worker-build
-[build]
-command = "worker-build --release"
+# ── Assets (React SPA) ────────────────────────────────────────────────────────
+# Vite builds the React app to .vite/dist/. Wrangler serves it as static assets.
+# SPA mode: unknown paths return index.html (client-side routing).
+# /agents/* is routed to the Worker first (DO WebSocket connections).
+[assets]
+not_found_handling = "single-page-application"
+run_worker_first   = ["/agents/*", "/health"]
 
-# ── Worker variables ─────────────────────────────────────────────────────────
-# Non-secret config exposed to the Worker as env vars.
-# Override per-environment in [env.staging] / [env.production] blocks below.
+# ── AI ────────────────────────────────────────────────────────────────────────
+[ai]
+binding = "AI"
+remote  = true
+
+# ── Durable Object ────────────────────────────────────────────────────────────
+[[durable_objects.bindings]]
+name       = "PipelineAgent"
+class_name = "PipelineAgent"
+
+[[durable_objects.bindings]]
+name       = "typst_compiler"
+class_name = "TypstCompiler"
+
+[[migrations]]
+tag                = "v1"
+new_sqlite_classes = ["PipelineAgent"]
+
+[[migrations]]
+tag                = "v2"
+new_sqlite_classes = ["TypstCompiler"]
+
+# ── Container ─────────────────────────────────────────────────────────────────
+# Runs quick-tool serve + typst inside a Docker container.
+# `mise run cf:prepare` copies cli/ + scripts/ + resources/fonts/ into cf/ first.
+[[containers]]
+name          = "typst_compiler"
+class_name    = "TypstCompiler"
+image         = "./Dockerfile.compiler"
+instance_type = "basic"
+
+# ── R2 ────────────────────────────────────────────────────────────────────────
+[[r2_buckets]]
+binding     = "SPECS_BUCKET"
+bucket_name = "quick-specs"
+
+# ── Variables ─────────────────────────────────────────────────────────────────
 [vars]
-QUICK_CLAUDE_MODEL = "claude-opus-4-6"
+QUICK_AI_BACKEND = "workers-ai"
 
-# ── Secrets ─────────────────────────────────────────────────────────────────
-# ANTHROPIC_API_KEY is a secret — set it with:
-#   wrangler secret put ANTHROPIC_API_KEY
-# Never put secrets in this file.
+# ── CF Workers AI model selection ─────────────────────────────────────────────
+# Uncomment one. SEA-LION is recommended for Thai — fine-tuned for SE Asian languages.
+# All models share 10,000 free neurons/day; beyond that: $0.011 per 1,000 neurons.
+#
+# Best for Thai (SE Asian fine-tune, 128k context):
+#   $0.35/M input  •  $0.56/M output
+QUICK_CF_MODEL = "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+# Dedicated translation model, 100 languages, faster/cheaper:
+#   $0.34/M input  •  $0.34/M output
+# QUICK_CF_MODEL = "@cf/meta/m2m100-1.2b"
+# General multilingual fallback (cheap input, expensive output):
+#   $0.29/M input  •  $2.25/M output
+# QUICK_CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
-# ── Local dev overrides ─────────────────────────────────────────────────────
-# wrangler dev reads secrets from .dev.vars (gitignored).
-# Create quick/cf/.dev.vars with:
-#   ANTHROPIC_API_KEY=sk-ant-...
+# ── Secrets ───────────────────────────────────────────────────────────────────
+# Optional backends — set via wrangler secret put:
+#   ANTHROPIC_API_KEY  — enables "anthropic" backend
+#   OPENAI_API_KEY     — enables "openai-agents" backend
+# Local dev: add to .dev.vars (gitignored)

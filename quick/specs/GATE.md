@@ -93,3 +93,6 @@ Fully aluminium T6 gate. 3× lighter than steel, 1.5× stronger than standard al
 - **Ask ALNEX explicitly: does the price include rollers, bottom track, end post, and side guide?** Premium brands often bundle hardware but confirm before ordering.
 - Existing bottom track may be reusable — check for straightness and rust before ordering new track.
 - T6 aluminium requires zero ongoing maintenance and no painting.
+
+x
+ 

@@ -9,11 +9,11 @@ mod http;
 mod fonts;
 mod idempotency;
 mod new;
+#[cfg(feature = "container")]
+mod serve;
 mod themes;
 mod translate;
 mod vfs;
-#[cfg(feature = "local")]
-mod watch;
 
 pub use config::Config;
 
@@ -50,11 +50,14 @@ enum Commands {
         /// Spec stem (e.g. GATE — without .md extension)
         name: String,
     },
-    /// Watch *.md and scripts/theme.typ; runs fonts → translate → build directly (no mise needed).
-    /// All three idempotency layers are preserved in Rust: hash checks, stamp mtime, per-file.
-    /// Local-dev only — not available on Cloudflare (no filesystem events on WASM).
-    #[cfg(feature = "local")]
-    Watch,
+    /// HTTP compile server — runs inside the CF Container alongside the PipelineAgent DO.
+    /// Accepts POST /compile {name, content} → PDF bytes.  GET /health → liveness probe.
+    #[cfg(feature = "container")]
+    Serve {
+        /// Port to listen on
+        #[arg(long, default_value = "8080")]
+        port: u16,
+    },
     /// Create a new spec file from TEMPLATE.md
     New {
         /// Spec name in UPPER CASE (e.g. DECK)
@@ -129,8 +132,8 @@ fn main() {
             translate::cmd_translate(&cfg, vec![path])
                 .and_then(|_| build::cmd_build(&cfg, Some(name)))
         }
-        #[cfg(feature = "local")]
-        Commands::Watch => watch::cmd_watch(&cfg),
+        #[cfg(feature = "container")]
+        Commands::Serve { port } => serve::cmd_serve(&cfg, port),
         Commands::New { name } => new::cmd_new(&cfg, &name),
         Commands::Clean => build::cmd_clean(&cfg),
         Commands::Themes { cmd } => match cmd {

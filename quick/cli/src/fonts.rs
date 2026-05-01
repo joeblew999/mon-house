@@ -81,7 +81,7 @@ fn font_source_file(cfg: &Config) -> Result<std::path::PathBuf> {
 fn theme_hash(cfg: &Config) -> Result<String> {
     let path = font_source_file(cfg)?;
     let bytes = vfs::read_bytes(&path)?;
-    Ok(idempotency::sha256_hex(&bytes))
+    Ok(idempotency::blake3_hex(&bytes))
 }
 
 pub fn parse_families(cfg: &Config) -> Result<Vec<String>> {
