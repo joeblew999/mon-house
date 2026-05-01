@@ -230,14 +230,14 @@ run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignore
 #
 # Fresh-machine setup (one time):
 #   1. fnox set --global -p keychain CLOUDFLARE_API_TOKEN  # one-time per machine
-#   2. wrangler secret put ANTHROPIC_API_KEY               # in cf/, one-time
+#   2. mise exec -- wrangler secret put ANTHROPIC_API_KEY  # one-time, in cf/
 #   3. mise run 1-install
 #   4. mise run 10-deploy
 #
 # Day-to-day:
-#   mise run dev            # local dev (Vite + miniflare + Container)
+#   mise run dev            # Vite + miniflare locally
 #   mise run 10b-redeploy   # quick redeploy after wrangler.toml/secret tweaks
-#   mise run tail           # follow live worker logs
+#   mise run tail           # live worker logs
 #   mise run prove:bindings # verify wrangler.toml bindings via dry-run
 
 [tasks."1-install"]
@@ -255,13 +255,10 @@ dir = "{{env.CF_WORKER_DIR}}"
 run = "npm run build"
 
 [tasks."10-deploy"]
-description = "Full deploy: prepare context, build SPA, wrangler deploy Worker + Container. Validates CF token first."
+description = "Full deploy: vite build + wrangler deploy. Validates CF token first."
 depends = ["cf:token-check"]
-run = """
-mise run cf:prepare
-cd {{env.CF_WORKER_DIR}} && npm run deploy
-mise run cf:prepare:clean
-"""
+dir = "{{env.CF_WORKER_DIR}}"
+run = "npm run deploy"
 
 [tasks."10b-redeploy"]
 description = "Re-deploy without rebuilding (fast iteration after wrangler.toml/secret changes)"
@@ -270,8 +267,7 @@ dir = "{{env.CF_WORKER_DIR}}"
 run = "wrangler deploy"
 
 [tasks.dev]
-description = "Run cf/ locally: Vite dev server + miniflare Worker + Container in Docker. AI binding calls real CF via remote=true in wrangler.toml."
-depends = ["cf:prepare"]
+description = "Run cf/ locally: Vite dev server + miniflare Worker. AI binding calls real CF via remote=true in wrangler.toml."
 dir = "{{env.CF_WORKER_DIR}}"
 run = "npm run dev"
 
@@ -292,26 +288,3 @@ run = "wrangler login"
 description = "Run all applicable prove:* checks. quick/ has no CF Access / fnox / D1, so only prove:bindings runs."
 depends = ["prove:bindings"]
 run = "echo '✓ all checks passed.'"
-
-# ── Project-specific helpers (used by 10-deploy, kept separate so they're addressable on their own)
-
-[tasks."cf:prepare"]
-description = "Copy cli/ + scripts/ + fonts into cf/ so the Docker build context for the typst Container is self-contained"
-depends = ["build-cli", "fonts"]
-run = """
-cp -r cli     {{env.CF_WORKER_DIR}}/cli
-cp    Cargo.toml Cargo.lock  {{env.CF_WORKER_DIR}}/
-cp -r scripts {{env.CF_WORKER_DIR}}/scripts
-mkdir -p {{env.CF_WORKER_DIR}}/resources/fonts
-cp -r {{env.QUICK_RESOURCES_DIR}}/fonts/. {{env.CF_WORKER_DIR}}/resources/fonts/
-"""
-
-[tasks."cf:prepare:clean"]
-description = "Remove files copied by cf:prepare (keeps cf/ tidy after deploy)"
-run = """
-rm -rf  {{env.CF_WORKER_DIR}}/cli
-rm -f   {{env.CF_WORKER_DIR}}/Cargo.toml
-rm -f   {{env.CF_WORKER_DIR}}/Cargo.lock
-rm -rf  {{env.CF_WORKER_DIR}}/scripts
-rm -rf  {{env.CF_WORKER_DIR}}/resources
-"""

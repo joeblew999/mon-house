@@ -8,11 +8,8 @@
 import { Hono } from "hono";
 import { routeAgentRequest } from "agents";
 import { PipelineAgent } from "./agent";
-// TypstCompiler container disabled in this deploy — see wrangler.toml comment.
-// import { TypstCompiler } from "./compiler";
 
 export { PipelineAgent };
-// export { TypstCompiler };
 
 const app = new Hono<{ Bindings: Env }>();
 

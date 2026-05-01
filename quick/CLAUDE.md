@@ -271,10 +271,13 @@ Every file operation goes through `vfs`, every HTTP call through `http`.
 
 | Feature | Default | What it enables |
 |---|---|---|
-| `local` | ✓ on | `notify` (file watching), `dirs` (VSCode path lookup), `watch` subcommand |
-| *(none)* | — | `--no-default-features` → Cloudflare-compatible build |
+| `local` | ✓ on | file watching, VSCode path lookup, `claude` CLI discovery |
+| `container` | — | `tiny_http` for the `serve` HTTP endpoint |
+| *(none)* | — | minimal build — kept buildable as a portability check; not currently a deploy target |
 
-Build for Cloudflare: `cargo build --no-default-features`
+The CF Worker is TypeScript (`cf/`), so the Rust CLI doesn't ship to CF
+today. The `--no-default-features` build is preserved as a safety net
+for any future WASM/Container path (see the WASM spike below).
 
 ### Translation backends (`translate.rs`)
 
@@ -403,20 +406,38 @@ the old pandoc `{=typst}` raw block syntax.
 
 ## Cloudflare Worker (`quick/cf/`)
 
-The pipeline can run on Cloudflare Workers as well as locally. The CF Worker lives at `quick/cf/`.
+The CF Worker lives at `quick/cf/`. **Currently TypeScript** (Hono + Agents
+SDK + R2 + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
 
-### Architecture — shared lib pattern
+### Current architecture
 
-`cli/` is a **lib + bin**. Shared code (compiled with `--no-default-features`) is used by both targets:
-
-| Layer | Local CLI | CF Worker |
+| Layer | Local CLI (Rust) | CF Worker (TS) |
 |---|---|---|
-| Shared types + logic | `cli/src/lib.rs` | same crate |
-| HTTP transport | `ureq` (`native-http` feature) | `worker::Fetch` (async, in `cf/src/`) |
-| FS | `std::fs` via `vfs.rs` | R2 / KV (swap `vfs.rs`) |
-| File watch | `notify` (`local` feature) | n/a |
+| Translate | `cli/src/translate.rs` (Claude API or CLI) | `cf/src/translate.rs` → `backends/*` |
+| FS | `std::fs` via `vfs.rs` | `@cloudflare/shell` Workspace (SQLite + R2) |
+| Watch | `notify` crate (`local` feature) | TS watcher in `quick/local/` (talks to Agent over WS) |
+| PDF compile | `typst` CLI subprocess | not on Worker — built by GitHub Actions |
 
-Build for Cloudflare: `cargo build --no-default-features` (drops `notify`, `dirs`, watch subcommand).
+The `cli/` Rust crate is structured as **lib + bin** so a future
+workers-rs migration of the Worker keeps source-shared. Modules
+intentionally portable (no `notify`, no `dirs`, no `which::which("typst")`):
+`vfs.rs`, `http.rs`, `config.rs`, `idempotency.rs`, `translate.rs`.
+
+### Migrating the Worker to workers-rs (Rust) — known-good path
+
+Demonstrated working in our other repos with complex systems. Tradeoff:
+keeps a single language across local + CF (Rust everywhere), at the cost
+of a Rust toolchain in the Worker build. The current TS Worker is fine
+day-to-day; revisit the Rust-on-CF migration if/when:
+
+- We want to share `translate.rs` / hash logic across local + Worker
+  without TS bindings (`cli/bindings/`).
+- We need a smaller Worker bundle than what the JS bundlers + AI SDKs
+  produce (current: ~520 KB gzipped — well under free tier).
+- We tackle the typst-WASM-on-CF spike (separate concern, see below).
+
+The `--no-default-features` build of `quick-tool` is kept compiling as a
+safety net for that path.
 
 ### Deploy
 
@@ -453,38 +474,50 @@ shared tasks.
 
 The Worker handles translate requests — receives EN spec content, calls the Claude API (via `ANTHROPIC_API_KEY`), returns Thai translation. The central `@cloudflare/shell` Workspace (SQLite + R2) acts as shared FS so local devs, CI, and contractors all read/write the same state.
 
-### TODO — spike: client-side typst WASM (fat client, thin worker)
+### TODO — research: typst-as-WASM, on client and on Worker
 
 Reference impl: [automataIA/wasm-typst-studio-rs](https://github.com/automataIA/wasm-typst-studio-rs)
-— typst compiled to WASM running **in the browser** (via Leptos + `typst-as-lib`),
-not on the Worker. The 11.3 MB gzipped WASM ships once, the browser caches it,
-and typst compilation happens on the user's machine. Zero CF compute used for
-typst.
+— typst compiled to WASM via `typst-as-lib`, running in a Leptos browser SPA.
+Their public deploy ships an 11.3 MB gzipped WASM artifact; that includes
+Leptos + `web-sys` overhead which a stripped build wouldn't carry.
 
-This inverts the current wip architecture. Instead of:
+There are **two related tracks** worth investigating, not necessarily one
+or the other:
 
-| | Current wip | Proposed (post-spike) |
-|---|---|---|
-| typst PDF compile | CF Container ($5/mo) | **Browser** (free CDN asset) |
-| Translate (Claude API) | CF Worker | CF Worker (unchanged — keeps API key off client) |
-| Realtime collab | Durable Object | optional (skip for single-user) |
-| PDF storage | Container → R2 | **Browser → R2** (or none) |
-| CF tier required | Workers Paid + Containers | Workers free tier ✓ |
+**Track A — typst-WASM in the browser (fat client)**
+- WASM ships from the Worker as a static asset (no compute cost),
+  browser caches it, typst compiles client-side.
+- Win: zero CF compute used for PDF render; works on free tier.
+- Open: how big a stripped build (no Leptos, no SPA framework, just
+  `typst` + `typst-pdf` + minimal JS bridge) actually is, and whether
+  Thai fonts can be loaded from `/fonts/` rather than embedded.
 
-**Spike goal**: prove the fat-client / thin-worker architecture is viable for
-this use case, then decide whether to rip the Container out of `quick/cf/`.
+**Track B — typst-WASM on the Worker (workers-rs)**
+- Same WASM artifact, loaded by a Rust Worker via workers-rs. Worker
+  exposes a `/compile` endpoint; clients without enough hardware (mobile?)
+  fall through to it.
+- Open: bundle size against the Workers Paid 10 MB compressed limit. A
+  stripped build *might* fit; needs measurement.
+- Worth noting — workers-rs itself is a known-good runtime in our other
+  repos. Sizing is the only uncertainty for this specific use case.
 
-**Spike scope** (timebox ~1 day):
-1. Clone `automataIA/wasm-typst-studio-rs`; confirm it loads in a browser, edits, and renders our bigger spec PDFs (multi-page, images, Thai fonts).
-2. Strip the demo SPA → keep only the typst engine bindings; integrate into the existing Vite React UI in `cf/src/client.tsx`.
-3. Verify Thai font support — `noto_sans_thai_*` must be loadable as bytes (probably embedded or fetched from `/fonts/`).
-4. Wire the Worker down to translate-only: drop `typst_compiler` Container, drop `PipelineAgent` DO if collab isn't required, keep just the `/translate` endpoint.
-5. Measure the browser bundle, browser compile time on a real spec, and confirm CF Worker bundle drops well under 1 MB compressed.
+**Track A unblocks free-tier with browser PDF preview. Track B adds a
+server-side fallback if needed.** Neither blocks the other — start with
+A (smaller scope), add B later if a server fallback proves valuable.
 
-**Non-goals during spike**: production polish, multi-user collab, mobile. Just
-prove the architecture works for the single-user-with-builder flow.
+**A-spike scope** (~1 day):
+1. Clone `wasm-typst-studio-rs`; confirm it renders our bigger specs (multi-page, images, Thai fonts) in a browser.
+2. Strip to just the typst bindings; integrate into [cf/src/client.tsx](cf/src/client.tsx).
+3. Verify `noto_sans_thai_*` loads from `/fonts/` (served as static asset by the Worker).
+4. Measure the stripped browser WASM size + cold-compile time on a representative spec.
 
-Don't take on this spike until the Container path is stable and merged.
+**B-spike scope** (~2 days, only if A is in production and a server fallback is wanted):
+1. Build `typst-as-lib` with `wasm32-unknown-unknown` + workers-rs bindings.
+2. Measure the gzipped Worker bundle. If under 10 MB, viable.
+3. Add a `/compile` endpoint that takes spec content and returns PDF bytes.
+
+PDFs continue to come from GitHub Actions (`specs-latest` release) for
+the builder regardless of which track lands first.
 
 ---
 
