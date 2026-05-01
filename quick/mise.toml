@@ -10,9 +10,10 @@
 includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.7.1"]
 
 [tools]
-typst           = "latest"
-node            = "lts"       # required by wrangler
-"npm:wrangler"  = "latest"    # Cloudflare Workers CLI
+typst                = "latest"
+node                 = "lts"       # required by wrangler
+"npm:wrangler"       = "latest"    # Cloudflare Workers CLI
+"github:jdx/fnox"    = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
 #              all functionality is now in the Rust CLI (cli/)
