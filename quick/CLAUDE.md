@@ -422,14 +422,32 @@ Build for Cloudflare: `cargo build --no-default-features` (drops `notify`, `dirs
 
 ```bash
 cd quick/cf
-wrangler secret put ANTHROPIC_API_KEY   # one-time
-mise run cf:login       # authenticate wrangler
-mise run cf:whoami      # verify account
-mise run cf:dev         # local dev mode
-mise run cf:deploy      # deploy to Cloudflare
+wrangler secret put ANTHROPIC_API_KEY      # one-time
+mise run login          # authenticate wrangler (opens browser)
+mise run whoami         # verify CF account
+mise run 1-install      # npm deps + build quick-tool (fresh-machine)
+mise run dev            # local dev mode (Vite + miniflare + Container)
+mise run 10-deploy      # full deploy to Cloudflare
+mise run 10b-redeploy   # fast redeploy after wrangler.toml/secret tweaks
+mise run tail           # follow live worker logs
+mise run prove:bindings # verify wrangler.toml bindings via dry-run
 ```
 
 Wrangler is installed via mise: `"npm:wrangler" = "latest"` (requires `node = "lts"`).
+
+### Shared mise tasks
+
+`quick/mise.toml` includes the org-shared library at
+[`joeblew999/.github/mise-tasks`](https://github.com/joeblew999/.github)
+via `[task_config].includes`. That brings in `cf:token-check`,
+`wrangler:tail` / `wrangler:secret-list` / `wrangler:dev` / `wrangler:deploy`,
+`rust:build` / `rust:test` / `rust:wasm-pack`, `prove:bindings`, and the
+`mobile:*` Tauri tasks. Local `mise.toml` only adds the spec pipeline
+(translate, build, watch, themes, fonts) and the deploy orchestrators
+(`1-install`, `6-build`, `10-deploy`, `10b-redeploy`, `dev`, `tail`).
+
+Pinned tag: `v0.7.1`. Bump in `[task_config].includes` to pull in newer
+shared tasks.
 
 ### What runs on CF
 

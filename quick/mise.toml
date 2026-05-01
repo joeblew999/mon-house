@@ -1,3 +1,14 @@
+[task_config]
+# Shared joeblew999 task library — provides cf:token-check, wrangler:tail/secret-list,
+# rust:build/test, prove:bindings. Same library kv-manager and other repos pull in
+# so task names stay consistent across the org.
+#
+# Not used here: cf:access-setup / cf:provision-d1-r2 / cf:secrets-put-mapped /
+# wrangler:gen / prove:secrets|access-policy|deployed — those assume CF Access auth,
+# D1, fnox, and templated wrangler.toml. quick/ deploys with a single
+# ANTHROPIC_API_KEY secret and a static wrangler.toml.
+includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.7.1"]
+
 [tools]
 typst           = "latest"
 node            = "lts"       # required by wrangler
@@ -214,28 +225,77 @@ description = "Run E2E tests with a specific theme. Usage: mise run test:theme -
 depends = ["build-cli", "fonts", "all"]
 run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignored"
 
-# ── Cloudflare tasks ───────────────────────────────────────────────────────────
+# ── Cloudflare deploy lifecycle (phase-numbered, matching kv-manager shape) ───
+#
+# Fresh-machine setup (one time):
+#   1. fnox set --global -p keychain CLOUDFLARE_API_TOKEN  # one-time per machine
+#   2. wrangler secret put ANTHROPIC_API_KEY               # in cf/, one-time
+#   3. mise run 1-install
+#   4. mise run 10-deploy
+#
+# Day-to-day:
+#   mise run dev            # local dev (Vite + miniflare + Container)
+#   mise run 10b-redeploy   # quick redeploy after wrangler.toml/secret tweaks
+#   mise run tail           # follow live worker logs
+#   mise run prove:bindings # verify wrangler.toml bindings via dry-run
 
-[tasks."cf:login"]
+[tasks."1-install"]
+description = "Fresh-machine: install npm deps for cf/ and local/ + build quick-tool"
+depends = ["build-cli"]
+run = """
+cd {{env.CF_WORKER_DIR}} && npm install
+cd ../local && npm install
+"""
+
+[tasks."6-build"]
+description = "Build the Vite SPA + Worker bundle (cf/dist/) — required before deploy"
+depends = ["1-install"]
+dir = "{{env.CF_WORKER_DIR}}"
+run = "npm run build"
+
+[tasks."10-deploy"]
+description = "Full deploy: prepare context, build SPA, wrangler deploy Worker + Container. Validates CF token first."
+depends = ["cf:token-check"]
+run = """
+mise run cf:prepare
+cd {{env.CF_WORKER_DIR}} && npm run deploy
+mise run cf:prepare:clean
+"""
+
+[tasks."10b-redeploy"]
+description = "Re-deploy without rebuilding (fast iteration after wrangler.toml/secret changes)"
+depends = ["cf:token-check"]
+dir = "{{env.CF_WORKER_DIR}}"
+run = "wrangler deploy"
+
+[tasks.dev]
+description = "Run cf/ locally: Vite dev server + miniflare Worker + Container in Docker. AI binding calls real CF via remote=true in wrangler.toml."
+depends = ["cf:prepare"]
+dir = "{{env.CF_WORKER_DIR}}"
+run = "npm run dev"
+
+[tasks.tail]
+description = "Tail live logs from the deployed Worker"
+dir = "{{env.CF_WORKER_DIR}}"
+run = "wrangler tail"
+
+[tasks.whoami]
+description = "Show current Cloudflare auth identity"
+run = "wrangler whoami"
+
+[tasks.login]
 description = "Authenticate with Cloudflare (opens browser)"
 run = "wrangler login"
 
-[tasks."cf:whoami"]
-description = "Show currently authenticated Cloudflare account"
-run = "wrangler whoami"
+[tasks."prove:all"]
+description = "Run all applicable prove:* checks. quick/ has no CF Access / fnox / D1, so only prove:bindings runs."
+depends = ["prove:bindings"]
+run = "echo '✓ all checks passed.'"
 
-[tasks."cf:dev"]
-description = "Run everything locally: Vite dev server (React UI) + miniflare Worker + Container in Docker. AI binding calls real CF via remote=true in wrangler.toml."
-depends = ["cf:prepare"]
-dir = "{{env.CF_WORKER_DIR}}"
-# `vite dev` starts the React dev server and proxies Worker requests to miniflare.
-# DOs + R2 + Container run locally; AI binding calls real CF Workers AI (remote=true in wrangler.toml).
-# Persisted state in cf/.wrangler/state/ (gitignored).
-# Open http://localhost:5173 for the React UI.
-run = "npm run dev"
+# ── Project-specific helpers (used by 10-deploy, kept separate so they're addressable on their own)
 
 [tasks."cf:prepare"]
-description = "Copy cli/ + scripts/ + fonts into cf/ so Docker build context is self-contained"
+description = "Copy cli/ + scripts/ + fonts into cf/ so the Docker build context for the typst Container is self-contained"
 depends = ["build-cli", "fonts"]
 run = """
 cp -r cli     {{env.CF_WORKER_DIR}}/cli
@@ -253,12 +313,4 @@ rm -f   {{env.CF_WORKER_DIR}}/Cargo.toml
 rm -f   {{env.CF_WORKER_DIR}}/Cargo.lock
 rm -rf  {{env.CF_WORKER_DIR}}/scripts
 rm -rf  {{env.CF_WORKER_DIR}}/resources
-"""
-
-[tasks."cf:deploy"]
-description = "Prepare build context, vite build + wrangler deploy Worker + Container to Cloudflare, then clean up"
-run = """
-mise run cf:prepare
-cd {{env.CF_WORKER_DIR}} && npm run deploy
-mise run cf:prepare:clean
 """
