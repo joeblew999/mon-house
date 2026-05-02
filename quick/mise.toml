@@ -7,13 +7,14 @@
 # wrangler:gen / prove:secrets|access-policy|deployed — those assume CF Access auth,
 # D1, fnox, and templated wrangler.toml. quick/ deploys with a single
 # ANTHROPIC_API_KEY secret and a static wrangler.toml.
-includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.9.0"]
+includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.10.0"]
 
 [tools]
 typst                  = "latest"
 node                   = "lts"       # required by wrangler
 "npm:wrangler"         = "4.87.0"    # Cloudflare Workers CLI
 "github:jdx/fnox"      = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
+"github:nushell/nushell" = "0.112"  # required by .github v0.10.0+ (all shared mise-tasks are nu)
 "cargo:worker-build"   = "0.8.1"     # workers-rs WASM bundler — used by quick-compiler/
 "cargo:cargo-leptos"   = "0.2"       # leptos compound build (SSR Worker + hydrate browser)
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
