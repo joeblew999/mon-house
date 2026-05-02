@@ -7,7 +7,7 @@
 # wrangler:gen / prove:secrets|access-policy|deployed — those assume CF Access auth,
 # D1, fnox, and templated wrangler.toml. quick/ deploys with a single
 # ANTHROPIC_API_KEY secret and a static wrangler.toml.
-includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.7.1"]
+includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.9.0"]
 
 [tools]
 typst                  = "latest"
