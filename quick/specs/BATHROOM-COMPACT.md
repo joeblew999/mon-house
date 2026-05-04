@@ -1,7 +1,7 @@
 ---
 title: Bathroom retile (compact, no wall move)
 status: Draft
-rev: "8"
+rev: "9"
 ---
 
 # Bathroom retile — Laem Chabang (compact, no wall move)
@@ -64,6 +64,24 @@ Both pieces are COTTO white ceramic with **30-year ceramic warranty**, same era 
 - **500 × 420 × 195 mm** (W × D × H)
 - Wall-hung white ceramic, single tap hole + overflow
 - ฿850 THB
+- **Box contains the basin only** — drain, trap and mounting hardware are extra (next 3 items)
+
+**Basin drain pop-up — COTTO CT665(HM) chrome push-button waste**
+
+- HomePro SKU TBC — [homepro.co.th search "CT665"](https://www.homepro.co.th/search?q=CT665&lang=en)
+- ฿429 THB
+
+**Basin trap — LUZERN OS-803 chrome bottle trap (20 cm exposed)**
+
+- HomePro SKU 169537 — [homepro.co.th/p/169537](https://www.homepro.co.th/p/169537)
+- Chrome finish, exposed under the basin (deliberate, for cleaning access)
+- ฿205 THB
+
+**Basin wall-mount bracket — MOYA mounting bracket set**
+
+- HomePro SKU 1269536 — [homepro.co.th/p/1269536](https://www.homepro.co.th/p/1269536)
+- Wall-hung basin mounting kit (brackets + bolts)
+- ฿99 THB
 
 **Basin tap — COTTO CTSE1006 (matched brand, chrome)**
 
@@ -93,7 +111,17 @@ Both pieces are COTTO white ceramic with **30-year ceramic warranty**, same era 
 - Square stainless grate, fits standard outlet
 - ฿375 THB
 
-**Total parts list: ฿4,283** (basin + tap + toilet + bidet + drain)
+**Tiles — COTTO Pemo Beige 30 × 60 cm porcelain (rectified)**
+
+- HomePro SKU 1305197 — [homepro.co.th/p/1305197](https://www.homepro.co.th/p/1305197)
+- Modern beige porcelain, hard-edge rectified, suits both walls and floor
+- **฿599 per box** (~1 m² per box; budget ~9 boxes for the full bathroom = ~฿5,400)
+- Anti-slip variant for the wet zone: pick from a matching beige range at the showroom if Pemo doesn't stock one (Duragres Celica Beige, Duragres Kalorin Beige, or Tara Lander Beige are close-tone alternatives)
+
+**Fixed parts list (excluding tiles, sold by area): ฿5,016**
+basin (850) + drain (429) + trap (205) + mount (99) + tap (439) + toilet (2,290) + bidet (329) + floor drain (375).
+
+**Tiles, ~฿5,400** at ~9 boxes for ~6.1 m² walls + 2.7 m² floor.
 
 ---
 
