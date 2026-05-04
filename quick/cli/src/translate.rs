@@ -24,7 +24,7 @@ use ts_rs::TS;
 
 use crate::{http, idempotency, vfs};
 
-/// Shared system prompt — keep in sync with cf/src/prompt.ts.
+/// Shared spec prompt — keep in sync with cf/src/prompt.ts SYSTEM_PROMPT.
 pub const SYSTEM_PROMPT: &str = r#"You are a professional translator specialising in Thai construction and renovation documents.
 
 Rules:
@@ -37,6 +37,44 @@ Rules:
 - Do NOT add explanations or notes — output ONLY the translated markdown
 "#;
 
+/// Single short label prompt — for SVG <text> elements. Keep in sync with cf/src/prompt.ts LABEL_PROMPT.
+pub const LABEL_PROMPT: &str = r#"You translate single short labels from English to Thai. The labels are used in technical floor plans and construction drawings.
+
+Rules:
+- Output ONLY the Thai translation, on a single line
+- Keep ALL numbers, dimensions, units (mm, m², etc.) exactly as-is
+- Use construction terminology
+- NO markdown, NO tables, NO headings, NO bullet points, NO explanations
+- NO quotation marks, NO labels like "Translation:"
+- If the input has no English words (numbers / units only), output it unchanged
+"#;
+
+/// Translation modes — `spec` for full markdown specs, `label` for single short SVG labels.
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
+pub enum TranslateMode {
+    Spec,
+    Label,
+}
+
+impl Default for TranslateMode {
+    fn default() -> Self { TranslateMode::Spec }
+}
+
+fn system_prompt_for(mode: TranslateMode) -> &'static str {
+    match mode {
+        TranslateMode::Spec => SYSTEM_PROMPT,
+        TranslateMode::Label => LABEL_PROMPT,
+    }
+}
+
+fn user_prompt_for(mode: TranslateMode, content: &str) -> String {
+    match mode {
+        TranslateMode::Spec => format!("Translate this construction spec to Thai:\n\n{content}"),
+        TranslateMode::Label => format!("Translate this label to Thai: {content}"),
+    }
+}
+
 // ── Wire types (shared with CF Worker via ts-rs) ───────────────────────────────
 
 /// Request body for `POST /translate`.
@@ -44,6 +82,9 @@ Rules:
 #[ts(export, export_to = "TranslateRequest.ts")]
 pub struct TranslateRequest {
     pub content: String,
+    /// Optional — `"spec"` (default) for markdown specs, `"label"` for SVG labels.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<String>,
 }
 
 /// Success response from `POST /translate`.
@@ -122,11 +163,15 @@ impl TranslateBackend {
     }
 
     fn translate(&self, content: &str) -> Result<String> {
+        self.translate_with(content, TranslateMode::Spec)
+    }
+
+    fn translate_with(&self, content: &str, mode: TranslateMode) -> Result<String> {
         match self {
-            TranslateBackend::Worker { url } => call_worker(url, content),
-            TranslateBackend::Api { api_key, model } => call_claude_api(api_key, model, content),
+            TranslateBackend::Worker { url } => call_worker(url, content, mode),
+            TranslateBackend::Api { api_key, model } => call_claude_api(api_key, model, content, mode),
             #[cfg(feature = "local")]
-            TranslateBackend::Cli(path) => call_claude_cli(path, content),
+            TranslateBackend::Cli(path) => call_claude_cli(path, content, mode),
         }
     }
 }
@@ -134,25 +179,31 @@ impl TranslateBackend {
 // ── Worker HTTP backend ────────────────────────────────────────────────────────
 
 #[derive(Serialize)]
-struct WorkerRequest<'a> { content: &'a str }
+struct WorkerRequest<'a> {
+    content: &'a str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    mode: Option<&'a str>,
+}
 
 #[derive(Deserialize)]
 struct WorkerResponse { thai: String }
 
-fn call_worker(url: &str, content: &str) -> Result<String> {
-    let resp: WorkerResponse = http::post_json(url, &[], &WorkerRequest { content })?;
+fn call_worker(url: &str, content: &str, mode: TranslateMode) -> Result<String> {
+    let mode_str = match mode { TranslateMode::Spec => None, TranslateMode::Label => Some("label") };
+    let resp: WorkerResponse = http::post_json(url, &[], &WorkerRequest { content, mode: mode_str })?;
     Ok(clean_output(resp.thai))
 }
 
 // ── Claude API backend ─────────────────────────────────────────────────────────
 
-fn call_claude_api(api_key: &str, model: &str, content: &str) -> Result<String> {
+fn call_claude_api(api_key: &str, model: &str, content: &str, mode: TranslateMode) -> Result<String> {
     const API_URL: &str = "https://api.anthropic.com/v1/messages";
-    let prompt = format!("Translate this construction spec to Thai:\n\n{content}");
+    let prompt = user_prompt_for(mode, content);
+    let max_tokens = match mode { TranslateMode::Label => 256, TranslateMode::Spec => 16384 };
     let body = ApiRequest {
         model,
-        max_tokens: 16384,
-        system: SYSTEM_PROMPT,
+        max_tokens,
+        system: system_prompt_for(mode),
         messages: vec![ApiMessage { role: "user", content: &prompt }],
     };
     let headers = [("x-api-key", api_key), ("anthropic-version", "2023-06-01")];
@@ -167,9 +218,13 @@ fn call_claude_api(api_key: &str, model: &str, content: &str) -> Result<String> 
 // ── Claude CLI backend (local only) ───────────────────────────────────────────
 
 #[cfg(feature = "local")]
-fn call_claude_cli(claude: &Path, content: &str) -> Result<String> {
+fn call_claude_cli(claude: &Path, content: &str, mode: TranslateMode) -> Result<String> {
     use std::process::Command;
-    let prompt = format!("{SYSTEM_PROMPT}\nTranslate this construction spec to Thai:\n\n{content}");
+    let prompt = format!(
+        "{system}\n{user}",
+        system = system_prompt_for(mode),
+        user = user_prompt_for(mode, content),
+    );
     let output = Command::new(claude)
         .args(["-p", &prompt, "--output-format", "text"])
         .output()
@@ -247,7 +302,7 @@ pub fn translate_svg_content(backend: &TranslateBackend, content: &str) -> Resul
         let translated = if inner.trim().is_empty() {
             inner.to_string()
         } else {
-            backend.translate(inner)?
+            backend.translate_with(inner, TranslateMode::Label)?
         };
         let new_attrs = font_re
             .replace(attrs, r#"font-family="Noto Sans Thai, Arial""#)

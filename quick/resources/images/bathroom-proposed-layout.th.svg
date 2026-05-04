@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-380 -450 2110 3850"
+     width="600" height="1100">
+  <defs>
+    <style>
+      .wall            { stroke: #222; stroke-width: 28; fill: none; }
+      .wet-zone        { fill: #e8f4fa; stroke: none; }
+      .step            { stroke: #c47a3a; stroke-width: 6; stroke-dasharray: 28,18; fill: none; }
+      .fixture         { stroke: #555; stroke-width: 4; fill: #f6f6f6; }
+      .glass           { stroke: #3a82c8; stroke-width: 14; fill: none; stroke-linecap: round; }
+      .door-arc        { stroke: #999; stroke-width: 4; stroke-dasharray: 14,12; fill: none; }
+      .door-open       { stroke: #6b4423; stroke-width: 8; fill: none; opacity: 0.45; stroke-dasharray: 24,14; }
+      .cabinet         { stroke: #555; stroke-width: 4; fill: #fafafa; }
+      .towel-rail      { stroke: #888; stroke-width: 14; fill: none; stroke-linecap: round; }
+      .label           { font-family: Arial, sans-serif; font-size: 56px; fill: #222; text-anchor: middle; }
+      .label-small     { font-family: Arial, sans-serif; font-size: 42px; fill: #444; text-anchor: middle; }
+      .label-tiny      { font-family: Arial, sans-serif; font-size: 36px; fill: #555; text-anchor: middle; }
+      .dim             { font-family: Arial, sans-serif; font-size: 44px; fill: #777; text-anchor: middle; }
+      .dim-line        { stroke: #aaa; stroke-width: 2; }
+      .title           { font-family: Arial, sans-serif; font-size: 64px; fill: #111; font-weight: bold; text-anchor: middle; }
+      .subtitle        { font-family: Arial, sans-serif; font-size: 40px; fill: #555; text-anchor: middle; font-style: italic; }
+    </style>
+  </defs>
+
+  <!-- ── Title ─────────────────────────────────────────────────────────── -->
+  <text class="title"    x="675" y="-300">ห้องน้ำ – แบบจัดวางที่เสนอ</text>
+  <text class="subtitle" x="675" y="-220">มุมมองจากด้านบน · 1350 × 3000 มม. ภายใน · ประตูอยู่ด้านบน ฝักบัวอยู่ด้านล่าง</text>
+
+  <!-- ── Wet-zone shading (toilet + shower) ────────────────────────────── -->
+  <rect class="wet-zone" x="20" y="950" width="1310" height="2030" />
+
+  <!-- ── Walls (4 segments — door wall has a gap for the door 550..1350) ── -->
+  <line class="wall" x1="0"    y1="0"    x2="550"  y2="0"    />  <!-- door wall, before door -->
+  <line class="wall" x1="0"    y1="0"    x2="0"    y2="3000" />  <!-- fixture wall (left) -->
+  <line class="wall" x1="0"    y1="3000" x2="1350" y2="3000" />  <!-- back wall -->
+  <line class="wall" x1="1350" y1="0"    x2="1350" y2="3000" />  <!-- cabinet wall (right) -->
+
+  <!-- ── Door (hinge at top-RIGHT corner, opens inward against right wall) ── -->
+  <path class="door-arc"  d="M 550 0 A 800 800 0 0 1 1350 800" />
+  <line class="door-open" x1="1350" y1="0" x2="1350" y2="800" />
+  <text class="label-tiny" x="900" y="430" fill="#888">รัศมีวงสวิงประตู</text>
+  <text class="label-tiny" x="900" y="475" fill="#888">แผงขนาด 800 มม.</text>
+  <text class="label-tiny" x="900" y="520" fill="#888">บานพับด้านบนขวา</text>
+
+  <!-- ── Wet/dry step ──────────────────────────────────────────────────── -->
+  <line class="step" x1="0" y1="950" x2="1350" y2="950" />
+  <text class="label-tiny" x="675" y="922" fill="#c47a3a">ขั้นลด 50 มม. (แห้ง → เปียก)</text>
+
+  <!-- ── Basin (150-750 from door wall, on the LEFT fixture wall) ──────── -->
+  <rect class="fixture" x="0" y="150" width="400" height="600" />
+  <text class="label"       x="200" y="450">อ่างล้างหน้า</text>
+  <text class="label-small" x="200" y="510">ไม่เกิน 600 มม.</text>
+
+  <!-- ── Toilet (compact, 950-1400 from door, on the LEFT fixture wall) ── -->
+  <rect class="fixture" x="0" y="950" width="600" height="450" />
+  <text class="label"       x="300" y="1145">ห้องน้ำ</text>
+  <text class="label-small" x="300" y="1205">กะทัดรัด 600</text>
+
+  <!-- ── 250 mm gap (toilet roll holder + bidet sprayer mount here) ───── -->
+  <text class="label-tiny" x="175" y="1505" font-style="italic">ท่อระบายน้ำ + บิเดต์</text>
+  <text class="label-tiny" x="175" y="1545" font-style="italic">หัวฉีดพ่น</text>
+
+  <!-- ── Shower glass partition (500 mm into bathroom from LEFT fixture wall) -->
+  <line class="glass" x1="0" y1="1650" x2="500" y2="1650" />
+  <text class="label-tiny" x="250" y="1620" fill="#3a82c8">กระจก 500 × 2100 mm</text>
+
+  <!-- ── Shower zone label ─────────────────────────────────────────────── -->
+  <text class="label"       x="675" y="2300">ฝักบัว</text>
+  <text class="label-small" x="675" y="2370">ห้องเก็บของแบบวอล์คอิน · 1.82 m²</text>
+
+  <!-- ── Shower head marker (back-wall fixture-wall corner — bottom-left) ── -->
+  <circle cx="60" cy="2920" r="32" fill="#3a82c8" />
+  <text class="label-tiny" x="110" y="2810" text-anchor="start" fill="#3a82c8">หัวลูกศรชี้ลงซ้าย</text>
+
+  <!-- ── Cabinet (DIY, 900-1500 from door wall, on the RIGHT cabinet wall) ── -->
+  <rect class="cabinet" x="1150" y="900" width="200" height="600" />
+  <text class="label-small" x="1250" y="1185">ตู้เก็บของ</text>
+  <text class="label-tiny"  x="1250" y="1235">600×1500×200</text>
+  <text class="label-tiny"  x="1250" y="1280">DIY</text>
+
+  <!-- ── Towel rail (DIY, 2400-3000 from door wall, opposite shower head) ── -->
+  <line class="towel-rail" x1="1290" y1="2400" x2="1290" y2="3000" />
+  <text class="label-small" x="1150" y="2690" text-anchor="end">ราวแขวนผ้า</text>
+  <text class="label-tiny"  x="1150" y="2735" text-anchor="end">สแตนเลส</text>
+  <text class="label-tiny"  x="1150" y="2775" text-anchor="end">DIY</text>
+
+  <!-- ── Overall dimensions ────────────────────────────────────────────── -->
+  <!-- Width arrow at bottom -->
+  <line class="dim-line" x1="0"    y1="3180" x2="1350" y2="3180" />
+  <line class="dim-line" x1="0"    y1="3160" x2="0"    y2="3200" />
+  <line class="dim-line" x1="1350" y1="3160" x2="1350" y2="3200" />
+  <text class="dim" x="675" y="3260">กว้าง 1350 มม. (ภายใน)</text>
+
+  <!-- Length arrow on the right (cabinet wall side) -->
+  <line class="dim-line" x1="1570" y1="0"    x2="1570" y2="3000" />
+  <line class="dim-line" x1="1550" y1="0"    x2="1590" y2="0"    />
+  <line class="dim-line" x1="1550" y1="3000" x2="1590" y2="3000" />
+  <text class="dim" x="1630" y="1500" transform="rotate(90 1630 1500)">ยาว 3000 มม. (ภายใน)</text>
+
+  <!-- ── Position annotations along fixture wall (now LEFT, mm from door) ── -->
+  <line class="dim-line" x1="-130" y1="0"    x2="-130" y2="150"  />
+  <line class="dim-line" x1="-130" y1="150"  x2="-130" y2="750"  />
+  <line class="dim-line" x1="-130" y1="750"  x2="-130" y2="950"  />
+  <line class="dim-line" x1="-130" y1="950"  x2="-130" y2="1400" />
+  <line class="dim-line" x1="-130" y1="1400" x2="-130" y2="1650" />
+  <line class="dim-line" x1="-130" y1="1650" x2="-130" y2="3000" />
+  <line class="dim-line" x1="-150" y1="0"    x2="-110" y2="0"    />
+  <line class="dim-line" x1="-150" y1="150"  x2="-110" y2="150"  />
+  <line class="dim-line" x1="-150" y1="750"  x2="-110" y2="750"  />
+  <line class="dim-line" x1="-150" y1="950"  x2="-110" y2="950"  />
+  <line class="dim-line" x1="-150" y1="1400" x2="-110" y2="1400" />
+  <line class="dim-line" x1="-150" y1="1650" x2="-110" y2="1650" />
+  <line class="dim-line" x1="-150" y1="3000" x2="-110" y2="3000" />
+
+  <text class="label-tiny" x="-170" y="85"   text-anchor="end">ระยะร่น 150</text>
+  <text class="label-tiny" x="-170" y="475"  text-anchor="end">อ่างล้างหน้า 600</text>
+  <text class="label-tiny" x="-170" y="870"  text-anchor="end">ช่องว่าง 200</text>
+  <text class="label-tiny" x="-170" y="1195" text-anchor="end">ห้องน้ำ 450</text>
+  <text class="label-tiny" x="-170" y="1545" text-anchor="end">ช่องว่าง 250</text>
+  <text class="label-tiny" x="-170" y="2350" text-anchor="end">ฝักบัว 1350</text>
+
+</svg>

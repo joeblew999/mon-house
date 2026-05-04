@@ -49,7 +49,7 @@ QUICK_CF_MODEL = "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
 #   $0.34/M input  •  $0.34/M output
 # QUICK_CF_MODEL = "@cf/meta/m2m100-1.2b"
 # General multilingual fallback (cheap input, expensive output):
-#   $0.29/M input  •  $2.25/M output
+#   $0.29/M input  •  $2.25/M output  •  8K output cap (vs sea-lion's ~4K)
 # QUICK_CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 
 # ── Secrets ───────────────────────────────────────────────────────────────────

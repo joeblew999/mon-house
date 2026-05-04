@@ -7,8 +7,10 @@
 //                              Requires OPENAI_API_KEY secret.
 //   "vercel"                 — Vercel AI SDK (legacy); auto-picks anthropic or workers-ai.
 
+import type { TranslateMode } from "../prompt";
+
 export interface TranslateBackend {
-  translate(content: string, env: Env): Promise<string>;
+  translate(content: string, env: Env, mode?: TranslateMode): Promise<string>;
 }
 
 export async function resolveBackend(env: Env): Promise<TranslateBackend> {

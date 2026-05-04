@@ -24,12 +24,13 @@ app.get("/health", (c) => c.json({ ok: true, ts: Date.now() }));
 //   request:  { "content": "<en markdown>" }
 //   response: { "thai":    "<th markdown>" }
 app.post("/translate", async (c) => {
-  const body = await c.req.json<{ content?: string }>();
+  const body = await c.req.json<{ content?: string; mode?: "spec" | "label" }>();
   if (typeof body?.content !== "string" || body.content.length === 0) {
     return c.json({ error: "missing 'content' string in request body" }, 400);
   }
+  const mode = body.mode === "label" ? "label" : "spec";
   try {
-    const thai = await translate(body.content, c.env);
+    const thai = await translate(body.content, c.env, mode);
     return c.json({ thai });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

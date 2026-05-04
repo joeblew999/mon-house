@@ -12,27 +12,24 @@
 
 import { Agent, run } from "@openai/agents";
 import type { TranslateBackend } from "./index";
-import { SYSTEM_PROMPT, cleanOutput } from "../prompt";
+import { promptFor, userPromptFor, cleanOutput, type TranslateMode } from "../prompt";
 
 export class OpenAIAgentsBackend implements TranslateBackend {
-  async translate(content: string, _env: Env): Promise<string> {
+  async translate(content: string, _env: Env, mode: TranslateMode = "spec"): Promise<string> {
     // Translation agent — primary worker
     const translatorAgent = new Agent({
       name: "Thai Translator",
-      instructions: SYSTEM_PROMPT,
+      instructions: promptFor(mode),
     });
 
     // Triage agent — extend handoffs here to add reviewers, language variants, etc.
     const triageAgent = new Agent({
       name: "Pipeline Triage",
-      instructions: "Route construction spec translation tasks to the appropriate specialist agent.",
+      instructions: "Route construction spec or label translation tasks to the appropriate specialist agent.",
       handoffs: [translatorAgent],
     });
 
-    const result = await run(
-      triageAgent,
-      `Translate this construction spec to Thai:\n\n${content}`,
-    );
+    const result = await run(triageAgent, userPromptFor(mode, content));
 
     return cleanOutput(result.finalOutput ?? "");
   }

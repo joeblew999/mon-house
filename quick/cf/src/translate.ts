@@ -5,8 +5,9 @@
 //   "openai-agents"           — @openai/agents SDK; supports handoffs + tools
 
 import { resolveBackend } from "./backends/index";
+import type { TranslateMode } from "./prompt";
 
-export async function translate(content: string, env: Env): Promise<string> {
+export async function translate(content: string, env: Env, mode: TranslateMode = "spec"): Promise<string> {
   const backend = await resolveBackend(env);
-  return backend.translate(content, env);
+  return backend.translate(content, env, mode);
 }
