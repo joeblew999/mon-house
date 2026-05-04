@@ -37,10 +37,29 @@ pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> 
         "#import \"{theme_fwd}\": *\n\
          #import \"@preview/cmarker:0.1.8\": render-with-metadata\n\
          \n\
+         // Captioned image — defined inline so image() paths resolve relative to this\n\
+         // wrapper (project root), not the theme file's directory.\n\
+         #let __captioned-image(src, alt: none, ..args) = {{\n\
+           let has-alt = alt != none and str(alt).trim() != \"\"\n\
+           figure(\n\
+             image(src, ..args),\n\
+             caption: {{\n\
+               set text(size: 8pt)\n\
+               if has-alt {{\n\
+                 emph(alt)\n\
+                 h(0.4em)\n\
+                 text(fill: rgb(\"#888888\"))[· #raw(src)]\n\
+               }} else {{\n\
+                 text(fill: rgb(\"#888888\"))[#raw(src)]\n\
+               }}\n\
+             }},\n\
+           )\n\
+         }}\n\
+         \n\
          #let (meta, body) = render-with-metadata(\n\
            read(\"{src_fwd}\"),\n\
            metadata-block: \"frontmatter-yaml\",\n\
-           scope: (image: (src, ..args) => image(src, ..args)),\n\
+           scope: (image: __captioned-image),\n\
          )\n\
          #show: conf.with(\n\
            title:  meta.at(\"title\",  default: \"\"),\n\

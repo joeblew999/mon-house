@@ -18,6 +18,24 @@
   v(0.3em)
 }
 
+// Captioned image — used by cmarker for every markdown image.
+#let captioned-image(src, alt: none, ..args) = {
+  let has-alt = alt != none and str(alt).trim() != ""
+  figure(
+    image(src, ..args),
+    caption: {
+      set text(size: 8pt)
+      if has-alt {
+        emph(alt)
+        h(0.4em)
+        text(fill: rgb("#888888"))[· #raw(src)]
+      } else {
+        text(fill: rgb("#888888"))[#raw(src)]
+      }
+    },
+  )
+}
+
 #let project-name = "Laem Chabang House"
 #let build-date   = datetime.today().display("[day] [month repr:long] [year]")
 
@@ -144,10 +162,15 @@
 
   show figure: it => {
     v(0.3em)
-    align(center)[
+    align(center, block(width: 100%)[
       #block(stroke: 0.4pt + rgb("#cccccc"), radius: 2pt, clip: true)[#it.body]
-    ]
-    v(0.3em)
+      #if it.caption != none [
+        #v(0.2em)
+        #set par(leading: 0.4em)
+        #it.caption
+      ]
+    ])
+    v(0.5em)
   }
 
   show line: set line(stroke: 0.4pt + rgb("#cccccc"))
