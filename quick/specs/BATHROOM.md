@@ -10,6 +10,8 @@ Phase 02 work. Replace the tiles in the bathroom (and the separate toilet room, 
 
 This spec is **Phase 02 only** — see [PHASES](AAA-PHASES.md).
 
+**Quote rule:** this file is **one quote line item**. The builder gives a single number for the **BATHROOM RETILE TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
+
 ---
 
 ## Phase 02 — what gets done

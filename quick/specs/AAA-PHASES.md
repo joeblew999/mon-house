@@ -6,7 +6,9 @@ rev: "2"
 
 # Phases
 
-This page is the **index** for the renovation. Each topic has its own spec file with the full detail and a cost-summary skeleton; this page just shows the **order of execution** and points at the relevant spec(s).
+This page is the **index** for the renovation. Each spec file below has its own scope and its own cost-summary skeleton; this page just shows the **order of execution** and points at the relevant spec(s).
+
+**Quote rule for builders: 1 spec file = 1 quote line item.** Each builder-facing spec below must be quoted as a single number against that file. Do not bundle quotes across specs. Do not split a spec's quote across multiple line items. The whole point of the file split is that you can compare each quote to a specific scope, 1:1.
 
 ---
 

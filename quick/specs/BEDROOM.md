@@ -12,6 +12,8 @@ The new bed is **2 m × 2 m**, with the **head against the exterior wall** and t
 
 This spec is **Phase 02 only** — see [PHASES](AAA-PHASES.md).
 
+**Quote rule:** this file is **one quote line item**. The builder gives a single number for the **BEDROOM COMBINE TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
+
 ![Existing — wider view of the living room looking toward the bedroom doors, showing the overall ceiling and floor finish that the new work needs to blend with.](resources/images/ceiling-existing-01.jpeg)
 
 ![Existing — close-up from the living room through the two bedroom doors. The thin wall stub between them, plus both doors, is the section that comes out to form the new 2 m opening.](resources/images/bedroom-existing-01.jpeg)

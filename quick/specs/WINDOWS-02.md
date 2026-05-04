@@ -8,6 +8,8 @@ rev: "3"
 
 Phase 02 work, later. Replace all old wooden windows and the aluminium sliding door, after [Phase 01](WINDOWS-01.md) has bedded in.
 
+**Quote rule:** this file is **one quote line item**. The builder gives a single number for the **WINDOWS PHASE 02 TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
+
 **All FRAMEX. All black aluminium. No uPVC.** Made by Window Asia. Available at Thai Watsadu, OfficeMate, or direct from Window Asia.
 
 By the time this phase happens, the steel security mesh and fly-wire screens are already gone (removed in [Phase 01](WINDOWS-01.md)). What remains: removal of the old wooden frames + old sliding door, then install of new FRAMEX units.

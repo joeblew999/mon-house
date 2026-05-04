@@ -8,6 +8,8 @@ rev: "3"
 
 Phase 01 work, do now. Make the existing gate functional with a remote-controlled motor so Mon can drive into the garage easily. Phase 02 (gate replacement) is a separate spec — see [GATE-02](GATE-02.md). The motor installed in this phase **is reused on the Phase 02 replacement gate**.
 
+**Quote rule:** this file is **one quote line item**. The builder gives a single number for the **GATE PHASE 01 TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote. (The painting line at the bottom is Joe + Mon DIY, not in the builder's quote.)
+
 Goal: existing gate slides easily and opens by remote so Mon can get her car into the garage without effort. Bottom chord and wheels get replaced; everything else on the gate stays.
 
 ![Gate - existing condition 1](resources/images/gate-existing-01.jpeg)

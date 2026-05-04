@@ -1,30 +1,39 @@
 ---
 title: Gate — Phase 02
 status: Draft
-rev: "3"
+rev: "4"
 ---
 
 # Gate — Phase 02: Replacement Gate
 
 Phase 02 work, later. Replace the existing heavy rusty sliding gate with a lightweight aluminium gate. **Reuse the motor** that was installed on the existing gate in [Phase 01](GATE-01.md).
 
-**Spec: 3.5 m wide × 1.5 m high sliding gate. Space Black, fully aluminium, rust-free.**
+**Quote rule:** this file is one quote line item. Builder gives a single number for the GATE PHASE 02 TOTAL — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
 
 ---
 
-## Preferred Option: ALNEX Prive — Aluminium Sliding Gate
+## Requirements
 
-Fully aluminium T6 gate. 3× lighter than steel, 1.5× stronger than standard aluminium. No rust, no painting ever. Available in **Space Black** (semi-gloss finish).
+The replacement gate must meet these requirements **regardless of supplier**. The supplier choice is open — see "Suppliers" below. Don't lock in to one premium brand.
 
-- **Model**: Prive (Standard Series)
-- **Material**: T6 aluminium
-- **Colour**: Space Black
-- **Weight**: ~3× lighter than existing steel gate
-- **Drive**: Reuse the [Phase 01](GATE-01.md) motor (manual push fallback)
-- **Max size**: up to 3 m high × 15 m wide — our 3.5 × 1.5 m is well within range
-- **Area**: 3.5 × 1.5 = **5.25 m²**
-- **Price**: 16,000 THB/m² → **~84,000 THB** for 5.25 m²
-- **Supplier**: [ALNEX Thailand — Gate](https://www.alnexthailand.com/en/gate/) | Tel: 02-136-8899 | LINE: [ALNEX](https://lin.ee/w9gnJzU)
+- **Size:** 3.5 m wide × 1.5 m high (5.25 m²).
+- **Material:** Aluminium (rust-free, no painting ever needed). T6 aluminium preferred for strength-to-weight ratio, but other aluminium grades acceptable if the fabricator can show structural soundness for this size.
+- **Colour:** Black, gloss or semi-gloss. Should sit visually with the gloss-black [ROOF](ROOF.md) beams and the gate motor housing.
+- **Weight:** Significantly lighter than the existing rusty steel gate. Light enough to be driven by the [Phase 01](GATE-01.md) motor.
+- **Drive:** Compatible with the existing [Phase 01](GATE-01.md) motor — **no new motor**. Manual push must remain a fallback.
+- **Hardware:** Bottom rollers, end post, side guide. Existing ground track is reusable if it's straight and rust-free; otherwise replace.
+
+---
+
+## Suppliers — get multiple quotes
+
+Don't take the first quote. **Get at least 2 quotes from different sources** before committing.
+
+| Option | Where | Notes |
+|---|---|---|
+| Local aluminium fabricator | Ask around locally or via referral | Likely the cheapest. Custom-build to spec. Confirm aluminium grade, weld quality, and powder-coat finish before ordering. |
+| Thai Watsadu / HomePro | In-store enquiry | May stock standard aluminium gates or arrange a custom order through their fabricator network. |
+| ALNEX Prive (premium reference) | [ALNEX Thailand](https://www.alnexthailand.com/en/gate/) — Tel 02-136-8899 / LINE [@ALNEX](https://lin.ee/w9gnJzU) | T6 aluminium, Space Black semi-gloss. ~16,000 THB/m² → ~84,000 THB for 5.25 m². Use as a **price ceiling** and quality reference, not as the default. |
 
 ---
 
@@ -35,31 +44,37 @@ Fully aluminium T6 gate. 3× lighter than steel, 1.5× stronger than standard al
 | Gate width | 3.5 m |
 | Gate height | 1.5 m |
 | Gate area | 5.25 m² (3.5 × 1.5) |
-| Track type | Bottom roller (existing track may be reusable) |
+| Track type | Bottom roller (existing track reusable if straight) |
 | Opening direction | Slide left or right (confirm on-site) |
 
 ---
 
-## Shopping List
+## Shopping List (supplier-agnostic line items)
 
-| Product | What it does | Qty | Est. Price (THB) |
+| Item | What it does | Qty | Where it comes from |
 |---|---|---|---|
-| ALNEX Prive, Space Black, 3.5 m × 1.5 m | Main gate. Made to order. | 1 | ~84,000 (TBC) |
-| Bottom rollers | Carry gate on track | 2 | ~300–600 ea if not included |
-| Bottom track | Ground channel for rollers | 1 × 3.5 m | ~300–500 if not included |
-| End post | Stop at open end of travel | 1 | ~500–1,000 if not included |
-| Side guide | Keeps gate vertical | 1 set | ~200–400 if not included |
+| Aluminium sliding gate, 3.5 × 1.5 m, black | Main gate | 1 | Chosen supplier |
+| Bottom rollers | Carry gate on ground track | 2 | Bundled with gate, or extra |
+| Bottom track | Ground channel for rollers (reuse existing if good) | 1 × 3.5 m | Bundled, extra, or reused |
+| End post | Stop at open end of travel | 1 | Bundled or extra |
+| Side guide | Keeps gate vertical | 1 set | Bundled or extra |
+
+**For each supplier quoted:** ask explicitly whether rollers, bottom track, end post, and side guide are included in the gate price or extra.
 
 ---
 
 ## Cost Summary
 
-| Item | Est. Cost (THB) |
+Single line for the Phase 02 total. The builder/supplier fills in this number against this spec, 1:1.
+
+| Category | Est. Cost (THB) |
 |---|---|
-| Gate (supply) | ~84,000 |
-| Hardware (rollers, track, end post, guide) | ~0 if included / ~1,500–2,500 if extra |
-| Labour (remove old gate, fit new, re-mount Phase 01 motor) | ~2,000–4,000 |
-| **GATE PHASE 02 TOTAL** | **~86,000–90,500** |
+| Gate (supply) | TBC per supplier |
+| Hardware (rollers, track, end post, guide) | TBC per supplier |
+| Labour (remove old gate, fit new, re-mount Phase 01 motor) | TBC |
+| **GATE PHASE 02 TOTAL** | **TBC** |
+
+**Reference range** (price ceiling, not a target): ALNEX premium quote would land around **~86,000–90,500 THB** for the full job. Aim for materially below this from a local fabricator unless ALNEX-grade build quality is genuinely needed.
 
 ---
 
@@ -67,29 +82,31 @@ Fully aluminium T6 gate. 3× lighter than steel, 1.5× stronger than standard al
 
 The Phase 02 quote must cover **only** the supply + install of the new gate plus re-mounting the [Phase 01](GATE-01.md) motor at the new rack height. Do not add anything else.
 
-- **No painting.** T6 aluminium needs no paint, ever.
+- **No painting.** Aluminium needs no paint, ever.
 - **No new motor.** The Phase 01 motor is being reused.
-- No bottom-runner-rail replacement unless it's bent or rusted (separate scope decision, not a default).
+- No bottom-runner-rail replacement unless the existing rail is bent or rusted (separate scope decision, not a default).
 
-If the builder believes extra work is needed, raise it separately before quoting — do not bundle it into Phase 02.
+If the supplier or builder believes extra work is needed, raise it separately before quoting — do not bundle it into Phase 02.
 
 ---
 
 ## Steps
 
-1. Remove old gate and set aside for scrap.
-2. Check existing bottom track — reuse if straight and intact, replace if bent/rusted.
-3. Contact ALNEX (02-136-8899 / LINE \@ALNEX) — request quote for Prive, Space Black, 3.5 m × 1.5 m sliding. **Ask explicitly: does price include rollers, bottom track, end post, and side guide?**
-4. Fit gate on bottom rollers.
-5. Fit top guide bracket to wall/post.
-6. Re-mount the [Phase 01](GATE-01.md) motor on the new gate. Wire to existing power and fuse.
-7. Test roll and remote — adjust rollers for smooth travel.
+1. **Confirm dimensions on site** — measure brick-to-brick the actual opening, plus the run of the existing track.
+2. **Get at least 2 quotes** from suppliers in the table above. For each: **must include or quote separately** rollers, bottom track, end post, side guide. Confirm aluminium grade and finish.
+3. **Choose** based on price + quality + lead time. Use ALNEX as the price ceiling.
+4. **Order.** Confirm Phase 01 motor compatibility with the chosen gate before paying deposit.
+5. **Remove old gate** and set aside for scrap.
+6. **Check existing bottom track** — reuse if straight and intact, replace if bent or rusted (separate scope decision).
+7. **Fit new gate** on bottom rollers, fit top guide bracket, fit end post.
+8. **Re-mount the [Phase 01](GATE-01.md) motor** on the new gate at the new rack height. Wire to existing power and fuse.
+9. **Test** roll and remote — adjust rollers for smooth travel.
 
 ---
 
 ## Notes
 
-- **Ask ALNEX explicitly: does the price include rollers, bottom track, end post, and side guide?** Premium brands often bundle hardware but confirm before ordering.
+- **Always ask each supplier explicitly:** does the price include rollers, bottom track, end post, and side guide? Or are they extra? This single question typically separates a clean quote from a hidden-extras one.
 - Existing bottom track may be reusable — check for straightness and rust before ordering new track.
-- T6 aluminium requires zero ongoing maintenance and no painting.
-- The [Phase 01](GATE-01.md) motor must be a model compatible with this Phase 02 gate.
+- Aluminium requires zero ongoing maintenance and no painting.
+- The [Phase 01](GATE-01.md) motor must be a model compatible with whatever Phase 02 gate is chosen.

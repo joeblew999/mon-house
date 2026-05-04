@@ -8,6 +8,8 @@ rev: "3"
 
 Phase 01 work, do now. Minimal functional fix so air conditioning works and the front door is usable. Phase 02 (full replacement) is a separate spec — see [WINDOWS-02](WINDOWS-02.md).
 
+**Quote rule:** this file is **one quote line item**. The builder gives a single number for the **WINDOWS PHASE 01 TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
+
 The old timber windows are skewed. We are not sealing them, not painting them, not replacing them. Just screw them shut. The screws alone give enough air seal for AC to be effective.
 
 ---
