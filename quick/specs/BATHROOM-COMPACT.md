@@ -1,7 +1,7 @@
 ---
 title: Bathroom retile (compact, no wall move)
 status: Draft
-rev: "4"
+rev: "7"
 ---
 
 # Bathroom retile — Laem Chabang (compact, no wall move)
@@ -20,22 +20,22 @@ This is **PHASE 02 ONLY** — see [PHASES](AAA-PHASES.md). One builder price for
 |---|---|---|
 | 1. Walk-in shower | **700 mm** | Spans the full **1380 mm width** of the back wall |
 | Gap 1 | 150 mm | Clearance between shower glass and toilet |
-| 2. Compact toilet | **500 mm** | Short-projection model, **max 480 mm deep** |
+| 2. Compact toilet | **500 mm** | COTTO C13970 wall-set, pan only **380 mm wide × 695 mm deep** |
 | Gap 2 | 100 mm | Elbow room between toilet and basin |
-| 3. Slim basin | **450 mm** | Ultra-slim vanity, **max 300 mm deep** |
-| Wall gap | 50 mm | Between basin and entry wall |
+| 3. Slim basin | **500 mm** | COTTO C013 wall-hung, **500 × 420 × 195 mm** |
+| Wall gap | 0 mm | Basin sits flush against the entry wall |
 | **Total** | **1950 mm** | Exact fit |
 
 ---
 
 ## Critical design notes
 
-- **Entrance:** the **300 mm deep basin is non-negotiable**. With the 800 mm door arc, a 300 mm sink leaves a **280 mm standing gap** — enough to stand at the basin while the door is open.
-- **Glass:** **700 mm wide screen** gives a **680 mm walk-in entrance** — shortened from the original 900 mm to free wall length opposite the toilet for the cabinet. **Aluminium U-channel chased into the floor and wall BEFORE the tiles go on**, so the tiles cover the channel — frameless look, no surface bracketry.
-- **Short projection toilet:** **max 480 mm deep** so the walkway between the toilet and the cabinet on the opposite wall stays at 700 mm.
-- **Cabinet:** wall-hung, **530 mm long × 200 mm deep**, mounted on the right wall opposite the toilet — fits between the door swing arc and the shower glass line. Tall (~1500 mm) but thin in the room. **DIY by Joe + Mon** (not in builder quote — builder leaves the wall paint-ready).
+- **Entrance:** basin sits flush against the entry wall on the left. With the 700 mm inward-swinging door on the opposite wall, the **COTTO C013 (420 mm deep)** leaves ~**160 mm minimum clearance** between the door arc and the basin face during swing. Door fully opens — basin doesn't block it. Don't try to stand at the basin while the door is being opened.
+- **Glass:** **700 mm wide screen** gives a **680 mm walk-in entrance** — shortened from the original 900 mm to free wall length opposite the toilet for the cabinet. **No support bars or visible profiles** — the aluminium U-channel is chased into the wall and floor, sitting flush, **before the tiles go on**, so the tiles cover the channel completely. Glass appears to grow straight out of the wall and floor.
+- **Floor-mounted toilet (~700 mm deep):** wall-hung is too expensive, so the toilet is a standard close-coupled at ~695 mm projection. Walkway in front of the toilet at floor level is **685 mm** clear (1380 − 695) — the cabinet on the opposite wall sits **above shoulder height** so it doesn't eat the floor corridor.
+- **Cabinet:** wall-hung, **530 mm long × 200 mm deep × ~900 mm tall**, mounted on the right wall opposite the toilet — fits between the door swing arc and the shower glass line. **Bottom edge ≥ 1500 mm AFL** so it clears toilet users, anyone walking past, and anyone standing at the basin. Top edge ~2400 mm AFL. **DIY by Joe + Mon** (not in builder quote — builder leaves the wall paint-ready).
 - **Mirror:** single fixed mirror on the left wall above the basin and toilet, **1250 mm long**, running from the shower glass line up to the entry wall. Frameless, butting cleanly at both vertical ends. Top edge 2100 mm AFL, bottom edge 1000 mm AFL (basin rim sits just above, hides the joint).
-- **Existing door stays — no change at all.** No re-hang, no swing change, no new lock, no new frame, no new louvre. The 300 mm basin depth is what makes the existing inward swing work.
+- **Existing door stays — no change at all.** No re-hang, no swing change, no new lock, no new frame, no new louvre.
 - **Bidet sprayer ("bum gun"):** mount on the left wall in the **150 mm gap between the toilet and the shower glass**. **Tank-mounted clip bracket — no drilling into tiles.** T-valve off the toilet's cold-water inlet so the hose runs hidden behind the cistern.
 - **Toilet roll holder:** pick one — **(A)** over-the-glass hook on the shower screen (no drilling, cleanest look), or **(B)** mounted on the side of the basin vanity (basin is only 100 mm from the toilet — natural reach, keeps the long wall clear of fixings).
 
@@ -53,12 +53,35 @@ Same off-white rectified range as BATHROOM.md. Tight grout, off-white grout, no 
 
 ---
 
+## Basin and toilet selection — matched COTTO set (฿3,140 total)
+
+Both pieces are COTTO white ceramic with **30-year ceramic warranty**, same era / visual family — read as a set without buying a "suite".
+
+**Basin — COTTO C013 wall-hung**
+
+- HomePro SKU 5744 — [homepro.co.th/p/5744](https://www.homepro.co.th/p/5744)
+- **500 × 420 × 195 mm** (W × D × H)
+- Wall-hung white ceramic, single tap hole + overflow
+- ฿850 THB
+
+**Basin tap — COTTO CTSE1006 (matched brand, chrome)**
+
+- HomePro SKU 1279031 — [homepro.co.th/p/1279031](https://www.homepro.co.th/p/1279031)
+- Single-hole basin faucet, chrome finish, ceramic valve
+- ฿439 THB
+
+**Toilet — COTTO C13970 close-coupled, two-piece**
+
+- HomePro SKU 1255715 — [homepro.co.th/p/1255715](https://www.homepro.co.th/p/1255715)
+- **380 × 695 × 735 mm** (W × D × H), rough-in 305 mm
+- 6 L siphonic washdown, **soft-close elongated seat** included
+- White ceramic, side-mounted flush lever
+- ฿2,290 THB
+- Soil-pipe spigot spacing (305 mm rough-in) must match the new layout's set-out
+
+---
+
 ## Everything else — same as BATHROOM.md
 
 Plumbing tidy, glass detailing, stainless hardware, waterproofing, ventilation, electrical, water-heater isolator, DIY items (towel rail, shower shelf) — all **identical to [BATHROOM.md](BATHROOM.md)**. Builder quotes them the same way under this layout.
 
----
-
-## Open question — glass screen finish
-
-Glass support bars and profiles: **Chrome, matte black, or brushed stainless** to match the basin taps? Pick one and apply consistently to the screen.
