@@ -1,7 +1,7 @@
 ---
 title: Bathroom Layout Change + Retile
 status: Draft
-rev: "5"
+rev: "6"
 ---
 
 # Bathroom Layout Change + Retile - Laem Chabang
@@ -29,6 +29,7 @@ The existing bathroom is too narrow for a clean fixture line-up — shower spray
 ### Wall move
 
 - **The new bathroom entrance wall lines up flush with the existing living-room wall** (continuous flat wall plane — no protrusion). Measured distance: **1003 mm** outward.
+- **Resulting interior dimensions: 1350 mm wide × 3000 mm long** (wall-to-wall, both measured on site). The 3 m is the long axis along which the fixtures line up.
 - Demolish the existing entrance wall (full height, full width); build the new entrance wall on the flush line with the new door framed in.
 - The **bedroom-bathroom dividing wall stays untouched** — future home of the wall-hung shelves; see [BEDROOM](BEDROOM.md).
 
@@ -66,6 +67,50 @@ Fixtures line up along one wall, in this sequence:
 3. **Shower** — at the back, with the new glass partition.
 
 Effect: shower spray points **away from** the toilet (toilet sits *beside* the shower, not in the spray line). The glass partition contains splashes.
+
+### Fixture spacing along the 3 m fixture wall (and the cabinet wall)
+
+Bathroom interior is **1350 mm wide × 3000 mm long**. All fixtures sit on one long wall (the **fixture wall** — gets tiled). The opposite long wall (the **cabinet wall** — painted) carries the storage cabinet + towel rail. Distances below are measured along each wall from the **door-wall corner**.
+
+**Fixture wall (3000 mm, tiled):**
+
+| From | To | mm | Item |
+|---|---|---|---|
+| 0 | 150 | 150 | Corner setback (door side) — keeps basin off the corner, leaves room for the exposed S-bend trap below |
+| 150 | 750 | **≤ 600** | **Basin** — pick any wall-hung white ceramic up to 600 mm wide; you're not restricted to a smaller model |
+| 750 | 950 | 200 | Gap (basin → wet/dry step). Bidet sprayer wall-mount can sit here on the fixture wall |
+| 950 | — | step | **50 mm step down** (dry → wet zone). Clean square edge. |
+| 950 | 1400 | 450 | **Toilet** — compact close-coupled (≤ 600 mm projection from wall), ~400 mm pan + 25 mm clearance each side |
+| 1400 | 1650 | **250** | **Explicit gap (toilet → shower glass).** Stainless toilet roll holder + bidet sprayer mount here. Elbow room while seated. |
+| 1650 | — | edge | **Shower glass partition** (500 mm × 2100 mm, frameless, chased into floor + fixture wall) |
+| 1650 | 3000 | **1350** | **Shower zone** (1350 × 1350 mm = 1.82 m²). Existing stainless shower head on back/fixture wall corner. |
+
+**Cabinet wall (3000 mm, painted, opposite the fixture wall):**
+
+| From | To | mm | Item |
+|---|---|---|---|
+| 0 | 800 | 800 | **Door swing arc.** Door (800 mm wide) hinged at this corner, opens inward, panel rests against this wall. Keep this section clear. |
+| 800 | 900 | 100 | Buffer beyond door swing |
+| 900 | 1500 | **600** | **Storage cabinet** (600 × 1500 × 200 mm) — DIY, mid-wall, mostly opposite the toilet. 100 mm clear of door swing arc. |
+| 1500 | 2400 | 900 | Empty wall — this is where you stand to use the basin / approach the shower |
+| 2400 | 3000 | **600** | **Stainless towel rail** (~600–900 mm long) — DIY, opposite the shower head end so you grab a towel as you step out |
+
+**Width-direction (perpendicular, 1350 mm) clearances:**
+
+| Item | Projection | Clear in front |
+|---|---|---|
+| Basin | ~400 mm | 950 mm — comfortable |
+| Toilet (compact, 600 mm) | 600 mm | **750 mm** — comfortable |
+| Shower glass partition | 500 mm into bathroom from fixture wall | 850 mm walk-in entry past the glass |
+| Cabinet | 200 mm | 1150 mm circulation in front |
+| Door swing tip vs basin | tip 800 mm from hinge; basin nearest corner 950 mm from hinge | 162 mm clear at full swing |
+
+**Net dimensional summary:**
+
+- Dry zone (basin + entry): 0 → 950 mm of length × 1350 mm width = 1.28 m²
+- Wet zone (toilet + shower + their gap): 950 → 3000 mm length × 1350 mm width = 2.77 m²
+- Door cleanly clears the basin throughout its full inward swing.
+- Cabinet + towel rail fit cleanly on the painted wall, neither fouling door swing nor wet-zone splash.
 
 ---
 
@@ -149,7 +194,8 @@ The current exposed pipes (water-heater hoses, shower flex across the wall, supp
 
 - New toilet pan in the new position (middle of the line, between basin and shower).
 - Re-route soil pipe and supply line to reach the new position.
-- **Pan + cistern + seat as a set — cheap and standard.** Low-cost spec.
+- **Pan + cistern + seat as a set — cheap and standard, COMPACT projection.** Low-cost spec.
+  - **Pick a compact close-coupled model: ≤ 600 mm projection from wall.** Standard pans run 650–700 mm; in a 1350 mm wide bathroom that leaves only 650 mm clear in front (borderline). A **compact 600 mm pan** gives a comfortable 750 mm clear. Common at Cotto, American Standard, HomePro under "compact" or "small bathroom" lines.
   - **Style: modern, not traditional.** Clean geometric / squared-off ceramic. **No floral patterns, no period mouldings, no old-style scrollwork.** Plain white ceramic.
   - Close-coupled cistern (cistern bolts onto the back of the pan). **Single-flush is fine** — water is cheap in Thailand, no need to pay extra for dual-flush.
   - **Standard plastic seat — no soft-close, no bidet seat, no fancy hinges.** Cheap.
@@ -160,6 +206,7 @@ The current exposed pipes (water-heater hoses, shower flex across the wall, supp
 
 - New basin in the new position (immediately on entering, by the door).
 - Wall-hung white ceramic basin.
+- **Width: up to 600 mm.** Pick any model in the 450–600 mm range; the layout (see "Fixture spacing" above) accommodates the full 600 mm without forcing a specific brand. Projection from wall: ~350–400 mm typical for wall-hung; leaves ~950 mm clear in front (1350 mm bathroom width minus basin projection).
 - **Style: modern, not traditional.** Clean geometric form (rectangular or simple rounded — not floral, not pedestal-style with old-school detailing). Plain white. **Cheap and standard, but the look must read as modern.** Match the toilet's visual style.
 - **Taps: stainless steel** to match the existing stainless steel shower hardware.
 - Re-route supply + waste to reach the new position.
@@ -240,7 +287,7 @@ These are defaults — the electrician's code clearance for the power outlet win
 The bathroom has **one** piece of storage and no other:
 
 - **Thin sliding-door wall cabinet** mounted on the **long wall opposite the basin/toilet/shower line** (the painted wall, not the tiled one).
-- **Position along that wall: mostly opposite the new toilet** (mid-wall). **Not** at the door end of the wall — the door swings inward, the structural column protrudes ~100 mm at the doorway, and the cabinet needs clearance from both. **Not** at the shower end either — leave the back of the wall clear for the wet-zone splash.
+- **Position along the cabinet wall: 900 → 1500 mm from the door-wall corner** (mostly opposite the toilet, see "Fixture spacing"). 100 mm clear of the door's full swing arc (which ends at 800 mm). 900 mm from the wet-zone end, so cabinet stays away from shower splash. Mid-wall location, never at the door end (door swing) or shower end (wet zone).
 - **Dimensions: 600 mm wide × 1500 mm high × 200 mm deep.** Compact tall-and-thin format that gives useful storage without crowding the bathroom or fouling the door swing arc on the opposite side.
 - **No towel rail attached to the cabinet** — the cabinet is just storage. The towel rail lives separately, opposite the shower head (see "Towel rail" below).
 - Sliding doors (not hinged) so the doors don't swing into the room.
@@ -253,7 +300,8 @@ The builder's job here is just to leave that wall in a clean paint-ready state w
 
 Wall-mounted towel rail, **separate** from the cabinet:
 
-- Mounted on the **painted wall opposite the basin/toilet/shower line**, **directly opposite the shower head unit** — so you grab a towel as you step out of the shower.
+- Mounted on the **painted (cabinet) wall opposite the basin/toilet/shower line**, **directly opposite the shower-head end** — so you grab a towel as you step out of the shower.
+- **Position along the cabinet wall: 2400 → 3000 mm from the door-wall corner** (~600 mm of rail, opposite the shower zone, see "Fixture spacing").
 - **Stainless steel** to match the shower, basin taps, bidet sprayer, and exposed basin trap.
 - Standard towel-rail height (~1100 mm AFL) for comfortable reach.
 - Length: pick a comfortable size for one or two towels (e.g. ~600–900 mm).
