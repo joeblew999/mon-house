@@ -1,7 +1,7 @@
 ---
 title: Bathroom retile (compact, no wall move)
 status: Draft
-rev: "7"
+rev: "8"
 ---
 
 # Bathroom retile — Laem Chabang (compact, no wall move)
@@ -33,11 +33,12 @@ This is **PHASE 02 ONLY** — see [PHASES](AAA-PHASES.md). One builder price for
 - **Entrance:** basin sits flush against the entry wall on the left. With the 700 mm inward-swinging door on the opposite wall, the **COTTO C013 (420 mm deep)** leaves ~**160 mm minimum clearance** between the door arc and the basin face during swing. Door fully opens — basin doesn't block it. Don't try to stand at the basin while the door is being opened.
 - **Glass:** **700 mm wide screen** gives a **680 mm walk-in entrance** — shortened from the original 900 mm to free wall length opposite the toilet for the cabinet. **No support bars or visible profiles** — the aluminium U-channel is chased into the wall and floor, sitting flush, **before the tiles go on**, so the tiles cover the channel completely. Glass appears to grow straight out of the wall and floor.
 - **Floor-mounted toilet (~700 mm deep):** wall-hung is too expensive, so the toilet is a standard close-coupled at ~695 mm projection. Walkway in front of the toilet at floor level is **685 mm** clear (1380 − 695) — the cabinet on the opposite wall sits **above shoulder height** so it doesn't eat the floor corridor.
-- **Cabinet:** wall-hung, **530 mm long × 200 mm deep × ~900 mm tall**, mounted on the right wall opposite the toilet — fits between the door swing arc and the shower glass line. **Bottom edge ≥ 1500 mm AFL** so it clears toilet users, anyone walking past, and anyone standing at the basin. Top edge ~2400 mm AFL. **DIY by Joe + Mon** (not in builder quote — builder leaves the wall paint-ready).
+- **Cabinet:** wall-hung, **530 mm long × 200 mm deep × ~900 mm tall**, mounted on the right wall opposite the toilet — fits between the door swing arc and the shower glass line. **Bottom edge ≥ 1500 mm AFL** so it clears toilet users, anyone walking past, and anyone standing at the basin. Top edge ~2400 mm AFL. **Doubles as both basin storage and shower storage** — reachable from the basin (across the room) and from inside the shower (its lower end butts up against the shower glass line, so you reach over the screen to grab shampoo / soap). No separate shower shelf needed. **DIY by Joe + Mon** (not in builder quote — builder leaves the wall paint-ready).
 - **Mirror:** single fixed mirror on the left wall above the basin and toilet, **1250 mm long**, running from the shower glass line up to the entry wall. Frameless, butting cleanly at both vertical ends. Top edge 2100 mm AFL, bottom edge 1000 mm AFL (basin rim sits just above, hides the joint).
 - **Existing door stays — no change at all.** No re-hang, no swing change, no new lock, no new frame, no new louvre.
 - **Bidet sprayer ("bum gun"):** mount on the left wall in the **150 mm gap between the toilet and the shower glass**. **Tank-mounted clip bracket — no drilling into tiles.** T-valve off the toilet's cold-water inlet so the hose runs hidden behind the cistern.
 - **Toilet roll holder:** pick one — **(A)** over-the-glass hook on the shower screen (no drilling, cleanest look), or **(B)** mounted on the side of the basin vanity (basin is only 100 mm from the toilet — natural reach, keeps the long wall clear of fixings).
+- **Towel rail — INSIDE the shower wet zone** (different from BATHROOM.md). Stainless, ~600–900 mm long, mounted on the back wall of the shower or the right side wall, at standard reach height (~1100 mm AFL). Grab the towel as you step out of the shower. **DIY by Joe + Mon.**
 
 ---
 
@@ -49,7 +50,7 @@ Less tile than BATHROOM.md — the long wall is **not** tiled full height in thi
 - **Floor (essential):** entire bathroom floor, anti-slip variant in the wet zone, waterproof coating under the wet zone.
 - **Basin splashback (recommended):** small tile strip behind the basin to stop water running down the wall.
 
-Same off-white rectified range as BATHROOM.md. Tight grout, off-white grout, no edge profiles.
+**Tile look — modern beige, rectified, tight grout.** Single tile range across walls + floor (anti-slip variant for wet zone). **Hard machined edges**, **small (~2 mm) grout lines**, **beige grout matching the tile**, no edge profiles.
 
 ---
 
@@ -79,9 +80,24 @@ Both pieces are COTTO white ceramic with **30-year ceramic warranty**, same era 
 - ฿2,290 THB
 - Soil-pipe spigot spacing (305 mm rough-in) must match the new layout's set-out
 
+**Bidet sprayer — WSP R-813 SS (304 stainless)**
+
+- HomePro SKU 1245047 — [homepro.co.th/p/1245047](https://www.homepro.co.th/p/1245047)
+- Stainless steel 304, complete kit (sprayer head + hose + holder)
+- T-valve off the toilet's cold-water inlet (see Critical design notes)
+- ฿329 THB
+
+**Floor drain — COTTO CT6404Z2P stainless square grate**
+
+- HomePro SKU 1153913 — [homepro.co.th/p/1153913](https://www.homepro.co.th/p/1153913)
+- Square stainless grate, fits standard outlet
+- ฿375 THB
+
+**Total parts list: ฿4,283** (basin + tap + toilet + bidet + drain)
+
 ---
 
 ## Everything else — same as BATHROOM.md
 
-Plumbing tidy, glass detailing, stainless hardware, waterproofing, ventilation, electrical, water-heater isolator, DIY items (towel rail, shower shelf) — all **identical to [BATHROOM.md](BATHROOM.md)**. Builder quotes them the same way under this layout.
+Plumbing tidy, glass detailing, stainless hardware, waterproofing, ventilation, electrical, water-heater isolator — all **identical to [BATHROOM.md](BATHROOM.md)**. Builder quotes them the same way under this layout. **No separate shower shelf** (the cabinet handles it) and the **towel rail goes inside the wet zone** (see Critical design notes).
 
