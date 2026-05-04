@@ -65,6 +65,11 @@ enum Commands {
     },
     /// Remove the out/ directory
     Clean,
+    /// Print the BLAKE3 hex hash of a file's bytes (used for `.th.md.hash`)
+    Hash {
+        /// File to hash
+        path: PathBuf,
+    },
     /// Theme registry — list, switch, test, and check Typst themes
     Themes {
         #[command(subcommand)]
@@ -136,6 +141,15 @@ fn main() {
         Commands::Serve { port } => serve::cmd_serve(&cfg, port),
         Commands::New { name } => new::cmd_new(&cfg, &name),
         Commands::Clean => build::cmd_clean(&cfg),
+        Commands::Hash { path } => {
+            match std::fs::read(&path) {
+                Ok(bytes) => {
+                    println!("{}", idempotency::blake3_hex(&bytes));
+                    Ok(())
+                }
+                Err(e) => Err(anyhow::anyhow!("read {:?}: {}", path, e)),
+            }
+        }
         Commands::Themes { cmd } => match cmd {
             ThemesCmd::List => themes::cmd_list(&cfg),
             ThemesCmd::Current => themes::cmd_current(&cfg),
