@@ -1,0 +1,56 @@
+<svg width="680" height="850" viewBox="-150 -100 1900 2150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Opaque background -->
+  <rect x="-150" y="-100" width="1900" height="2150" fill="white"/>
+
+  <!-- Room Outline (1380 x 1950) -->
+  <rect x="0" y="0" width="1380" height="1950" fill="none" stroke="black" stroke-width="10"/>
+
+  <!-- Full Width Shower (Back Wall) -->
+  <rect x="0" y="1250" width="1380" height="700" fill="#aec6cf" fill-opacity="0.5" stroke="black" stroke-width="2"/>
+  <text x="690" y="1600" font-family="Noto Sans Thai, Arial" font-size="50" font-weight="bold" text-anchor="middle">ห้องอาบน้ำ (1380x700)</text>
+
+  <!-- Shower Glass Screen (700mm wide from the Left) -->
+  <line x1="0" y1="1250" x2="700" y2="1250" stroke="#00ced1" stroke-width="15"/>
+  <text x="350" y="1200" font-family="Noto Sans Thai, Arial" font-size="40" fill="#008b8b" font-weight="bold" text-anchor="middle">ฉากกระจก 700 มม.</text>
+
+  <!-- Shower Entry Gap (680mm on the Right) -->
+  <text x="1040" y="1230" font-family="Noto Sans Thai, Arial" font-size="35" text-anchor="middle">ทางเข้า 680 มม.</text>
+
+  <!-- Toilet COTTO C13970 -->
+  <rect x="0" y="720" width="695" height="380" fill="#ffb347" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="348" y="930" font-family="Noto Sans Thai, Arial" font-size="45" font-weight="bold" text-anchor="middle">โถสุขภัณฑ์</text>
+
+  <!-- Basin COTTO C013 -->
+  <rect x="0" y="100" width="420" height="500" fill="#b39eb5" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="210" y="370" font-family="Noto Sans Thai, Arial" font-size="40" font-weight="bold" text-anchor="middle">อ่างล้างหน้า</text>
+
+  <!-- Cabinet MOYA TK-CAB-007 -->
+  <rect x="1230" y="735" width="150" height="350" fill="#d4b896" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="1305" y="920" font-family="Noto Sans Thai, Arial" font-size="40" font-weight="bold" text-anchor="middle">ตู้</text>
+
+  <!-- Mirror -->
+  <line x1="5" y1="0" x2="5" y2="1250" stroke="#00ced1" stroke-width="10"/>
+  <text x="-50" y="625" font-family="Noto Sans Thai, Arial" font-size="40" fill="#008b8b" font-weight="bold" text-anchor="middle" transform="rotate(-90, -50, 625)">กระจก 1250 มม.</text>
+
+  <!-- Door (700mm wide, 100mm offset from RIGHT wall, swinging IN) -->
+  <line x1="1280" y1="0" x2="1280" y2="700" stroke="red" stroke-width="10"/>
+  <path d="M 1280 700 A 700 700 0 0 1 580 0" fill="none" stroke="red" stroke-dasharray="20,10" stroke-width="5"/>
+  <text x="1230" y="350" font-family="Noto Sans Thai, Arial" font-size="40" fill="red" font-weight="bold" transform="rotate(90, 1230, 350)">ประตู 700 มม.</text>
+
+  <!-- Vertical Spacing Labels (Along the 1950mm wall) -->
+  <g fill="blue" font-family="Noto Sans Thai, Arial" font-size="35" font-weight="bold" text-anchor="start">
+    <text x="1400" y="1600">700 (อาบน้ำ)</text>
+    <text x="1400" y="1175">150 (ช่องว่าง)</text>
+    <text x="1400" y="910">380 (โถ)</text>
+    <text x="1400" y="660">120 (ช่องว่าง)</text>
+    <text x="1400" y="350">500 (อ่าง)</text>
+    <text x="1400" y="50">100 (ช่องผนัง)</text>
+  </g>
+
+  <!-- Horizontal Projection Labels -->
+  <text x="348" y="700" font-family="Noto Sans Thai, Arial" font-size="35" fill="purple" text-anchor="middle">ความลึก 695 มม.</text>
+  <text x="210" y="80" font-family="Noto Sans Thai, Arial" font-size="35" fill="purple" text-anchor="middle">ความลึก 420 มม.</text>
+
+  <!-- Room Width Label -->
+  <text x="690" y="-30" font-family="Noto Sans Thai, Arial" font-size="45" fill="green" font-weight="bold" text-anchor="middle">ความกว้างรวม 1380 มม.</text>
+</svg>

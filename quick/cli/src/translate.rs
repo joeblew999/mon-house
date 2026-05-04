@@ -151,7 +151,7 @@ fn call_claude_api(api_key: &str, model: &str, content: &str) -> Result<String> 
     let prompt = format!("Translate this construction spec to Thai:\n\n{content}");
     let body = ApiRequest {
         model,
-        max_tokens: 8096,
+        max_tokens: 16384,
         system: SYSTEM_PROMPT,
         messages: vec![ApiMessage { role: "user", content: &prompt }],
     };
@@ -212,13 +212,118 @@ fn claude_in_extensions(ext_dir: &Path, binary: &str) -> Option<PathBuf> {
 
 pub fn clean_output(raw: String) -> String {
     let trimmed = raw.trim().to_string();
-    if trimmed.starts_with("```") {
-        let lines: Vec<&str> = trimmed.lines().collect();
-        if lines.last().map(|l| l.trim()) == Some("```") {
-            return lines[1..lines.len() - 1].join("\n");
+    if !trimmed.starts_with("```") {
+        return trimmed;
+    }
+    let lines: Vec<&str> = trimmed.lines().collect();
+    let last_idx = if lines.last().map(|l| l.trim()) == Some("```") {
+        lines.len() - 1 // drop the closing fence
+    } else {
+        lines.len()     // truncated response — no closing fence, keep all remaining lines
+    };
+    lines[1..last_idx].join("\n")
+}
+
+// ── SVG translation ────────────────────────────────────────────────────────────
+
+/// Translate the visible text inside `<text>...</text>` elements of an SVG.
+///
+/// The non-text parts of the SVG (geometry, attributes, comments) pass through unchanged,
+/// so the diagram still scales / renders identically — only the labels switch language.
+/// `font-family` attributes on each `<text>` are rewritten to `"Noto Sans Thai, Arial"` so
+/// Thai characters fall back gracefully when the spec PDF is rendered.
+pub fn translate_svg_content(backend: &TranslateBackend, content: &str) -> Result<String> {
+    let text_re = regex::Regex::new(r#"<text([^>]*)>([^<]+)</text>"#)?;
+    let font_re = regex::Regex::new(r#"font-family="[^"]*""#)?;
+
+    let mut out = String::with_capacity(content.len());
+    let mut last = 0;
+    for cap in text_re.captures_iter(content) {
+        let whole = cap.get(0).expect("whole match");
+        let attrs = cap.get(1).expect("attrs").as_str();
+        let inner = cap.get(2).expect("inner").as_str();
+        out.push_str(&content[last..whole.start()]);
+
+        let translated = if inner.trim().is_empty() {
+            inner.to_string()
+        } else {
+            backend.translate(inner)?
+        };
+        let new_attrs = font_re
+            .replace(attrs, r#"font-family="Noto Sans Thai, Arial""#)
+            .into_owned();
+        out.push_str(&format!("<text{new_attrs}>{translated}</text>"));
+
+        last = whole.end();
+    }
+    out.push_str(&content[last..]);
+    Ok(out)
+}
+
+fn translate_svg_file(
+    backend: &mut Option<TranslateBackend>,
+    cfg: &crate::Config,
+    input: &Path,
+) -> Result<bool> {
+    let name = input.file_stem().and_then(|s| s.to_str()).context("invalid filename")?;
+    let output    = input.with_file_name(format!("{name}.th.svg"));
+    let hash_file = input.with_file_name(format!("{name}.th.svg.hash"));
+    let content   = vfs::read_to_string(input)?;
+    let current_hash = idempotency::blake3_hex(content.as_bytes());
+
+    if vfs::exists(&output) && vfs::exists(&hash_file) {
+        if vfs::read_to_string(&hash_file)?.trim() == current_hash {
+            println!("  skip {} (unchanged)", input.display());
+            return Ok(false);
         }
     }
-    trimmed
+
+    if backend.is_none() { *backend = Some(TranslateBackend::resolve(cfg)?); }
+    let b = backend.as_ref().expect("set above");
+
+    println!("  translating {} → {} ...", input.display(), output.display());
+    let result = translate_svg_content(b, &content)?;
+    vfs::write(&output, result.as_bytes())?;
+    vfs::write(&hash_file, current_hash.as_bytes())?;
+    Ok(true)
+}
+
+// ── Image-ref substitution ─────────────────────────────────────────────────────
+
+/// In the translated markdown, swap any `![..](path/to/foo.svg|png|jpg|jpeg)` reference
+/// for `path/to/foo.th.<ext>` if a Thai sibling exists on disk. Lets the Thai PDF use
+/// Thai-labelled diagrams automatically without the author touching the .th.md.
+fn substitute_th_image_refs(content: &str, base_dir: &Path) -> String {
+    let img_re = match regex::Regex::new(r"!\[([^\]]*)\]\(([^)]+)\)") {
+        Ok(re) => re,
+        Err(_) => return content.to_string(),
+    };
+    img_re
+        .replace_all(content, |caps: &regex::Captures| {
+            let alt = &caps[1];
+            let path = &caps[2];
+            let new_path = th_variant_if_exists(path, base_dir);
+            format!("![{alt}]({new_path})")
+        })
+        .into_owned()
+}
+
+fn th_variant_if_exists(path: &str, base_dir: &Path) -> String {
+    let p = Path::new(path);
+    let Some(stem) = p.file_stem().and_then(|s| s.to_str()) else { return path.into() };
+    let Some(ext) = p.extension().and_then(|s| s.to_str()) else { return path.into() };
+    if !matches!(ext.to_ascii_lowercase().as_str(), "svg" | "png" | "jpg" | "jpeg") {
+        return path.into();
+    }
+    if stem.ends_with(".th") { return path.into(); } // already Thai variant
+    let parent = p.parent().unwrap_or(Path::new(""));
+    let th_rel = parent.join(format!("{stem}.th.{ext}"));
+    let th_abs = base_dir.join(&th_rel);
+    if vfs::exists(&th_abs) {
+        th_rel.to_string_lossy().into_owned()
+    } else {
+        path.into()
+    }
 }
 
 // ── Per-file translation ───────────────────────────────────────────────────────
@@ -241,7 +346,12 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
     let b = backend.as_ref().expect("set above");
 
     println!("  translating {} → {} ...", input.display(), output.display());
-    let result = b.translate(&content)?;
+    let translated = b.translate(&content)?;
+    // Repoint image refs at any *.th.<ext> sibling that exists (so the Thai PDF picks
+    // up Thai-labelled SVGs without a manual edit). Resolved relative to the project
+    // root (one level up from specs/), matching how typst resolves image paths at build.
+    let base_dir = cfg.specs_dir.parent().unwrap_or(Path::new("."));
+    let result = substitute_th_image_refs(&translated, base_dir);
     vfs::write(&output, result.as_bytes())?;
     vfs::write(&hash_file, current_hash.as_bytes())?;
     Ok(true)
@@ -250,7 +360,7 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
 // ── Subcommand ─────────────────────────────────────────────────────────────────
 
 pub fn cmd_translate(cfg: &crate::Config, files: Vec<PathBuf>) -> Result<()> {
-    let paths: Vec<PathBuf> = if files.is_empty() {
+    let md_paths: Vec<PathBuf> = if files.is_empty() {
         let pattern = cfg.specs_dir.join("[A-Z]*.md");
         vfs::glob(pattern.to_str().context("specs_dir path not UTF-8")?)?
             .into_iter()
@@ -258,14 +368,34 @@ pub fn cmd_translate(cfg: &crate::Config, files: Vec<PathBuf>) -> Result<()> {
             .collect()
     } else {
         files.into_iter()
-            .filter(|p| !p.file_name().and_then(|n| n.to_str()).unwrap_or_default().ends_with(".th.md"))
+            .filter(|p| {
+                let name = p.file_name().and_then(|n| n.to_str()).unwrap_or_default();
+                name.ends_with(".md") && !name.ends_with(".th.md")
+            })
+            .collect()
+    };
+
+    // SVG inputs — always glob (kept simple; explicit file args still translate matching .md).
+    let svg_paths: Vec<PathBuf> = {
+        let parent = cfg.specs_dir.parent().unwrap_or(Path::new("."));
+        let pattern = parent.join("resources/images/*.svg");
+        vfs::glob(pattern.to_str().context("images path not UTF-8")?)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|p| {
+                let stem = p.file_stem().and_then(|s| s.to_str()).unwrap_or("");
+                !stem.ends_with(".th")
+            })
             .collect()
     };
 
     let mut backend: Option<TranslateBackend> = None;
     let mut translated = 0u32;
     let mut skipped    = 0u32;
-    for path in &paths {
+    for path in &svg_paths {
+        if translate_svg_file(&mut backend, cfg, path)? { translated += 1; } else { skipped += 1; }
+    }
+    for path in &md_paths {
         if translate_file(&mut backend, cfg, path)? { translated += 1; } else { skipped += 1; }
     }
     println!("Done. {translated} translated, {skipped} skipped.");

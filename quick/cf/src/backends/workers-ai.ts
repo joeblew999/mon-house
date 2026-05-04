@@ -15,6 +15,7 @@ export class WorkersAIBackend implements TranslateBackend {
       model: workersai(model),
       system: SYSTEM_PROMPT,
       prompt: `Translate this construction spec to Thai:\n\n${content}`,
+      maxOutputTokens: 4096,
     });
     return cleanOutput(text);
   }

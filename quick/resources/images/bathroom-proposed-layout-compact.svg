@@ -16,17 +16,17 @@
   <!-- Shower Entry Gap (680mm on the Right) -->
   <text x="1040" y="1230" font-family="Arial" font-size="35" text-anchor="middle">680mm ENTRY</text>
 
-  <!-- Toilet (Left Wall: 480mm Deep, 500mm Wide) -->
-  <rect x="0" y="600" width="480" height="500" fill="#ffb347" fill-opacity="0.7" stroke="black" stroke-width="2"/>
-  <text x="240" y="850" font-family="Arial" font-size="45" font-weight="bold" text-anchor="middle">TOILET</text>
+  <!-- Toilet COTTO C13970 (Left Wall: 695mm Deep, 380mm Wide, y=720 to y=1100) -->
+  <rect x="0" y="720" width="695" height="380" fill="#ffb347" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="348" y="930" font-family="Arial" font-size="45" font-weight="bold" text-anchor="middle">TOILET</text>
 
-  <!-- Basin (Left Wall: 300mm Deep, 450mm Wide) -->
-  <rect x="0" y="50" width="300" height="450" fill="#b39eb5" fill-opacity="0.7" stroke="black" stroke-width="2"/>
-  <text x="150" y="275" font-family="Arial" font-size="40" font-weight="bold" text-anchor="middle">BASIN</text>
+  <!-- Basin COTTO C013 (Left Wall: 420mm Deep, 500mm long, y=100 to y=600 — 100mm clear of entry wall) -->
+  <rect x="0" y="100" width="420" height="500" fill="#b39eb5" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="210" y="370" font-family="Arial" font-size="40" font-weight="bold" text-anchor="middle">BASIN</text>
 
-  <!-- Cabinet (Right Wall, opposite toilet: 200mm Deep, 530mm Long, wall-hung) -->
-  <rect x="1180" y="720" width="200" height="530" fill="#d4b896" fill-opacity="0.7" stroke="black" stroke-width="2"/>
-  <text x="1280" y="1000" font-family="Arial" font-size="40" font-weight="bold" text-anchor="middle">CABINET</text>
+  <!-- Cabinet MOYA TK-CAB-007 (Right Wall, paired with toilet: 150mm Deep, 350mm Long, wall-hung at 1100 AFL) -->
+  <rect x="1230" y="735" width="150" height="350" fill="#d4b896" fill-opacity="0.7" stroke="black" stroke-width="2"/>
+  <text x="1305" y="920" font-family="Arial" font-size="40" font-weight="bold" text-anchor="middle">CABINET</text>
 
   <!-- Mirror (Left wall: from shower glass at y=1250 up to entry wall at y=0, above basin + toilet) -->
   <line x1="5" y1="0" x2="5" y2="1250" stroke="#00ced1" stroke-width="10"/>
@@ -42,15 +42,15 @@
   <g fill="blue" font-family="Arial" font-size="35" font-weight="bold" text-anchor="start">
     <text x="1400" y="1600">700 (Shower)</text>
     <text x="1400" y="1175">150 (Gap)</text>
-    <text x="1400" y="850">500 (Toilet)</text>
-    <text x="1400" y="550">100 (Gap)</text>
-    <text x="1400" y="275">450 (Basin)</text>
-    <text x="1400" y="25">50 (Gap)</text>
+    <text x="1400" y="910">380 (Toilet)</text>
+    <text x="1400" y="660">120 (Gap)</text>
+    <text x="1400" y="350">500 (Basin)</text>
+    <text x="1400" y="50">100 (Wall Gap)</text>
   </g>
 
   <!-- Horizontal Projection Labels -->
-  <text x="240" y="580" font-family="Arial" font-size="35" fill="purple" text-anchor="middle">480mm PROJECTION</text>
-  <text x="150" y="30" font-family="Arial" font-size="35" fill="purple" text-anchor="middle">300mm PROJECTION</text>
+  <text x="348" y="700" font-family="Arial" font-size="35" fill="purple" text-anchor="middle">695mm PROJECTION</text>
+  <text x="210" y="80" font-family="Arial" font-size="35" fill="purple" text-anchor="middle">420mm PROJECTION</text>
 
   <!-- Room Width Label -->
   <text x="690" y="-30" font-family="Arial" font-size="45" fill="green" font-weight="bold" text-anchor="middle">1380mm TOTAL WIDTH</text>
