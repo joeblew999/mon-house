@@ -1,7 +1,7 @@
 ---
 title: Bathroom Layout Change + Retile
 status: Draft
-rev: "6"
+rev: "7"
 ---
 
 # Bathroom Layout Change + Retile - Laem Chabang
@@ -11,6 +11,8 @@ Phase 02 work. The bathroom is **extended outward** until its new entrance wall 
 This spec is **Phase 02 only** — see [PHASES](AAA-PHASES.md).
 
 **Quote rule:** this file is **one quote line item**. The builder gives a single number for the **BATHROOM TOTAL** — not bundled with any other spec, not split across files. 1:1 mapping between this spec and the quote.
+
+![Proposed bathroom layout — top-down floor plan with all fixture positions and dimensions in mm](resources/images/bathroom-proposed-layout.svg)
 
 ![Bathroom — existing condition 1](resources/images/bathroom-existing-01.jpeg)
 

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="-380 -450 2110 3850"
+     width="600" height="1100">
+  <defs>
+    <style>
+      .wall            { stroke: #222; stroke-width: 28; fill: none; }
+      .wet-zone        { fill: #e8f4fa; stroke: none; }
+      .step            { stroke: #c47a3a; stroke-width: 6; stroke-dasharray: 28,18; fill: none; }
+      .fixture         { stroke: #555; stroke-width: 4; fill: #f6f6f6; }
+      .glass           { stroke: #3a82c8; stroke-width: 14; fill: none; stroke-linecap: round; }
+      .door-arc        { stroke: #999; stroke-width: 4; stroke-dasharray: 14,12; fill: none; }
+      .door-open       { stroke: #6b4423; stroke-width: 8; fill: none; opacity: 0.45; stroke-dasharray: 24,14; }
+      .cabinet         { stroke: #555; stroke-width: 4; fill: #fafafa; }
+      .towel-rail      { stroke: #888; stroke-width: 14; fill: none; stroke-linecap: round; }
+      .label           { font-family: Arial, sans-serif; font-size: 56px; fill: #222; text-anchor: middle; }
+      .label-small     { font-family: Arial, sans-serif; font-size: 42px; fill: #444; text-anchor: middle; }
+      .label-tiny      { font-family: Arial, sans-serif; font-size: 36px; fill: #555; text-anchor: middle; }
+      .dim             { font-family: Arial, sans-serif; font-size: 44px; fill: #777; text-anchor: middle; }
+      .dim-line        { stroke: #aaa; stroke-width: 2; }
+      .title           { font-family: Arial, sans-serif; font-size: 64px; fill: #111; font-weight: bold; text-anchor: middle; }
+      .subtitle        { font-family: Arial, sans-serif; font-size: 40px; fill: #555; text-anchor: middle; font-style: italic; }
+    </style>
+  </defs>
+
+  <!-- ── Title ─────────────────────────────────────────────────────────── -->
+  <text class="title"    x="675" y="-300">Bathroom — proposed layout</text>
+  <text class="subtitle" x="675" y="-220">top-down view  ·  1350 × 3000 mm interior  ·  door at top, shower head at bottom</text>
+
+  <!-- ── Wet-zone shading (toilet + shower) ────────────────────────────── -->
+  <rect class="wet-zone" x="20" y="950" width="1310" height="2030" />
+
+  <!-- ── Walls (4 segments — door wall has a gap for the door 0..800) ─── -->
+  <line class="wall" x1="800"  y1="0"    x2="1350" y2="0"    />  <!-- door wall, after door -->
+  <line class="wall" x1="1350" y1="0"    x2="1350" y2="3000" />  <!-- fixture wall (right) -->
+  <line class="wall" x1="0"    y1="3000" x2="1350" y2="3000" />  <!-- back wall -->
+  <line class="wall" x1="0"    y1="0"    x2="0"    y2="3000" />  <!-- cabinet wall (left) -->
+
+  <!-- ── Door (hinge at top-left corner, opens inward against left wall) ─ -->
+  <path class="door-arc"  d="M 800 0 A 800 800 0 0 0 0 800" />
+  <line class="door-open" x1="0" y1="0" x2="0" y2="800" />
+  <text class="label-tiny" x="450" y="430" fill="#888">door swing arc</text>
+  <text class="label-tiny" x="450" y="475" fill="#888">(800 mm panel,</text>
+  <text class="label-tiny" x="450" y="520" fill="#888"> hinged top-left)</text>
+
+  <!-- ── Wet/dry step ──────────────────────────────────────────────────── -->
+  <line class="step" x1="0" y1="950" x2="1350" y2="950" />
+  <text class="label-tiny" x="675" y="922" fill="#c47a3a">— 50 mm step down (dry → wet) —</text>
+
+  <!-- ── Basin (150-750 from door wall, 400 mm projection) ─────────────── -->
+  <rect class="fixture" x="950" y="150" width="400" height="600" />
+  <text class="label"       x="1150" y="450">Basin</text>
+  <text class="label-small" x="1150" y="510">≤ 600 mm</text>
+
+  <!-- ── Toilet (compact, 950-1400 from door, 600 mm projection) ───────── -->
+  <rect class="fixture" x="750" y="950" width="600" height="450" />
+  <text class="label"       x="1050" y="1145">Toilet</text>
+  <text class="label-small" x="1050" y="1205">compact 600</text>
+
+  <!-- ── 250 mm gap (toilet roll holder + bidet sprayer mount here) ───── -->
+  <text class="label-tiny" x="1175" y="1505" font-style="italic">TR + bidet</text>
+  <text class="label-tiny" x="1175" y="1545" font-style="italic">sprayer</text>
+
+  <!-- ── Shower glass partition (500 mm into bathroom from fixture wall) ─ -->
+  <line class="glass" x1="850" y1="1650" x2="1350" y2="1650" />
+  <text class="label-tiny" x="1100" y="1620" fill="#3a82c8">glass 500 × 2100 mm</text>
+
+  <!-- ── Shower zone label ─────────────────────────────────────────────── -->
+  <text class="label"       x="675" y="2300">Shower</text>
+  <text class="label-small" x="675" y="2370">walk-in  ·  1.82 m²</text>
+
+  <!-- ── Shower head marker (back-wall fixture-wall corner) ───────────── -->
+  <circle cx="1290" cy="2920" r="32" fill="#3a82c8" />
+  <text class="label-tiny" x="1240" y="2810" text-anchor="end" fill="#3a82c8">head ↘</text>
+
+  <!-- ── Cabinet (DIY, 900-1500 from door wall, 200 mm depth) ─────────── -->
+  <rect class="cabinet" x="0" y="900" width="200" height="600" />
+  <text class="label-small" x="100" y="1185">Cabinet</text>
+  <text class="label-tiny"  x="100" y="1235">600×1500×200</text>
+  <text class="label-tiny"  x="100" y="1280">(DIY)</text>
+
+  <!-- ── Towel rail (DIY, 2400-3000 from door wall, opposite shower head) -->
+  <line class="towel-rail" x1="60" y1="2400" x2="60" y2="3000" />
+  <text class="label-small" x="200" y="2690" text-anchor="start">Towel rail</text>
+  <text class="label-tiny"  x="200" y="2735" text-anchor="start">stainless</text>
+  <text class="label-tiny"  x="200" y="2775" text-anchor="start">(DIY)</text>
+
+  <!-- ── Overall dimensions ────────────────────────────────────────────── -->
+  <!-- Width arrow at bottom -->
+  <line class="dim-line" x1="0"    y1="3180" x2="1350" y2="3180" />
+  <line class="dim-line" x1="0"    y1="3160" x2="0"    y2="3200" />
+  <line class="dim-line" x1="1350" y1="3160" x2="1350" y2="3200" />
+  <text class="dim" x="675" y="3260">1350 mm wide (interior)</text>
+
+  <!-- Length arrow on left -->
+  <line class="dim-line" x1="-220" y1="0"    x2="-220" y2="3000" />
+  <line class="dim-line" x1="-240" y1="0"    x2="-200" y2="0"    />
+  <line class="dim-line" x1="-240" y1="3000" x2="-200" y2="3000" />
+  <text class="dim" x="-280" y="1500" transform="rotate(-90 -280 1500)">3000 mm long (interior)</text>
+
+  <!-- ── Position annotations along fixture wall (right, mm from door) ─── -->
+  <line class="dim-line" x1="1480" y1="0"    x2="1480" y2="150"  />
+  <line class="dim-line" x1="1480" y1="150"  x2="1480" y2="750"  />
+  <line class="dim-line" x1="1480" y1="750"  x2="1480" y2="950"  />
+  <line class="dim-line" x1="1480" y1="950"  x2="1480" y2="1400" />
+  <line class="dim-line" x1="1480" y1="1400" x2="1480" y2="1650" />
+  <line class="dim-line" x1="1480" y1="1650" x2="1480" y2="3000" />
+  <line class="dim-line" x1="1460" y1="0"    x2="1500" y2="0"    />
+  <line class="dim-line" x1="1460" y1="150"  x2="1500" y2="150"  />
+  <line class="dim-line" x1="1460" y1="750"  x2="1500" y2="750"  />
+  <line class="dim-line" x1="1460" y1="950"  x2="1500" y2="950"  />
+  <line class="dim-line" x1="1460" y1="1400" x2="1500" y2="1400" />
+  <line class="dim-line" x1="1460" y1="1650" x2="1500" y2="1650" />
+  <line class="dim-line" x1="1460" y1="3000" x2="1500" y2="3000" />
+
+  <text class="label-tiny" x="1520" y="85"   text-anchor="start">150  setback</text>
+  <text class="label-tiny" x="1520" y="475"  text-anchor="start">600  basin</text>
+  <text class="label-tiny" x="1520" y="870"  text-anchor="start">200  gap</text>
+  <text class="label-tiny" x="1520" y="1195" text-anchor="start">450  toilet</text>
+  <text class="label-tiny" x="1520" y="1545" text-anchor="start">250  gap</text>
+  <text class="label-tiny" x="1520" y="2350" text-anchor="start">1350 shower</text>
+
+</svg>
