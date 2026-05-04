@@ -1,12 +1,14 @@
 ---
-title: Metal & Roof
+title: Roof
 status: Draft
-rev: "1"
+rev: "2"
 ---
 
-# Metal & Roof - Laem Chabang
+# Roof - Laem Chabang
 
-Approximately 10 years old. Flat garage roof. Gloss black finish on all steelwork.
+Garage roof and the steelwork that supports it. Approximately 10 years old. Flat garage roof. Gloss black finish on all steelwork.
+
+The gate paint product (TOA MD 2IN1 Gloss Black) is the same one used on these roof beams — it is also documented in [GATE-01](GATE-01.md) so the gate spec is self-contained.
 
 **Order of work: structural repairs → new roof → paint everything.**
 
@@ -64,7 +66,7 @@ Approximately 10 years old. Flat garage roof. Gloss black finish on all steelwor
 | Roof sheets + screws | ~8,950-10,700 |
 | Paint materials | ~814 |
 | Labour (DIY) | 0 |
-| **METAL TOTAL** | **~9,764-11,514** |
+| **ROOF TOTAL** | **~9,764-11,514** |
 
 ---
 
@@ -90,4 +92,4 @@ Approximately 10 years old. Flat garage roof. Gloss black finish on all steelwor
 ## Notes
 
 - All structural welding and roof install before any painting.
-- Gate is now covered in GATE.md.
+- Gate work is covered separately in [GATE-01](GATE-01.md) (Phase 01 motor + bottom chord) and [GATE-02](GATE-02.md) (Phase 02 ALNEX replacement).

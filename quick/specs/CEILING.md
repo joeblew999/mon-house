@@ -1,10 +1,20 @@
 ---
 title: Ceiling
-status: Draft
-rev: "1"
+status: Out of Scope
+rev: "2"
 ---
 
 # Ceiling - Laem Chabang
+
+> ## OUT OF SCOPE — for much later
+>
+> This spec describes a larger ceiling rebuild (insulation, tray + cove, LED uplight, downlights) tied to an earlier "expand the living room to 7 × 7 m" plan. **It is not part of the current Phase 01 or Phase 02 work** and pre-dates the current bedroom-combine direction (see [BEDROOM](BEDROOM.md)). The content below is preserved as a future-reference idea only — do not quote it, do not bundle it with current scope.
+>
+> Any ceiling work in the *current* plan is limited to the small infill strip in [BEDROOM](BEDROOM.md) where the leaf wall used to meet the ceiling.
+
+---
+
+## Future idea (preserved for reference)
 
 Living room expanded to 7m × 7m by removing load-bearing wall and installing steel beam. Existing suspended ceiling (metal grid + tiles) stays in place. New plasterboard fixed to underside of existing grid. Foil-backed insulation laid on top of existing tiles to reduce heat. Tray/cove profile built below the flat board with hidden LED strip uplight and recessed downlights in centre panel.
 

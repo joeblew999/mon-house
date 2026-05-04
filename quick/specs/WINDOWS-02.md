@@ -1,14 +1,18 @@
 ---
-title: Windows & Door
+title: Windows & Door — Phase 02
 status: Draft
-rev: "1"
+rev: "3"
 ---
 
-# Windows & Door - Laem Chabang
+# Windows & Door — Phase 02: Full Replacement
 
-Replace all old wooden windows and aluminium sliding door. Remove old fly screens and metal security grilles.
+Phase 02 work, later. Replace all old wooden windows and the aluminium sliding door, after [Phase 01](WINDOWS-01.md) has bedded in.
 
 **All FRAMEX. All black aluminium. No uPVC.** Made by Window Asia. Available at Thai Watsadu, OfficeMate, or direct from Window Asia.
+
+By the time this phase happens, the steel security mesh and fly-wire screens are already gone (removed in [Phase 01](WINDOWS-01.md)). What remains: removal of the old wooden frames + old sliding door, then install of new FRAMEX units.
+
+---
 
 ## Dimensions
 
@@ -36,20 +40,32 @@ Measure all openings **brick to brick**. Thai houses use standard openings so th
 
 | Category | Est. Cost (THB) |
 |---|---|
-| 5x main windows (120x110) | ~7,500-12,500 |
-| 1x bathroom window | ~1,000-2,000 |
-| 1x sliding door (custom) | ~8,000-12,000 |
-| Labour (DIY) | 0 |
-| **WINDOWS TOTAL** | **~16,500-26,500** |
+| 5x main windows (120x110) supply | ~7,500-12,500 |
+| 1x bathroom window supply | ~1,000-2,000 |
+| 1x sliding door supply (custom) | ~8,000-12,000 |
+| Labour (remove old + install new) | TBC |
+| **WINDOWS PHASE 02 TOTAL** | **~16,500-26,500 supply + TBC labour** |
+
+---
+
+## Phase 02 scope is fixed — nothing else
+
+The Phase 02 quote must cover **only** the supply + install of the new FRAMEX units listed above. Do not add anything else.
+
+- **No painting.** Joe and Mon will do all painting themselves. Do not include paint, paint prep, or painting labour in the Phase 02 quote.
+- No re-doing of [Phase 01](WINDOWS-01.md) work — by this point the security mesh and screens are already gone.
+- Nothing else.
+
+If the builder believes extra work is needed, raise it separately before quoting — do not bundle it into Phase 02.
 
 ---
 
 ## Steps
 
-1. **Measure** - All openings brick-to-brick. Confirm standard sizes fit.
-2. **Order** - Get Thai Watsadu to quote with your measurements. Door from OfficeMate.
-3. **Remove** - Old wooden frames x 6, fly screens x 6, metal security grilles x 6, old sliding door x 1, steel security grille behind door (6-8 bolts into concrete).
-4. **Install** - New FRAMEX windows and door. Foam + silicone the gaps.
+1. **Measure** — All openings brick-to-brick. Confirm standard sizes fit.
+2. **Order** — Get Thai Watsadu to quote with your measurements. Door from OfficeMate.
+3. **Remove** — Old wooden frames x 6, and old sliding door x 1. (Fly-wire screens and steel security grilles were already removed in [Phase 01](WINDOWS-01.md).)
+4. **Install** — New FRAMEX windows and door. Foam + silicone the gaps.
 
 ---
 
@@ -59,4 +75,3 @@ Measure all openings **brick to brick**. Thai houses use standard openings so th
 - FRAMEX is the most common aluminium window in Thai housing.
 - Bathroom window too small for standard - custom order (สั่งตัด) or local aluminium shop.
 - Confirm brick-to-brick measurements before ordering.
-
