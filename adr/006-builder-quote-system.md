@@ -2,6 +2,7 @@
 
 **Date**: 2026-05-04
 **Status**: Proposed
+**Phase of**: ADR 008 — Phase 3 of the everything-on-Cloudflare migration.
 **Context**: Sending PDFs to builders via LINE and getting prices/comments back manually is the day-to-day pain point. We want a frictionless way for multiple builders to quote each spec and for those quotes to be first-class artifacts in the repo, version-locked to the spec rev they were quoted against.
 
 ---

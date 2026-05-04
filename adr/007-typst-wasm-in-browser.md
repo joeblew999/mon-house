@@ -2,6 +2,7 @@
 
 **Date**: 2026-05-04
 **Status**: Proposed
+**Phase of**: ADR 008 — Phase 2 of the everything-on-Cloudflare migration.
 **Context**: We need PDF preview in the browser without a CI round-trip. This unlocks: (1) builder sees their quote rendered into the cost-summary PDF instantly after submit, (2) Joe edits a spec and previews the PDF immediately, (3) the SPA becomes genuinely useful offline / on a phone / without GitHub Actions in the loop.
 
 ---
