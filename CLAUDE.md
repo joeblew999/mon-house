@@ -8,6 +8,19 @@
 
 YOU MUST use this file path root:  `/Users/apple/workspace/go/src/github.com/joeblew999/mon-house`
 
+## Two pipelines, two purposes
+
+The repo has two distinct content streams. Don't conflate them.
+
+| Pipeline | Drives | Lives at | Driven by |
+|---|---|---|---|
+| **GitHub Pages SPA** — renovation docs, SVG drawings, furniture catalog | https://joeblew999.github.io/mon-house/ | repo root: `examples/`, `real-estate-*`, `drawing-standards.json/.css`, `index.html`, this `CLAUDE.md` | `Taskfile.yml` (go-task), pre-commit hook |
+| **Construction specs for the builder** — bilingual EN/Thai PDFs | `specs-latest` GitHub release | `quick/` | `mise` + Rust CLI + CF Worker (Workers AI translation, typst PDF compile) |
+
+This file documents the **first** pipeline. For the second, see [`quick/CLAUDE.md`](quick/CLAUDE.md).
+
+The original Go pathfinder pipeline (`main.go`, `cmd/`, `pkg/translate/`, `internal/`) was removed on 2026-05-04. Its translation lessons informed the Rust+Workers-AI replacement at `quick/`. See ADRs 004 and 005 for the historical context.
+
 ---
 
 ## SPA & Markdown Convention
@@ -47,15 +60,15 @@ All paths and URLs are defined as variables with clear prefixes:
 
 ```bash
 task                  # Show all available tasks
-task build            # Build mon-tool
-task test             # Test translation sync (safe)
-task prod             # Production translation sync
+
+# Local dev
+task dev              # Start static-server for the furniture SPA on :8080
 
 # GitHub Pages helpers
 task pages:status     # Check build status
 task pages:wait       # Wait for build to complete
 task pages:dev        # Open in dev mode (no cache)
-task deploy           # Push + wait + open in dev mode
+task deploy           # Bump version + push + wait + open in dev mode
 ```
 
 ### Adding New Tasks
@@ -89,97 +102,26 @@ This project documents:
 
 ---
 
-## Project Structure (Standard Go Layout)
+## Project Structure
 
 ```
 mon-house/
-├── main.go                      # Go entry point
-├── go.mod                       # Go module
-├── cmd/                         # Command implementations
-├── pkg/translate/               # Translation packages
-├── internal/                    # Internal packages
-├── drawing-standards.json       # SVG element definitions
 ├── adr/                         # Architecture Decision Records
-├── examples/                    # Example projects
-│   ├── production/              # Production house documentation
-│   │   └── code/translate.json  # Production config
-│   └── test/                    # Test data (safe sandbox)
-│       └── code/translate.json  # Test config
-├── Taskfile.yml                 # Task runner (single source of truth for automation)
-└── README.md                    # Project entry point
+├── drawing-standards.json       # SVG element vocabulary (source of truth)
+├── drawing-standards.css        # GENERATED from JSON
+├── examples/
+│   ├── production/              # The actual renovation docs
+│   │   ├── drawings/            # SVG drawings (en/ + th/)
+│   │   └── furniture/           # Furniture catalog
+│   └── test/                    # Test fixtures (safe sandbox)
+├── real-estate-house/           # House listing photos + agent templates
+├── real-estate-land/            # Land listing photos + agent templates
+├── index.html                   # The GitHub Pages SPA
+├── Taskfile.yml                 # Pages tasks (build / wait / dev / deploy)
+├── README.md                    # Project entry point
+├── CLAUDE.md                    # This file (Pages-pipeline rules)
+└── quick/                       # Construction-spec pipeline (separate, see quick/CLAUDE.md)
 ```
-
----
-
-## Translation Workflow
-
-All commands are run from the **project root** directory using `task`.
-
-### Production vs Test
-
-**Production commands** (operate on `examples/production/` folder):
-```bash
-task prod    # Production translation sync
-```
-
-**Test commands** (operate on `examples/test/` folder):
-```bash
-task test    # Test translation sync (safe)
-```
-
-**Always test first**: Run `task test` before `task prod`.
-
-### How It Works
-
-1. Taskfile.yml → Changes directory (`cd examples/production` or `cd examples/test`)
-2. mon-tool → Auto-discovers `examples/*/code/translate.json` in that directory
-3. translate.json → Contains ALL paths and configuration (single source of truth)
-
-**No hardcoded paths in Go code** - everything comes from `examples/*/code/translate.json`.
-
-### Go Code Structure (Standard Go Layout)
-
-The translation system follows standard Go project layout:
-
-**`cmd/mon-tool/`** - Main application:
-- `main.go` - Entry point
-- `cmd/` - Subcommands (translate, css, svg, etc.)
-
-**`pkg/translate/`** - Translation packages:
-
-**Core types** (`types.go`):
-- `Config` - Mirrors translate.json structure exactly
-- `TargetConfig` - Per-language config (language, language_name, folder, translation_notes)
-- `Task` - Translation task with source/target language and extractions
-- `TextExtraction` - Single translatable text element
-
-**Key principle**: Go types directly reflect translate.json. Example:
-
-```json
-// In examples/*/code/translate.json:
-{
-  "targets": [{
-    "language": "th",
-    "language_name": "Thai",
-    "translation_notes": ["Use formal Thai", "..."]
-  }]
-}
-```
-
-```go
-// In Go (types.go):
-type TargetConfig struct {
-    Language         string   `json:"language"`
-    LanguageName     string   `json:"language_name"`
-    TranslationNotes []string `json:"translation_notes"`
-}
-```
-
-**Where language config flows**:
-1. `config.go` → Loads translate.json
-2. `task.go` → Generates task files from Config.Targets
-3. `ai/claude.go` → Uses LanguageName and TranslationNotes for AI prompts
-4. `commands/*_handler.go` → Executes operations using Config
 
 ---
 
@@ -850,7 +792,4 @@ From `drawing-standards.json`:
 
 ---
 
-**This file was simplified on 2025-10-23 to remove accumulated complexity.**
----
-
-**This file was simplified on 2025-10-23 to remove accumulated complexity.**
+**This file was simplified on 2025-10-23 to remove accumulated complexity, and again on 2026-05-04 to drop the deprecated Go pathfinder pipeline (now lives only in git history).**

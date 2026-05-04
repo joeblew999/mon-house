@@ -1,7 +1,7 @@
 # ADR 004: Visible Call Flow Architecture
 
 ## Status
-Accepted
+**Superseded** (2026-05-04) — describes the original Go pathfinder pipeline (`main.go`, `cmd/`, `pkg/translate/`, `internal/`), which has been removed from the repo. The translation pipeline now runs in Rust + a Cloudflare Workers AI backend; see `quick/CLAUDE.md` and the live Worker at `quick-worker.gedw99.workers.dev`. This ADR is preserved as historical context — what the path-finder taught us about call flow.
 
 ## Summary
 

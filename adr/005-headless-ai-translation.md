@@ -1,7 +1,7 @@
 # ADR 005: Headless AI Translation Architecture
 
 **Date**: 2025-10-31
-**Status**: Proposed
+**Status**: **Superseded** (2026-05-04) — describes the original Go pathfinder pipeline's Anthropic-API-driven headless translation. The Go code (`main.go`, `cmd/`, `pkg/translate/`, `internal/`) has since been removed. The replacement runs entirely on Cloudflare Workers AI (SEA-LION 27B, Thai-fine-tuned) via a public `POST /translate` endpoint on `quick-worker.gedw99.workers.dev`, with the Rust CLI (`quick/cli/`) as the local client. No external API keys involved. See `quick/CLAUDE.md` for current architecture. This ADR is preserved as historical context.
 **Context**: Translation system needs to run autonomously without human intervention
 
 ---
