@@ -64,6 +64,17 @@ QUICK_TEMPLATE_FILE = "TEMPLATE.md"
 QUICK_GWFH_API      = "https://gwfh.mranftl.com/api/fonts"
 QUICK_WEIGHTS       = "400,700"
 
+# ── Translation backend ───────────────────────────────────────────────────────
+# Default: route translations through the live CF Worker, which uses the
+# Workers AI binding (SEA-LION 27B fine-tuned for Thai). No local Claude CLI
+# or ANTHROPIC_API_KEY needed — everything runs on Cloudflare.
+#
+# To force the local Claude CLI / Anthropic API instead (e.g. for offline work
+# or quality A/B testing), unset in mise.local.toml:
+#   [env]
+#   QUICK_TRANSLATE_URL = ""
+QUICK_TRANSLATE_URL = "https://quick-worker.gedw99.workers.dev/translate"
+
 # ── Cloudflare ────────────────────────────────────────────────────────────────
 # Override in mise.local.toml (gitignored) — never commit CF credentials here.
 # CF_API_TOKEN and CF_ACCOUNT_ID are read by wrangler automatically from env.
