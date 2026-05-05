@@ -7,8 +7,7 @@
 //
 // To add a new agent (e.g. a "review" agent after translation):
 //   1. Define it below with `new Agent({ ... })`
-//   2. Add it to the triageAgent handoffs array
-//   3. The triage agent routes automatically — no changes needed in agent.ts
+//   2. Add it to the triageAgent handoffs array — routing is automatic.
 
 import { Agent, run } from "@openai/agents";
 import type { TranslateBackend } from "./index";
