@@ -2,18 +2,22 @@
 //
 // Routes:
 //   GET  /health          — health check
-//   POST /translate       — translate EN → Thai. JSON in: {content}, JSON out: {thai}
-//                           Used by the Rust CLI's `QUICK_TRANSLATE_URL` backend
+//   POST /translate       — translate EN → Thai. JSON in: {content, mode?},
+//                           JSON out: {thai}. Used by the Rust CLI's
+//                           QUICK_TRANSLATE_URL backend
 //                           (see cli/src/translate.rs::call_worker).
-//   ALL  /agents/*        — delegated to routeAgentRequest (PipelineAgent DO)
+//   ALL  /agents/*        — delegated to routeAgentRequest. Currently hosts
+//                           the spec-copilot ChatAgent (see ./chat.ts);
+//                           AIChatAgent gives us a WebSocket chat UI that
+//                           the React SPA's useAgentChat hook drives.
 //   *                     — wrangler assets serves the React SPA
 
 import { Hono } from "hono";
 import { routeAgentRequest } from "agents";
-import { PipelineAgent } from "./agent";
+import { ChatAgent } from "./chat";
 import { translate } from "./translate";
 
-export { PipelineAgent };
+export { ChatAgent };
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -21,7 +25,7 @@ app.get("/health", (c) => c.json({ ok: true, ts: Date.now() }));
 
 // Plain HTTP translate endpoint — what the Rust CLI's QUICK_TRANSLATE_URL hits.
 // Body shape is fixed by cli/src/translate.rs::WorkerRequest / WorkerResponse:
-//   request:  { "content": "<en markdown>" }
+//   request:  { "content": "<en markdown>", "mode"?: "spec" | "label" }
 //   response: { "thai":    "<th markdown>" }
 app.post("/translate", async (c) => {
   const body = await c.req.json<{ content?: string; mode?: "spec" | "label" }>();
@@ -38,9 +42,8 @@ app.post("/translate", async (c) => {
   }
 });
 
-// All /agents/* routes go to the Agent DO via routeAgentRequest.
-// routeAgentRequest handles WebSocket upgrades, routing to the right DO class,
-// and the cf_agent protocol framing.
+// All /agents/* routes go to the SDK's routeAgentRequest, which dispatches
+// WebSocket upgrades to the right Durable Object. Today: ChatAgent.
 app.all("/agents/*", async (c) => {
   const response = await routeAgentRequest(c.req.raw, c.env);
   return response ?? c.notFound();

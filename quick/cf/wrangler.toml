@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 # ── Assets (React SPA) ────────────────────────────────────────────────────────
 # Vite builds the React app to .vite/dist/. Wrangler serves it as static assets.
 # SPA mode: unknown paths return index.html (client-side routing).
-# /agents/* is routed to the Worker first (DO WebSocket connections).
+# /agents/* is routed to the Worker first so WebSocket upgrades reach the DO.
 [assets]
 not_found_handling = "single-page-application"
 run_worker_first   = ["/agents/*", "/health", "/translate"]
@@ -16,18 +16,35 @@ run_worker_first   = ["/agents/*", "/health", "/translate"]
 binding = "AI"
 remote  = true
 
-# ── Durable Object ────────────────────────────────────────────────────────────
-[[durable_objects.bindings]]
-name       = "PipelineAgent"
-class_name = "PipelineAgent"
-
 # typst PDF compilation runs in GitHub Actions, not on the Worker — see
 # .github/workflows/build-specs.yml. Future direction: typst-WASM on the
-# client (and possibly also on the Worker as WASM) — see CLAUDE.md.
+# client (and possibly also on the Worker as WASM) — see ADR 007.
 
+# ── Durable Object — ChatAgent (spec copilot) ─────────────────────────────────
+# AIChatAgent-derived class in cf/src/chat.ts. Persists message history in
+# SQLite-backed DO storage so conversations survive disconnects.
+[[durable_objects.bindings]]
+name       = "ChatAgent"
+class_name = "ChatAgent"
+
+# ── DO migrations ─────────────────────────────────────────────────────────────
+# v1: legacy PipelineAgent (translate-+-build pipeline runner; superseded by
+#     the /translate HTTP endpoint + Rust CLI's chunked cache).
+# v2: delete the legacy class (storage was empty in production).
+# v3: introduce the new ChatAgent class (spec copilot, AIChatAgent SDK).
+#     Splitting v2 + v3 because wrangler doesn't accept both deleted_classes
+#     and new_sqlite_classes inside a single migration entry.
 [[migrations]]
 tag                = "v1"
 new_sqlite_classes = ["PipelineAgent"]
+
+[[migrations]]
+tag             = "v2"
+deleted_classes = ["PipelineAgent"]
+
+[[migrations]]
+tag                = "v3"
+new_sqlite_classes = ["ChatAgent"]
 
 # ── R2 ────────────────────────────────────────────────────────────────────────
 [[r2_buckets]]

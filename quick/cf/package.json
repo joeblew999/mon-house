@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "latest",
+    "@cloudflare/ai-chat": "*",
     "@cloudflare/shell": "*",
     "@openai/agents": "latest",
     "@openai/agents-extensions": "latest",
