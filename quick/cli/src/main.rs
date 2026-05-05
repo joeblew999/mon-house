@@ -16,6 +16,8 @@ mod serve;
 mod themes;
 mod translate;
 mod vfs;
+#[cfg(feature = "local")]
+mod watch;
 
 pub use config::Config;
 
@@ -77,6 +79,10 @@ enum Commands {
         #[command(subcommand)]
         cmd: ThemesCmd,
     },
+    /// Watch specs/, scripts/, and resources/images/ for changes; on every save
+    /// run translate + build for the affected files. Local-only.
+    #[cfg(feature = "local")]
+    Watch,
 }
 
 #[derive(Subcommand)]
@@ -159,6 +165,8 @@ fn main() {
             ThemesCmd::Test { name, all } => themes::cmd_test(&cfg, name.as_deref(), all),
             ThemesCmd::Check => themes::cmd_check(&cfg),
         },
+        #[cfg(feature = "local")]
+        Commands::Watch => watch::cmd_watch(&cfg),
     };
     if let Err(e) = result {
         eprintln!("Error: {e:#}");

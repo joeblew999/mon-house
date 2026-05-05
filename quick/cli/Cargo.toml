@@ -93,6 +93,11 @@ which = { version = "6", optional = true }
 # Gated behind `local` feature; omitted on Cloudflare builds.
 dirs = { version = "5", optional = true }
 
+# File-system watcher — replaces the TypeScript chokidar watcher in quick/local/.
+# Powers `quick-tool watch` for local dev. Local-only — Cloudflare/WASM builds
+# don't have an FS to watch. Debouncer rolls bursts of save events into one.
+notify-debouncer-mini = { version = "0.4", optional = true }
+
 # HTTP server — compile-server endpoint inside CF Container (serve subcommand)
 tiny_http = { version = "0.12", optional = true }
 
@@ -116,7 +121,7 @@ anyhow = "1"
 # `local`       — all OS-level subsystems: native-http + file watching + claude CLI discovery.
 # Cloudflare:   cargo build --no-default-features  (neither feature enabled)
 default     = ["local"]
-local       = ["native-http", "dep:dirs", "dep:which"]
+local       = ["native-http", "dep:dirs", "dep:which", "dep:notify-debouncer-mini"]
 native-http = ["dep:ureq"]
 # `container` — minimal feature set for the CF Container image.
 # Only tiny_http (serve subcommand) is needed; no file watching, no WS client.
