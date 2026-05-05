@@ -163,25 +163,16 @@ description = "Translate (if changed) and build PDFs for a single file. Usage: m
 depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} one $@"
 
-[tasks.run]
-description = "Send a single spec to the CF PipelineAgent (translate + PDF). Requires mise run cf:dev. Usage: mise run run -- GATE"
-dir = "local"
-run = "npm run run-spec -- $@"
-
 [tasks.new]
 description = "Create a new spec file from TEMPLATE.md. Usage: mise run new -- SPECNAME"
 depends = ["build-cli"]
 run = "{{vars.QUICK_TOOL}} new $@"
 
 [tasks.watch]
-description = "Watch specs/*.md via TypeScript AgentClient — sends changed files to CF PipelineAgent, writes .th.md + PDFs back. Requires mise run cf:dev running first."
-dir = "local"
-run = "npm run watch"
-
-[tasks."watch:local"]
-description = "Watch + build entirely locally (no Agent) — fonts → translate → build via Rust CLI. Use when offline or for local-only testing."
+description = "Watch specs/, scripts/, and resources/images/ for changes; re-translate (chunked, cached) and rebuild affected PDFs. All-local — no CF round-trip."
 depends = ["build-cli"]
-run = "{{vars.QUICK_TOOL}} translate && {{vars.QUICK_TOOL}} build"
+env = { QUICK_TRANSLATE_URL = "https://quick-worker.gedw99.workers.dev/translate" }
+run = "{{vars.QUICK_TOOL}} watch"
 
 [tasks."themes:list"]
 description = "List all available themes with descriptions; marks the active one"
@@ -255,11 +246,10 @@ run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignore
 #   mise run prove:bindings # verify wrangler.toml bindings via dry-run
 
 [tasks."1-install"]
-description = "Fresh-machine: install npm deps for cf/ and local/ + build quick-tool"
+description = "Fresh-machine: install npm deps for cf/ + build quick-tool"
 depends = ["build-cli"]
 run = """
 cd {{env.CF_WORKER_DIR}} && npm install
-cd ../local && npm install
 """
 
 [tasks."6-build"]
