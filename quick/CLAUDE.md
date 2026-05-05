@@ -458,6 +458,13 @@ SDK + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
 > RATE_LIMIT binding, and what could blow the budget. Single source of
 > truth — keep it current as prices and models shift.
 
+> **[`cf/RESEARCH.md`](cf/RESEARCH.md) is the survey of upstream
+> `cloudflare-agents/examples/`** — what we already use (`ai-chat`,
+> `playground` layout), what we should adopt next (`auth-agent`,
+> `workspace-chat`, `structured-input`, `multi-ai-chat`), and what's
+> not pulling weight. Keep it current after each `agents` bump or
+> when copying a new pattern.
+
 ### Reference clones at `.src/` — read these BEFORE guessing
 
 The Cloudflare Agents SDK is moving fast — multiple breaking renames per
