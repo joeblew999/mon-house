@@ -18,7 +18,7 @@
 // Direct import from @cloudflare/ai-chat — `agents/ai-chat-agent` is a
 // deprecated re-export shim in agents 0.12+ that points here anyway.
 import { AIChatAgent } from "@cloudflare/ai-chat";
-import { generateText } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 import { createWorkersAI } from "workers-ai-provider";
 
 const SYSTEM_PROMPT = `You are a helpful assistant for the quick/ construction-spec project.
@@ -38,21 +38,21 @@ Style:
 
 export class ChatAgent extends AIChatAgent<Env> {
   /**
-   * Called by the SDK on every new user message. We send the full message
-   * history (already maintained for us) to Workers AI and stream the reply
-   * back to the React client.
+   * Called by the SDK on every new user message. We stream the assistant
+   * response from Workers AI back to the React client; the AIChatAgent base
+   * class handles persistence (DO SQLite), reconnection replay, and
+   * dispatch to all connected clients of this agent instance.
    */
   async onChatMessage() {
     const workersai = createWorkersAI({ binding: this.env.AI });
     const model = (this.env.QUICK_CF_MODEL as string) ?? "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
-    const { text } = await generateText({
+    const result = streamText({
       model: workersai(model),
       system: SYSTEM_PROMPT,
-      messages: this.messages.map((m) => ({ role: m.role, content: m.content })),
-      maxOutputTokens: 4096,
+      messages: await convertToModelMessages(this.messages),
     });
 
-    return text;
+    return result.toUIMessageStreamResponse();
   }
 }

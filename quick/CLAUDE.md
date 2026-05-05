@@ -450,7 +450,23 @@ the old pandoc `{=typst}` raw block syntax.
 ## Cloudflare Worker (`quick/cf/`)
 
 The CF Worker lives at `quick/cf/`. **Currently TypeScript** (Hono + Agents
-SDK + R2 + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
+SDK + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
+
+### Reference clones (`.src/`, gitignored)
+
+The Cloudflare Agents SDK ships fast — APIs that worked last week may have
+moved. Before guessing or grepping `node_modules`, **read the upstream
+source pinned to our installed version**:
+
+```
+quick/.src/cloudflare-agents/      # github.com/cloudflare/agents @ agents@<our version>
+quick/.src/agents-starter/         # github.com/cloudflare/agents-starter
+```
+
+The `examples/` folder under `cloudflare-agents/` has 37 canonical patterns
+(`ai-chat/`, `mcp/`, `voice-agent/`, `tictactoe/`, etc.). When in doubt,
+copy the pattern from there. See `quick/.src/README.md` for refresh
+instructions.
 
 ### Current architecture
 

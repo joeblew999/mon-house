@@ -1,37 +1,53 @@
-// Spec copilot — a chat UI backed by the ChatAgent on the Worker side.
+// Spec copilot — chat UI backed by the ChatAgent on the Worker side.
 //
-// Uses `useAgentChat` from `agents/react`, which:
+// Uses `useAgent` + `useAgentChat` from the agents SDK:
 //   - opens a WebSocket to /agents/chat-agent/<name>
-//   - streams assistant replies token-by-token
 //   - persists message history in the DO's SQLite storage
 //   - reconnects automatically on close
 //
-// Today the chat is general-purpose: drop a markdown spec section in,
-// ask for revisions, paraphrasing, sanity-checking. Future work: pipe
-// the active spec into the system prompt as live context, hook the
-// builder-quote workflow from ADR 006, etc.
+// AI SDK 6 hook shape: { messages, sendMessage, status, error, regenerate,
+// stop }. We drive the input ourselves with React state because the SDK no
+// longer ships `input` / `handleInputChange` / `handleSubmit`.
 
 import "./styles.css";
 import { createRoot } from "react-dom/client";
 import { useAgent } from "agents/react";
-import { useAgentChat } from "agents/ai-react";
-import { type FormEvent, useRef } from "react";
+import { useAgentChat } from "@cloudflare/ai-chat/react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 
 function App() {
   const agent = useAgent({ agent: "ChatAgent" });
-  const { messages, input, handleInputChange, handleSubmit, status } = useAgentChat({ agent });
+  const { messages, sendMessage, status, error } = useAgentChat({ agent });
+
+  const [input, setInput] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const logEndRef = useRef<HTMLDivElement>(null);
+
+  const busy = status === "submitted" || status === "streaming";
+
+  // Auto-scroll on new messages.
+  useEffect(() => {
+    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, busy]);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    handleSubmit(e);
-    // Re-focus the textarea after submit
+    e.preventDefault();
+    const text = input.trim();
+    if (busy || !text) return;
+    sendMessage({ role: "user", parts: [{ type: "text", text }] });
+    setInput("");
     requestAnimationFrame(() => {
-      const ta = formRef.current?.querySelector("textarea");
-      ta?.focus();
+      formRef.current?.querySelector("textarea")?.focus();
     });
   };
 
-  const busy = status === "submitted" || status === "streaming";
+  // Pull the visible text out of an AI SDK 6 UIMessage. UIMessage.parts is an
+  // array of `{ type: "text", text: "..." }` (and other variants we ignore).
+  const textOf = (msg: { parts?: Array<{ type: string; text?: string }> }) =>
+    (msg.parts ?? [])
+      .filter((p) => p.type === "text" && typeof p.text === "string")
+      .map((p) => p.text)
+      .join("");
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -68,7 +84,7 @@ function App() {
                   : "mr-auto max-w-[85%] bg-white border border-gray-200 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm whitespace-pre-wrap"
               }
             >
-              {m.content}
+              {textOf(m)}
             </div>
           ))}
 
@@ -77,6 +93,14 @@ function App() {
               <span className="inline-block animate-pulse">…thinking</span>
             </div>
           )}
+
+          {error && (
+            <div className="mr-auto bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-2 text-sm">
+              {error.message}
+            </div>
+          )}
+
+          <div ref={logEndRef} />
         </div>
 
         {/* Composer */}
@@ -85,7 +109,7 @@ function App() {
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-mono h-28 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60"
             placeholder="Type your message or paste a markdown section…"
             value={input}
-            onChange={handleInputChange}
+            onChange={(e) => setInput(e.target.value)}
             disabled={busy}
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
