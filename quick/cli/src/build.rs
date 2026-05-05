@@ -45,7 +45,7 @@ pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> 
     let raw = vfs::read_to_string(src)?;
     let base_dir = src.parent().unwrap_or(Path::new("."));
     let expanded = includes::expand(&raw, base_dir)?;
-    vfs::write(Path::new(TMP_MD), expanded.as_bytes())?;
+    vfs::write_atomic(Path::new(TMP_MD), expanded.as_bytes())?;
 
     let theme_fwd = theme.to_string_lossy().replace('\\', "/");
 
@@ -87,7 +87,7 @@ pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> 
          #body\n"
     );
 
-    vfs::write(Path::new(TMP), wrapper.as_bytes())
+    vfs::write_atomic(Path::new(TMP), wrapper.as_bytes())
 }
 
 fn run_typst(font_dir: &Path, out: &str) -> Result<()> {

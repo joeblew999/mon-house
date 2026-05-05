@@ -17,9 +17,13 @@
 ///   * If `## ` is the very first text: chunk 0 is empty (preserved so the
 ///     chunk-index stays stable as later chunks change).
 ///   * Joining: the concatenation of the returned chunks IS the input.
+///
+/// Code-fence aware: a `## ` line **inside** a fenced block (between two
+/// matching ` ``` ` lines) is NOT treated as a section boundary. Otherwise
+/// a code sample that happens to contain `## ` (e.g. a shell comment or a
+/// markdown-about-markdown example) would silently shred the spec.
 pub fn split(content: &str) -> Vec<String> {
-    let re = regex::Regex::new(r"(?m)^## ").expect("static regex");
-    let starts: Vec<usize> = re.find_iter(content).map(|m| m.start()).collect();
+    let starts = find_section_starts(content);
 
     if starts.is_empty() {
         return vec![content.to_string()];
@@ -32,6 +36,26 @@ pub fn split(content: &str) -> Vec<String> {
         chunks.push(content[start..end].to_string());
     }
     chunks
+}
+
+/// Walk the input line-by-line and return the byte offset of every `## `
+/// heading that is NOT inside a fenced code block.
+fn find_section_starts(content: &str) -> Vec<usize> {
+    let mut starts = Vec::new();
+    let mut in_fence = false;
+    let mut offset = 0usize;
+    for line in content.split_inclusive('\n') {
+        // A line that begins with ``` (any fence flavour) flips fence state.
+        // We test against `trim_start` so indented fences still toggle.
+        let trimmed_start = line.trim_start();
+        if trimmed_start.starts_with("```") || trimmed_start.starts_with("~~~") {
+            in_fence = !in_fence;
+        } else if !in_fence && line.starts_with("## ") {
+            starts.push(offset);
+        }
+        offset += line.len();
+    }
+    starts
 }
 
 /// Concatenate chunks back into a single string. Inverse of `split`.
@@ -79,6 +103,29 @@ mod tests {
         assert_eq!(chunks.len(), 2);
         assert_eq!(chunks[0], "");
         assert!(chunks[1].starts_with("## Heading"));
+        assert_eq!(join(&chunks), s);
+    }
+
+    #[test]
+    fn heading_inside_code_fence_is_not_a_section_boundary() {
+        let s = "## Real\n\n```bash\n## not a heading\necho hi\n```\n\n## Also Real\nbody\n";
+        let chunks = split(s);
+        // Two real sections (after the empty pre-chunk).
+        assert_eq!(chunks.len(), 3);
+        assert_eq!(chunks[0], "");
+        assert!(chunks[1].starts_with("## Real"));
+        assert!(chunks[1].contains("## not a heading")); // stayed inside chunk 1
+        assert!(chunks[2].starts_with("## Also Real"));
+        assert_eq!(join(&chunks), s);
+    }
+
+    #[test]
+    fn tilde_fence_also_protects_headings() {
+        let s = "intro\n~~~\n## inside tilde fence\n~~~\n## Real\n";
+        let chunks = split(s);
+        assert_eq!(chunks.len(), 2);
+        assert!(chunks[0].contains("## inside tilde fence"));
+        assert!(chunks[1].starts_with("## Real"));
         assert_eq!(join(&chunks), s);
     }
 }

@@ -342,8 +342,8 @@ fn translate_svg_file(
 
     println!("  translating {} → {} ...", input.display(), output.display());
     let result = translate_svg_content(b, &content)?;
-    vfs::write(&output, result.as_bytes())?;
-    vfs::write(&hash_file, current_hash.as_bytes())?;
+    vfs::write_atomic(&output, result.as_bytes())?;
+    vfs::write_atomic(&hash_file, current_hash.as_bytes())?;
     Ok(true)
 }
 
@@ -430,11 +430,34 @@ struct ChunkCache {
 
 fn default_cache_version() -> u32 { 1 }
 
+/// Current cache schema version. Bump when changing the on-disk shape.
+const CACHE_VERSION: u32 = 1;
+
 fn load_cache(path: &Path) -> ChunkCache {
     if !vfs::exists(path) { return ChunkCache::default(); }
-    match vfs::read_to_string(path) {
-        Ok(text) => serde_json::from_str::<ChunkCache>(&text).unwrap_or_default(),
-        Err(_)   => ChunkCache::default(),
+    let text = match vfs::read_to_string(path) {
+        Ok(t) => t,
+        Err(e) => {
+            eprintln!("WARNING: cache unreadable at {} ({}), starting fresh", path.display(), e);
+            return ChunkCache::default();
+        }
+    };
+    match serde_json::from_str::<ChunkCache>(&text) {
+        Ok(c) if c.version == CACHE_VERSION => c,
+        Ok(c) => {
+            eprintln!(
+                "WARNING: cache version mismatch at {} (got {}, expected {}), starting fresh — chunks will re-translate",
+                path.display(), c.version, CACHE_VERSION,
+            );
+            ChunkCache::default()
+        }
+        Err(e) => {
+            eprintln!(
+                "WARNING: cache file corrupt at {} ({}), starting fresh — chunks will re-translate",
+                path.display(), e,
+            );
+            ChunkCache::default()
+        }
     }
 }
 
@@ -445,7 +468,9 @@ fn save_cache(path: &Path, cache: &ChunkCache) -> Result<()> {
     if vfs::read_to_string(path).map(|s| s == json).unwrap_or(false) {
         return Ok(());
     }
-    vfs::write(path, json.as_bytes())
+    // Atomic: write to .tmp then rename. Crash mid-write doesn't leave a
+    // corrupt JSON behind.
+    vfs::write_atomic(path, json.as_bytes())
 }
 
 /// Maximum number of chunks translated in parallel per file. CF Worker
@@ -518,15 +543,55 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
                 .collect()
         });
 
-        // Surface any error from the parallel batch and propagate the rest in order.
+        // Apply every successful chunk to its slot. Remember the FIRST error
+        // (if any) but don't bail early — we still want to persist the chunks
+        // that succeeded, so a transient half-failure doesn't make us pay the
+        // API cost a second time on the next run.
+        let mut first_err: Option<anyhow::Error> = None;
+        let mut succeeded: Vec<usize> = Vec::with_capacity(translated.len());
         for r in translated {
-            let (idx, thai) = r?;
-            th_chunks[idx] = thai;
+            match r {
+                Ok((idx, thai)) => {
+                    th_chunks[idx] = thai;
+                    succeeded.push(idx);
+                }
+                Err(e) if first_err.is_none() => first_err = Some(e),
+                Err(_) => { /* keep the first error */ }
+            }
+        }
+
+        if let Some(err) = first_err {
+            // Persist the partial cache (cache hits + chunks we just translated
+            // successfully) before bubbling the failure. Stale entries are
+            // pruned because we rebuild from the current chunk_keys.
+            let mut partial = ChunkCache { version: CACHE_VERSION, chunks: std::collections::BTreeMap::new() };
+            // Cache hits: every index NOT in `pending` already has its Thai in th_chunks.
+            for (i, key) in chunk_keys.iter().enumerate() {
+                if !pending.contains(&i) {
+                    partial.chunks.insert(key.clone(), th_chunks[i].clone());
+                }
+            }
+            // Chunks that succeeded this run.
+            for &idx in &succeeded {
+                partial.chunks.insert(chunk_keys[idx].clone(), th_chunks[idx].clone());
+            }
+            // Best-effort save — if persisting fails too, surface the original
+            // translation error (more useful than the cache-write error).
+            if let Err(save_err) = save_cache(&cache_path, &partial) {
+                eprintln!("  WARNING: also failed to persist partial cache: {save_err}");
+            } else {
+                eprintln!(
+                    "  partial cache saved: {} chunks kept, {} still missing",
+                    partial.chunks.len(),
+                    en_chunks.len() - partial.chunks.len(),
+                );
+            }
+            return Err(err);
         }
     }
 
     // Rebuild the cache from the final chunk-set (auto-prunes stale entries).
-    let mut next_cache = ChunkCache { version: 1, chunks: std::collections::BTreeMap::new() };
+    let mut next_cache = ChunkCache { version: CACHE_VERSION, chunks: std::collections::BTreeMap::new() };
     for (key, thai) in chunk_keys.iter().zip(th_chunks.iter()) {
         next_cache.chunks.insert(key.clone(), thai.clone());
     }
@@ -541,7 +606,7 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
     // step to redo typst. So only write if needed.
     let prev_output = vfs::read_to_string(&output).unwrap_or_default();
     let did_write = if prev_output != result {
-        vfs::write(&output, result.as_bytes())?;
+        vfs::write_atomic(&output, result.as_bytes())?;
         true
     } else {
         false

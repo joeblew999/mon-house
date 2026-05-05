@@ -42,6 +42,23 @@ fn expand_inner(content: &str, base_dir: &Path, depth: u32) -> Result<String> {
         let whole = caps.get(0).expect("whole match");
         let path_str = caps.name("path").expect("path group").as_str();
         let included_path = base_dir.join(path_str);
+
+        // Guard: reject absolute paths and any include that would escape the
+        // top-level base. Keeps a stray `<!-- include: ../../../etc/passwd -->`
+        // from quietly inlining whatever happens to be on disk.
+        if Path::new(path_str).is_absolute() {
+            bail!("include path must be relative: {path_str}");
+        }
+        let canon_base = base_dir.canonicalize().unwrap_or_else(|_| base_dir.to_path_buf());
+        let canon_inc  = included_path.canonicalize()
+            .with_context(|| format!("include not found: {}", included_path.display()))?;
+        if !canon_inc.starts_with(&canon_base) {
+            bail!(
+                "include escapes base directory: {} -> {} (base {})",
+                path_str, canon_inc.display(), canon_base.display(),
+            );
+        }
+
         let included = vfs::read_to_string(&included_path)
             .with_context(|| format!("include not found: {}", included_path.display()))?;
         let nested_base = included_path.parent().unwrap_or(base_dir);
@@ -100,5 +117,30 @@ mod tests {
     fn frontmatter_absent_passes_through() {
         let s = "# Body\n\nplain.\n";
         assert_eq!(strip_frontmatter(s), s);
+    }
+
+    #[test]
+    fn absolute_include_path_rejected() {
+        let dir = std::env::temp_dir().join("quick-incl-abs");
+        let _ = std::fs::create_dir_all(&dir);
+        let abs = dir.join("evil.md");
+        std::fs::write(&abs, "X").unwrap();
+        let src = format!("<!-- include: {} -->", abs.display());
+        let err = expand(&src, &dir).unwrap_err().to_string();
+        assert!(err.contains("must be relative"), "got: {err}");
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn parent_traversal_rejected() {
+        // base_dir = .../inner ; include points at .../outer/secret.md (escapes)
+        let outer = std::env::temp_dir().join("quick-incl-trav");
+        let inner = outer.join("inner");
+        let _ = std::fs::create_dir_all(&inner);
+        std::fs::write(outer.join("secret.md"), "secret").unwrap();
+        let src = "<!-- include: ../secret.md -->\n";
+        let err = expand(src, &inner).unwrap_err().to_string();
+        assert!(err.contains("escapes base"), "got: {err}");
+        let _ = std::fs::remove_dir_all(&outer);
     }
 }
