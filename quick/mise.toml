@@ -11,7 +11,7 @@
 # prove:secrets|access-policy|deployed — those assume D1, templated wrangler.toml,
 # and the full secrets-mapping flow. quick/ deploys with a single ANTHROPIC_API_KEY
 # secret and a static wrangler.toml.
-includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.11.0"]
+includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.12.0"]
 
 [tools]
 typst                  = "latest"
