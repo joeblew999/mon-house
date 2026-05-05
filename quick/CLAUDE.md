@@ -452,21 +452,61 @@ the old pandoc `{=typst}` raw block syntax.
 The CF Worker lives at `quick/cf/`. **Currently TypeScript** (Hono + Agents
 SDK + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
 
-### Reference clones (`.src/`, gitignored)
+### Reference clones at `.src/` — read these BEFORE guessing
 
-The Cloudflare Agents SDK ships fast — APIs that worked last week may have
-moved. Before guessing or grepping `node_modules`, **read the upstream
-source pinned to our installed version**:
+The Cloudflare Agents SDK is moving fast — multiple breaking renames per
+month. APIs documented yesterday may already have shifted (concrete recent
+example: `useAgentChat` migrated from `agents/ai-react` to
+`@cloudflare/ai-chat/react`; `onChatMessage` returns a streaming `Response`
+now, not a plain string). To stay aligned with what's actually shipping
+we keep two upstream clones under `quick/.src/` (gitignored):
 
 ```
-quick/.src/cloudflare-agents/      # github.com/cloudflare/agents @ agents@<our version>
-quick/.src/agents-starter/         # github.com/cloudflare/agents-starter
+quick/.src/cloudflare-agents/      → github.com/cloudflare/agents
+                                     PINNED to agents@<exact installed version>
+quick/.src/agents-starter/         → github.com/cloudflare/agents-starter
+                                     on main, depth 50
 ```
 
-The `examples/` folder under `cloudflare-agents/` has 37 canonical patterns
-(`ai-chat/`, `mcp/`, `voice-agent/`, `tictactoe/`, etc.). When in doubt,
-copy the pattern from there. See `quick/.src/README.md` for refresh
-instructions.
+**Pinning rule (non-negotiable):** the `cloudflare-agents` clone is
+checked out at the **same tag as `agents` in `cf/package.json`**. If
+`node_modules/agents/package.json` says `0.12.3`, the clone is on
+`agents@0.12.3`. If they drift, the source you read no longer matches
+what runs — that's how you end up debugging against ghost APIs.
+
+**Where to look first:**
+
+- `cloudflare-agents/examples/` — **37 canonical patterns**: `ai-chat/`,
+  `mcp/`, `voice-agent/`, `tictactoe/`, `structured-input/`, `workflows/`,
+  `oauth-agent/`, etc. Grep here BEFORE guessing or asking ChatGPT — odds
+  are very high the pattern exists, vetted, with tests.
+- `cloudflare-agents/packages/agents/src/` — the SDK source. Read comments
+  and tests when a method's behaviour isn't obvious from the type
+  signature.
+- `cloudflare-agents/packages/ai-chat/` — **the actual `AIChatAgent` class
+  + chat hooks live here**, not in `packages/agents/`. The
+  `agents/ai-chat-agent` import path is a deprecated re-export shim;
+  prefer `@cloudflare/ai-chat` directly.
+
+**Bump discipline.** When `cf/package.json` jumps versions:
+
+```bash
+# 1. Bump the dependency normally
+cd quick/cf && npm install agents@<new> @cloudflare/ai-chat@<new>
+
+# 2. Bump the clone to match — DO NOT SKIP
+cd ../.src/cloudflare-agents
+git fetch --tags
+git checkout agents@<new>          # exact same version
+
+# 3. Re-deploy and smoke-test
+cd ../../cf && mise run 10-deploy
+```
+
+Skipping step 2 is how you start trusting docs that have moved on. Don't.
+
+See `quick/.src/README.md` for the full refresh procedure and a per-folder
+map of what's worth reading.
 
 ### Current architecture
 
