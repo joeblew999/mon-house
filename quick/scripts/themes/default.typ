@@ -152,7 +152,6 @@
   }
 
   show heading.where(level: 1): it => {
-    pagebreak(weak: true)
     v(0.6em)
     block(width: 100%, fill: light, inset: (x: 0.7em, y: 0.45em), radius: 3pt)[
       #text(size: 12pt, weight: "bold", fill: accent)[#it.body]

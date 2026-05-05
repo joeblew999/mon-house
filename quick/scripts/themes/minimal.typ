@@ -123,7 +123,6 @@
 
   // H1 — bold rule only, no filled block
   show heading.where(level: 1): it => {
-    pagebreak(weak: true)
     v(0.8em)
     text(size: 13pt, weight: "bold")[#it.body]
     v(0.15em)

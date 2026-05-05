@@ -128,7 +128,6 @@
 
   // H1 — compact with light fill
   show heading.where(level: 1): it => {
-    pagebreak(weak: true)
     v(0.4em)
     block(width: 100%, fill: light, inset: (x: 0.6em, y: 0.3em), radius: 2pt)[
       #text(size: 10.5pt, weight: "bold", fill: accent)[#it.body]
