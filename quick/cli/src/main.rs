@@ -8,6 +8,7 @@ mod config;
 mod http;
 mod fonts;
 mod idempotency;
+mod includes;
 mod new;
 #[cfg(feature = "container")]
 mod serve;

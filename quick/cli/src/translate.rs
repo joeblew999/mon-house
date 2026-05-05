@@ -34,6 +34,7 @@ Rules:
 - Keep table structure identical — only translate the text inside cells
 - Use correct Thai construction terminology (not word-for-word literal translation)
 - Formal register (ภาษาทางการ) appropriate for contractor documents
+- Preserve HTML comments (<!-- ... -->) exactly as-is — do not translate, expand, or remove them
 - Do NOT add explanations or notes — output ONLY the translated markdown
 "#;
 
@@ -343,31 +344,49 @@ fn translate_svg_file(
     Ok(true)
 }
 
-// ── Image-ref substitution ─────────────────────────────────────────────────────
+// ── Image-ref + include substitution ───────────────────────────────────────────
 
-/// In the translated markdown, swap any `![..](path/to/foo.svg|png|jpg|jpeg)` reference
-/// for `path/to/foo.th.<ext>` if a Thai sibling exists on disk. Lets the Thai PDF use
-/// Thai-labelled diagrams automatically without the author touching the .th.md.
-fn substitute_th_image_refs(content: &str, base_dir: &Path) -> String {
-    let img_re = match regex::Regex::new(r"!\[([^\]]*)\]\(([^)]+)\)") {
-        Ok(re) => re,
-        Err(_) => return content.to_string(),
-    };
-    img_re
-        .replace_all(content, |caps: &regex::Captures| {
+/// In the translated markdown, swap any `![..](path/to/foo.svg|png|jpg|jpeg)` or
+/// `<!-- include: path/to/foo.md -->` reference for the `.th.<ext>` Thai sibling
+/// if it exists on disk. Lets a Thai PDF pick up both Thai-labelled diagrams and
+/// translated partials automatically without the author touching `.th.md`.
+///
+/// The two base_dirs differ because the path conventions differ:
+///   * `image_base` — image paths are resolved by typst at compile time relative
+///     to the project root (where `_tmp.typ` lives), so this should be the
+///     parent of `specs_dir`.
+///   * `include_base` — include paths are relative to the markdown file that
+///     contains them, the same convention `build::write_typ_wrapper` uses.
+fn substitute_th_refs(content: &str, image_base: &Path, include_base: &Path) -> String {
+    let after_images = if let Ok(re) = regex::Regex::new(r"!\[([^\]]*)\]\(([^)]+)\)") {
+        re.replace_all(content, |caps: &regex::Captures| {
             let alt = &caps[1];
             let path = &caps[2];
-            let new_path = th_variant_if_exists(path, base_dir);
+            let new_path = th_variant_if_exists(path, image_base, &["svg", "png", "jpg", "jpeg"]);
             format!("![{alt}]({new_path})")
         })
         .into_owned()
+    } else {
+        content.to_string()
+    };
+
+    if let Ok(re) = regex::Regex::new(r"(?m)^[ \t]*<!--[ \t]*include:[ \t]*([^\s>]+)[ \t]*-->[ \t]*$") {
+        re.replace_all(&after_images, |caps: &regex::Captures| {
+            let path = &caps[1];
+            let new_path = th_variant_if_exists(path, include_base, &["md"]);
+            format!("<!-- include: {new_path} -->")
+        })
+        .into_owned()
+    } else {
+        after_images
+    }
 }
 
-fn th_variant_if_exists(path: &str, base_dir: &Path) -> String {
+fn th_variant_if_exists(path: &str, base_dir: &Path, allowed_exts: &[&str]) -> String {
     let p = Path::new(path);
     let Some(stem) = p.file_stem().and_then(|s| s.to_str()) else { return path.into() };
     let Some(ext) = p.extension().and_then(|s| s.to_str()) else { return path.into() };
-    if !matches!(ext.to_ascii_lowercase().as_str(), "svg" | "png" | "jpg" | "jpeg") {
+    if !allowed_exts.iter().any(|e| e.eq_ignore_ascii_case(ext)) {
         return path.into();
     }
     if stem.ends_with(".th") { return path.into(); } // already Thai variant
@@ -405,8 +424,12 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
     // Repoint image refs at any *.th.<ext> sibling that exists (so the Thai PDF picks
     // up Thai-labelled SVGs without a manual edit). Resolved relative to the project
     // root (one level up from specs/), matching how typst resolves image paths at build.
-    let base_dir = cfg.specs_dir.parent().unwrap_or(Path::new("."));
-    let result = substitute_th_image_refs(&translated, base_dir);
+    // Image paths in markdown are resolved by typst relative to the project
+    // root (where `_tmp.typ` lives) — that's `cfg.specs_dir.parent()`.
+    // Include paths are relative to the markdown file itself.
+    let image_base   = cfg.specs_dir.parent().unwrap_or(Path::new("."));
+    let include_base = input.parent().unwrap_or(image_base);
+    let result = substitute_th_refs(&translated, image_base, include_base);
     vfs::write(&output, result.as_bytes())?;
     vfs::write(&hash_file, current_hash.as_bytes())?;
     Ok(true)
@@ -415,7 +438,7 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
 // ── Subcommand ─────────────────────────────────────────────────────────────────
 
 pub fn cmd_translate(cfg: &crate::Config, files: Vec<PathBuf>) -> Result<()> {
-    let md_paths: Vec<PathBuf> = if files.is_empty() {
+    let primary_md_paths: Vec<PathBuf> = if files.is_empty() {
         let pattern = cfg.specs_dir.join("[A-Z]*.md");
         vfs::glob(pattern.to_str().context("specs_dir path not UTF-8")?)?
             .into_iter()
@@ -427,6 +450,18 @@ pub fn cmd_translate(cfg: &crate::Config, files: Vec<PathBuf>) -> Result<()> {
                 let name = p.file_name().and_then(|n| n.to_str()).unwrap_or_default();
                 name.ends_with(".md") && !name.ends_with(".th.md")
             })
+            .collect()
+    };
+
+    // Partials in `specs/_partials/` — always globbed regardless of file args, so
+    // that includer specs find a translated `.th.md` partial during ref substitution.
+    // Translated FIRST so the substitution step downstream sees fresh `.th.md` siblings.
+    let partial_md_paths: Vec<PathBuf> = {
+        let pattern = cfg.specs_dir.join("_partials/*.md");
+        vfs::glob(pattern.to_str().context("partials path not UTF-8")?)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|p| !p.file_name().and_then(|n| n.to_str()).unwrap_or_default().ends_with(".th.md"))
             .collect()
     };
 
@@ -447,10 +482,16 @@ pub fn cmd_translate(cfg: &crate::Config, files: Vec<PathBuf>) -> Result<()> {
     let mut backend: Option<TranslateBackend> = None;
     let mut translated = 0u32;
     let mut skipped    = 0u32;
+    // Order matters: SVGs first so their `.th.svg` exists for spec image-ref
+    // substitution; partials second so their `.th.md` exists for spec
+    // include-ref substitution; then the specs themselves.
     for path in &svg_paths {
         if translate_svg_file(&mut backend, cfg, path)? { translated += 1; } else { skipped += 1; }
     }
-    for path in &md_paths {
+    for path in &partial_md_paths {
+        if translate_file(&mut backend, cfg, path)? { translated += 1; } else { skipped += 1; }
+    }
+    for path in &primary_md_paths {
         if translate_file(&mut backend, cfg, path)? { translated += 1; } else { skipped += 1; }
     }
     println!("Done. {translated} translated, {skipped} skipped.");

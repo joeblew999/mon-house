@@ -384,6 +384,29 @@ mise run clean                          # remove out/
 
 ---
 
+## Markdown includes (SSOT for shared content)
+
+When two or more specs need the same content (e.g. a parts list shared
+between BATHROOM.md and BATHROOM-COMPACT.md), keep it in **one** file
+under `specs/_partials/` and pull it in with an HTML-comment directive:
+
+```markdown
+<!-- include: _partials/bathroom-parts.md -->
+```
+
+- Paths are resolved relative to the **including markdown file**.
+- The build expander recurses (capped at depth 5).
+- A leading frontmatter block in the partial is auto-stripped.
+- Translate handles partials separately — each `_partials/*.md` gets its
+  own `.th.md` + `.th.md.hash`. After translating a spec that references
+  a partial, the include path is rewritten in the `.th.md` to point at
+  the `.th.md` partial, so the Thai PDF stays SSOT.
+- Idempotency: change the partial → only the partial re-translates and
+  PDFs that include it rebuild. No spammy re-translation of every
+  including spec.
+
+---
+
 ## Image Grids in Specs
 
 To show two images side-by-side in a spec, use a cmarker raw Typst block:

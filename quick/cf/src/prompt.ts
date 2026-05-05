@@ -12,6 +12,7 @@ Rules:
 - Keep table structure identical — only translate the text inside cells
 - Use correct Thai construction terminology (not word-for-word literal translation)
 - Formal register (ภาษาทางการ) appropriate for contractor documents
+- Preserve HTML comments (<!-- ... -->) exactly as-is — do not translate, expand, or remove them
 - Do NOT add explanations or notes — output ONLY the translated markdown
 `;
 

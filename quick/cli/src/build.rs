@@ -22,15 +22,31 @@ use std::process::Command;
 
 use anyhow::{bail, Context, Result};
 
-use crate::{vfs, Config};
+use crate::{includes, vfs, Config};
 
 const TMP: &str = "_tmp.typ";
+const TMP_MD: &str = "_tmp.md";
 
 // ── internal helpers ───────────────────────────────────────────────────────────
 
-/// Write a cmarker-based Typst wrapper that replaces the pandoc md→typ step.
+/// Write a cmarker-based Typst wrapper.
+///
+/// Two files are produced in the project root:
+///   * `_tmp.md`  — the source markdown after `<!-- include: -->` directives
+///                  have been recursively expanded.
+///   * `_tmp.typ` — the typst wrapper that imports the theme, defines the
+///                  captioned-image helper, and feeds `_tmp.md` into cmarker.
+///
+/// Image paths inside the markdown stay relative to the project root because
+/// that's where typst is invoked from — same as before this change.
 pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> Result<()> {
-    let src_fwd   = src.to_string_lossy().replace('\\', "/");
+    // Read the spec, expand any include directives, write the result alongside
+    // the typst wrapper. cmarker's `read()` then sees a self-contained file.
+    let raw = vfs::read_to_string(src)?;
+    let base_dir = src.parent().unwrap_or(Path::new("."));
+    let expanded = includes::expand(&raw, base_dir)?;
+    vfs::write(Path::new(TMP_MD), expanded.as_bytes())?;
+
     let theme_fwd = theme.to_string_lossy().replace('\\', "/");
 
     let wrapper = format!(
@@ -57,7 +73,7 @@ pub fn write_typ_wrapper(src: &Path, theme: &Path, lang: &str, region: &str) -> 
          }}\n\
          \n\
          #let (meta, body) = render-with-metadata(\n\
-           read(\"{src_fwd}\"),\n\
+           read(\"{TMP_MD}\"),\n\
            metadata-block: \"frontmatter-yaml\",\n\
            scope: (image: __captioned-image),\n\
          )\n\
