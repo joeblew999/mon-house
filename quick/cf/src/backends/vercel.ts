@@ -23,7 +23,7 @@ export class VercelAIBackend implements TranslateBackend {
     }
 
     const workersai = createWorkersAI({ binding: env.AI });
-    const model = (env.QUICK_CF_MODEL as string) ?? "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+    const model = (env.QUICK_CF_MODEL_TRANSLATE as string) ?? "@cf/aisingapore/gemma-sea-lion-v4-27b-it";
     const { text } = await generateText({
       model: workersai(model),
       system,

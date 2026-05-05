@@ -452,6 +452,12 @@ the old pandoc `{=typst}` raw block syntax.
 The CF Worker lives at `quick/cf/`. **Currently TypeScript** (Hono + Agents
 SDK + Workers AI binding). Live at https://quick-worker.gedw99.workers.dev.
 
+> **Read [`cf/COSTS.md`](cf/COSTS.md) before changing any model or rate-limit
+> setting.** It documents the two cost knobs (`QUICK_CF_MODEL_TRANSLATE`
+> and `QUICK_CF_MODEL_CHAT`), per-model pricing, free-tier math, the
+> RATE_LIMIT binding, and what could blow the budget. Single source of
+> truth — keep it current as prices and models shift.
+
 ### Reference clones at `.src/` — read these BEFORE guessing
 
 The Cloudflare Agents SDK is moving fast — multiple breaking renames per

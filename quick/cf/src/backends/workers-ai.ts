@@ -1,5 +1,5 @@
 // CF Workers AI backend — uses the AI binding declared in wrangler.toml.
-// Model is controlled by QUICK_CF_MODEL (default: llama-3.3-70b-instruct-fp8-fast).
+// Model is controlled by QUICK_CF_MODEL_TRANSLATE (set in wrangler.toml).
 // No external API key required — runs entirely within Cloudflare.
 
 import { generateText } from "ai";
@@ -10,7 +10,7 @@ import { promptFor, userPromptFor, cleanOutput, type TranslateMode } from "../pr
 export class WorkersAIBackend implements TranslateBackend {
   async translate(content: string, env: Env, mode: TranslateMode = "spec"): Promise<string> {
     const workersai = createWorkersAI({ binding: env.AI });
-    const model = (env.QUICK_CF_MODEL as string) ?? "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+    const model = (env.QUICK_CF_MODEL_TRANSLATE as string) ?? "@cf/aisingapore/gemma-sea-lion-v4-27b-it";
     const { text } = await generateText({
       model: workersai(model),
       system: promptFor(mode),

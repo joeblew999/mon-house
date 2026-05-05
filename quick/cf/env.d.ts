@@ -6,18 +6,17 @@
 
 interface Env {
   // Durable Object — name must match class name for routeAgentRequest routing
-  PipelineAgent: DurableObjectNamespace;
-  // Container — Typst PDF compiler (quick-tool serve inside Docker).
-  // Name MUST be lowercase (Docker image tag constraint).
-  // [[durable_objects.bindings]] exposes the DO namespace in env;
-  // [[containers]] (same name) makes it container-aware (ctx.container populated).
-  typst_compiler: DurableObjectNamespace<import("./src/compiler").TypstCompiler>;
+  ChatAgent: DurableObjectNamespace<import("./src/chat").ChatAgent>;
   // R2 bucket
   SPECS_BUCKET: R2Bucket;
   // CF Workers AI binding
   AI: Ai;
-  // Variables (wrangler.toml [vars])
-  QUICK_CF_MODEL: string;
+  // Rate limit binding (per-IP cap on /translate + chat surfaces)
+  RATE_LIMIT: { limit(opts: { key: string }): Promise<{ success: boolean }> };
+  // Per-feature model selection (wrangler.toml [vars]) — split so /translate
+  // and chat can run on different models with different cost profiles.
+  QUICK_CF_MODEL_TRANSLATE: string;
+  QUICK_CF_MODEL_CHAT: string;
   // "workers-ai" (default) | "anthropic" | "openai-agents" | "vercel"
   QUICK_AI_BACKEND?: string;
   // Secrets (wrangler secret put)

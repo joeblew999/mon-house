@@ -42,10 +42,22 @@ export class ChatAgent extends AIChatAgent<Env> {
    * response from Workers AI back to the React client; the AIChatAgent base
    * class handles persistence (DO SQLite), reconnection replay, and
    * dispatch to all connected clients of this agent instance.
+   *
+   * Model selection priority:
+   *   1. `body.model` from the client (SPA dropdown override) — wins
+   *   2. `QUICK_CF_MODEL_CHAT` from wrangler.toml [vars]
+   *   3. Hard-coded fallback (gemma-3-12b-it — cheap, fluent enough)
+   *
+   * The SPA passes the user's pick via the AI SDK's `body` option in
+   * `useAgentChat`; we surface it here through `options.body`.
    */
-  async onChatMessage() {
+  async onChatMessage(_onFinish: unknown, options?: { body?: Record<string, unknown> }) {
     const workersai = createWorkersAI({ binding: this.env.AI });
-    const model = (this.env.QUICK_CF_MODEL as string) ?? "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+    const requested = typeof options?.body?.model === "string" ? options.body.model : undefined;
+    const model =
+      requested ??
+      this.env.QUICK_CF_MODEL_CHAT ??
+      "@cf/google/gemma-3-12b-it";
 
     const result = streamText({
       model: workersai(model),

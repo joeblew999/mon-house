@@ -46,6 +46,16 @@ deleted_classes = ["PipelineAgent"]
 tag                = "v3"
 new_sqlite_classes = ["ChatAgent"]
 
+# ── Rate limit ────────────────────────────────────────────────────────────────
+# Per-IP cap on the public AI surfaces (/translate + /agents/*) so a hostile
+# or curious visitor can't drain the daily Workers AI budget. See COSTS.md
+# for the 'why' and how to tune.
+[[unsafe.bindings]]
+name         = "RATE_LIMIT"
+type         = "ratelimit"
+namespace_id = "1001"
+simple       = { limit = 60, period = 60 }   # 60 reqs / minute / IP
+
 # ── R2 ────────────────────────────────────────────────────────────────────────
 [[r2_buckets]]
 binding     = "SPECS_BUCKET"
@@ -56,18 +66,31 @@ bucket_name = "quick-specs"
 QUICK_AI_BACKEND = "workers-ai"
 
 # ── CF Workers AI model selection ─────────────────────────────────────────────
-# Uncomment one. SEA-LION is recommended for Thai — fine-tuned for SE Asian languages.
-# All models share 10,000 free neurons/day; beyond that: $0.011 per 1,000 neurons.
+# Two separate env vars so translate and chat can use different models —
+# translate wants quality on technical Thai; chat wants cheap streaming on
+# casual back-and-forth. The pricing column is approximate per-million-token
+# cost; both share the 10K-Neurons/day free pool then $0.011 per 1K Neurons.
 #
-# Best for Thai (SE Asian fine-tune, 128k context):
-#   $0.35/M input  •  $0.56/M output
-QUICK_CF_MODEL = "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
-# Dedicated translation model, 100 languages, faster/cheaper:
-#   $0.34/M input  •  $0.34/M output
-# QUICK_CF_MODEL = "@cf/meta/m2m100-1.2b"
-# General multilingual fallback (cheap input, expensive output):
-#   $0.29/M input  •  $2.25/M output  •  8K output cap (vs sea-lion's ~4K)
-# QUICK_CF_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+# TRANSLATE — Sea-Lion is the default because we already validated Thai
+# construction-spec output on it. Bumping to llama-3.3-70b lifts quality
+# at ~4x output cost; m2m100-1.2b is dedicated translation but lower
+# quality on long markdown.
+#
+#   sea-lion-v4-27b-it           ~$0.35/M in  $0.56/M out  ← default
+#   llama-3.3-70b-instruct-fp8   ~$0.29/M in  $2.25/M out
+#   m2m100-1.2b                  ~$0.34/M in  $0.34/M out  (translation-only)
+QUICK_CF_MODEL_TRANSLATE = "@cf/aisingapore/gemma-sea-lion-v4-27b-it"
+
+# CHAT — Gemma 3 12B is roughly half the per-turn cost of sea-lion 27B at
+# similar conversational quality. The chat agent honours a per-message
+# override sent from the SPA dropdown, so this is just the default for
+# clients that don't pick one.
+#
+#   gemma-3-12b-it               ~$0.10/M in  $0.20/M out  ← default
+#   sea-lion-v4-27b-it           ~$0.35/M in  $0.56/M out  (Thai-aware)
+#   llama-3.3-70b-instruct-fp8   ~$0.29/M in  $2.25/M out  (smart but pricey)
+#   llama-4-scout-17b-16e-it     ~$0.20/M in  $0.85/M out  (newer mid-tier)
+QUICK_CF_MODEL_CHAT = "@cf/google/gemma-3-12b-it"
 
 # ── Secrets ───────────────────────────────────────────────────────────────────
 # Optional backends — set via wrangler secret put:
