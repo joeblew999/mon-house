@@ -234,6 +234,8 @@ This ADR's WASM compile path is **storage-agnostic**: it accepts markdown bytes,
 
 ---
 
-## Note on `quick/deckfs/`
+## Worker home: `cf/` (not a new worker)
 
-A fresh `wrangler init` scaffold exists at `quick/deckfs/` (untracked, version `0.0.0`). Not directly part of this ADR, but worth flagging that **this ADR's WASM artifact and SPA shim should be reusable** wherever the project decides to host them — `cf/`, `deckfs/`, or a future location. The TypeScript wrapper (`typst-wasm-shim.ts`) should be free of `cf/`-specific assumptions so it composes with whatever the next prototype turns out to be.
+Track A lands in the **existing** `cf/` Worker — same React SPA at `cf/src/client.tsx`, same deploy pipeline (`mise run 10-deploy`), same domain (`quick-worker.gedw99.workers.dev`). The integration steps above (serve WASM at `/wasm/typst.wasm`, mount the React `<Preview>` component, hook ADR 006's quote form) are all inside `cf/`.
+
+A bare `wrangler init` scaffold at `quick/deckfs/` was created speculatively before this ADR was written and was **deleted** when this ADR's decision pinned the work to `cf/`. The TypeScript wrapper (`typst-wasm-shim.ts`) is still written without `cf/`-specific assumptions so it stays portable, but adding a second Worker just for this is unnecessary overhead.
