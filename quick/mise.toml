@@ -1,12 +1,16 @@
 [task_config]
-# Shared joeblew999 task library — provides cf:token-check, wrangler:tail/secret-list,
-# rust:build/test, prove:bindings. Same library kv-manager and other repos pull in
-# so task names stay consistent across the org.
+# Shared joeblew999 task library — provides cf:token-check, cf:access-setup,
+# wrangler:tail/secret-list, rust:build/test, prove:bindings. Same library
+# kv-manager and other repos pull in so task names stay consistent across the org.
 #
-# Not used here: cf:access-setup / cf:provision-d1-r2 / cf:secrets-put-mapped /
-# wrangler:gen / prove:secrets|access-policy|deployed — those assume CF Access auth,
-# D1, fnox, and templated wrangler.toml. quick/ deploys with a single
-# ANTHROPIC_API_KEY secret and a static wrangler.toml.
+# cf:access-setup is used here — it reads cf/config/production.env and
+# provisions a Cloudflare Access App + email-allowlist policy in front of
+# the Worker. See cf/COSTS.md "Auth gate" section.
+#
+# Not used here: cf:provision-d1-r2 / cf:secrets-put-mapped / wrangler:gen /
+# prove:secrets|access-policy|deployed — those assume D1, templated wrangler.toml,
+# and the full secrets-mapping flow. quick/ deploys with a single ANTHROPIC_API_KEY
+# secret and a static wrangler.toml.
 includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.10.0"]
 
 [tools]

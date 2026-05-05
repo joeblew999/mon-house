@@ -11,9 +11,8 @@ affect the AI bill.
 - **Plan:** Cloudflare Workers Paid — **$5/month**.
 - **Free Workers AI budget:** **10,000 Neurons / day**, then **$0.011 / 1,000 Neurons**.
 - **Two surfaces burn budget:** `POST /translate` and the `/agents/*` chat WebSocket.
-- **Both are public** at https://quick-worker.gedw99.workers.dev/. **Anyone on the internet can hit them.**
-- **Rate limit:** 60 req/min/IP via `RATE_LIMIT` binding (`wrangler.toml`). Caps damage from unauthenticated abuse.
-- **Auth: not yet.** Tracked as a follow-up — see "Open: auth gate" below.
+- **Both are gated by Cloudflare Access** at https://quick-worker.gedw99.workers.dev/ — email-allowlist policy provisioned via `mise run cf:access-setup` (see "Auth gate" below).
+- **Rate limit:** 60 req/min/IP via `RATE_LIMIT` binding (`wrangler.toml`). Defence-in-depth behind CF Access.
 
 ---
 
@@ -123,20 +122,43 @@ In rough order of "scariest to fix":
 
 ---
 
-## Open: auth gate
+## Auth gate — Cloudflare Access
 
-Today the chat is open to the internet. Mitigations:
+The Worker sits behind **Cloudflare Access** with an email-allowlist
+policy. Anonymous traffic is bounced at the edge with a one-time-PIN
+login screen; the Worker code never runs for unauthorised callers, so
+the AI budget is fully protected even if the rate-limit binding fails.
 
-- Rate limit (in place — soft cap).
-- Future: **CF Access** in front of the Worker, gating `/agents/*` and
-  optionally `/translate` to GitHub-authenticated users only. CF Access
-  is free for the first 50 users and integrates with the existing
-  shared-mise-tasks `cf:access-setup` script we already pull in.
-- Or: **server-issued bearer tokens** stored in user keychain. More
-  custom but no CF Access dependency.
+Free for the first 50 users on our plan. Configured via the shared
+mise task `cf:access-setup`, which is idempotent: re-run it to add
+more emails to the allow policy.
 
-Auth is tracked as the next ops follow-up. Until it's in place: monitor
-`wrangler tail` and the CF dashboard's Workers AI charts.
+### Add a new allowed user
+
+1. Append the email to `OPERATOR_EMAIL` (comma-separated) in
+   `cf/config/production.env`.
+2. `mise run cf:access-setup` — the task PATCHes the existing policy
+   with the new email; existing sessions are not disrupted.
+3. Commit the env-file change.
+
+### One-time setup
+
+Run `mise run cf:access-setup` from `quick/`. The task reads
+`cf/config/production.env`, ensures an Access App exists for
+`quick-worker.gedw99.workers.dev`, creates an "operator-only" allow
+policy for `OPERATOR_EMAIL`, and writes `CF_ACCESS_TEAM_DOMAIN` +
+`QUICK_WORKER_POLICY_AUD` to the fnox keychain. Requires
+`CLOUDFLARE_API_TOKEN` in fnox with `Access:Edit` +
+`Access:Organizations:Read` + `Account.Settings:Read` scopes.
+
+### Defence in depth
+
+- **Edge (CF Access):** primary gate, blocks unauth'd before Worker.
+- **Worker (rate limit):** 60 req/min/IP via `RATE_LIMIT` binding —
+  protects against an authorised user's misbehaving client (runaway
+  retry loop, etc.).
+- **Worker (per-user DOs):** future `multi-ai-chat` adoption will use
+  the Access JWT email claim to give each user their own ChatAgent DO.
 
 ---
 
