@@ -1,9 +1,17 @@
 // Local file watcher + CF PipelineAgent client.
 //
-// Watches specs/*.md for changes, sends each changed file to the PipelineAgent
-// over WebSocket, and writes results back to disk:
-//   translated → specs/{name}.th.md + specs/{name}.th.md.hash
+// Watches the EN markdown sources (specs/*.md and specs/_partials/*.md) for
+// changes, sends each changed file to the PipelineAgent over WebSocket, and
+// writes results back to disk:
+//   translated → specs/{name}.th.md
 //   pdf        → out/{name}.th.pdf
+//
+// NOTE: The Rust CLI path (`mise run translate`, `mise run one`) is the
+// supported "section-granular" pipeline that maintains per-spec
+// `<stem>.th.md.cache.json` files. This TS watcher hits the older Agent
+// endpoint and currently treats each spec as a single unit (no per-section
+// cache awareness on this path). Migrate the Agent to chunked translate
+// before relying on this watcher in production.
 //
 // Uses AgentClient (from agents/client, built on PartySocket) for:
 //   - Auto-reconnection when the DO hibernates or wrangler restarts
@@ -86,14 +94,17 @@ if (!existsSync(SPECS_DIR)) {
   process.exit(1);
 }
 
-console.log(`[watch] watching ${SPECS_DIR}/*.md`);
+console.log(`[watch] watching ${SPECS_DIR}/*.md and ${SPECS_DIR}/_partials/*.md`);
 console.log(`[watch] PDFs → ${OUT_DIR}/`);
 console.log("[watch] (Ctrl+C to stop)\n");
 
-const watcher = chokidar.watch(`${SPECS_DIR}/[A-Z]*.md`, {
-  ignoreInitial: true,
-  ignored: /\.th\.md$/,
-});
+const watcher = chokidar.watch(
+  [`${SPECS_DIR}/[A-Z]*.md`, `${SPECS_DIR}/_partials/*.md`],
+  {
+    ignoreInitial: true,
+    ignored: /\.th\.md$/,
+  },
+);
 
 watcher.on("change", (filePath: string) => {
   const name    = basename(filePath, ".md");
