@@ -1,7 +1,7 @@
 # ADR 001: JSON Reference Resolution System
 
 ## Status
-Proposed
+**Deferred (2026-05-04)** — never built. The `resolve-refs` tool, CSS generation pipeline, and pre-commit hook described below were superseded by the move to `quick/` + Typst (theme styles live in `quick/scripts/themes/*.typ`, not in a generated CSS file). The `drawing-standards.json` file is still in the repo root for reference, but no tooling reads it. If a JSON-ref system is needed in the future, fork from this ADR; otherwise treat as historical.
 
 ## Context
 The `drawing-standards.json` file defines drawing standards with a normalized structure using `$ref:` references to avoid duplication:

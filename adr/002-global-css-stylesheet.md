@@ -1,7 +1,7 @@
 # ADR 002: Global CSS Stylesheet for SVG Drawings
 
 ## Status
-Proposed
+**Deferred (2026-05-04)** — never built. Depends on ADR 001 (also deferred). The bilingual SVG drawing pipeline this ADR addresses moved to Typst, where styling lives in `quick/scripts/themes/*.typ` — there is no longer a generated CSS file shared across SVGs. The repo-root `index.html` SPA + `drawing-standards.css` referenced below are still present but are part of the older GitHub Pages pipeline, not the active `quick/` construction-spec pipeline. Treat as historical.
 
 ## Context
 
