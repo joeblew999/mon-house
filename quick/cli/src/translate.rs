@@ -401,38 +401,110 @@ fn th_variant_if_exists(path: &str, base_dir: &Path, allowed_exts: &[&str]) -> S
 }
 
 // ── Per-file translation ───────────────────────────────────────────────────────
+//
+// Translation is **section-granular**:
+//
+//   1. The source `.md` is split on `## ` heading boundaries (`chunks::split`).
+//   2. Each chunk's BLAKE3 hash is looked up in `<stem>.th.md.cache.json`.
+//   3. Hits → reuse the cached Thai chunk (no API call).
+//   4. Misses → call the backend on just that chunk, store result in the
+//      rebuilt cache.
+//   5. Concat translated chunks → run image / include ref substitution → write
+//      `<stem>.th.md`. Save the rebuilt cache (which prunes stale entries).
+//
+// Editing one paragraph in section "Plumbing tidy" therefore re-translates
+// only that one section, while every other section reuses its cached Thai.
+
+#[derive(serde::Serialize, serde::Deserialize, Default)]
+struct ChunkCache {
+    #[serde(default = "default_cache_version")]
+    version: u32,
+    /// `blake3(en_chunk_bytes)` (hex) → translated Thai chunk text.
+    chunks: std::collections::HashMap<String, String>,
+}
+
+fn default_cache_version() -> u32 { 1 }
+
+fn load_cache(path: &Path) -> ChunkCache {
+    if !vfs::exists(path) { return ChunkCache::default(); }
+    match vfs::read_to_string(path) {
+        Ok(text) => serde_json::from_str::<ChunkCache>(&text).unwrap_or_default(),
+        Err(_)   => ChunkCache::default(),
+    }
+}
+
+fn save_cache(path: &Path, cache: &ChunkCache) -> Result<()> {
+    let json = serde_json::to_string_pretty(cache).context("serialise cache")?;
+    vfs::write(path, json.as_bytes())
+}
 
 fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, input: &Path) -> Result<bool> {
     let name = input.file_stem().and_then(|s| s.to_str()).context("invalid filename")?;
-    let output    = input.with_file_name(format!("{name}.th.md"));
-    let hash_file = input.with_file_name(format!("{name}.th.md.hash"));
-    let content   = vfs::read_to_string(input)?;
-    let current_hash = idempotency::blake3_hex(content.as_bytes());
+    let output     = input.with_file_name(format!("{name}.th.md"));
+    let cache_path = input.with_file_name(format!("{name}.th.md.cache.json"));
+    let old_hash_path = input.with_file_name(format!("{name}.th.md.hash"));
 
-    if vfs::exists(&output) && vfs::exists(&hash_file) {
-        if vfs::read_to_string(&hash_file)?.trim() == current_hash {
-            println!("  skip {} (unchanged)", input.display());
-            return Ok(false);
+    let content = vfs::read_to_string(input)?;
+    let en_chunks = crate::chunks::split(&content);
+    let prev_cache = load_cache(&cache_path);
+
+    let mut next_cache = ChunkCache { version: 1, chunks: std::collections::HashMap::new() };
+    let mut th_chunks = Vec::with_capacity(en_chunks.len());
+    let mut hits = 0u32;
+    let mut misses = 0u32;
+
+    for chunk in &en_chunks {
+        let key = idempotency::blake3_hex(chunk.as_bytes());
+        if let Some(cached) = prev_cache.chunks.get(&key) {
+            th_chunks.push(cached.clone());
+            next_cache.chunks.insert(key, cached.clone());
+            hits += 1;
+            continue;
         }
+        if backend.is_none() { *backend = Some(TranslateBackend::resolve(cfg)?); }
+        let b = backend.as_ref().expect("set above");
+        let translated = b.translate(chunk)?;
+        next_cache.chunks.insert(key, translated.clone());
+        th_chunks.push(translated);
+        misses += 1;
     }
 
-    if backend.is_none() { *backend = Some(TranslateBackend::resolve(cfg)?); }
-    let b = backend.as_ref().expect("set above");
-
-    println!("  translating {} → {} ...", input.display(), output.display());
-    let translated = b.translate(&content)?;
-    // Repoint image refs at any *.th.<ext> sibling that exists (so the Thai PDF picks
-    // up Thai-labelled SVGs without a manual edit). Resolved relative to the project
-    // root (one level up from specs/), matching how typst resolves image paths at build.
-    // Image paths in markdown are resolved by typst relative to the project
-    // root (where `_tmp.typ` lives) — that's `cfg.specs_dir.parent()`.
-    // Include paths are relative to the markdown file itself.
+    let translated_full = crate::chunks::join(&th_chunks);
     let image_base   = cfg.specs_dir.parent().unwrap_or(Path::new("."));
     let include_base = input.parent().unwrap_or(image_base);
-    let result = substitute_th_refs(&translated, image_base, include_base);
-    vfs::write(&output, result.as_bytes())?;
-    vfs::write(&hash_file, current_hash.as_bytes())?;
-    Ok(true)
+    let result = substitute_th_refs(&translated_full, image_base, include_base);
+
+    // Decide whether anything actually changed on disk. Re-writing identical
+    // bytes is harmless but it does bump mtime, which would force the build
+    // step to redo typst. So only write if needed.
+    let prev_output = vfs::read_to_string(&output).unwrap_or_default();
+    let did_write = if prev_output != result {
+        vfs::write(&output, result.as_bytes())?;
+        true
+    } else {
+        false
+    };
+
+    save_cache(&cache_path, &next_cache)?;
+
+    // Migrate away from the old whole-file `.hash` sibling: delete it on first
+    // run so future tooling only has to look at `.cache.json`.
+    if vfs::exists(&old_hash_path) { let _ = std::fs::remove_file(&old_hash_path); }
+
+    if misses == 0 && !did_write {
+        println!("  skip {} (all {} chunks cached)", input.display(), hits);
+        Ok(false)
+    } else {
+        println!(
+            "  translated {} → {} ({} chunks: {} cached, {} via API)",
+            input.display(),
+            output.display(),
+            hits + misses,
+            hits,
+            misses,
+        );
+        Ok(true)
+    }
 }
 
 // ── Subcommand ─────────────────────────────────────────────────────────────────

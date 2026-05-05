@@ -14,6 +14,7 @@
 ///
 /// CLI-only modules (fonts, build, themes, new, watch) are NOT exported —
 /// they depend on local tools (typst, pandoc) that do not run on Cloudflare.
+pub mod chunks;
 pub mod config;
 pub mod http;
 pub mod idempotency;

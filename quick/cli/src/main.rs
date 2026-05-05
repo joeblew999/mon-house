@@ -4,6 +4,7 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 mod build;
+mod chunks;
 mod config;
 mod http;
 mod fonts;

@@ -1,7 +1,7 @@
 ---
 title: Bathroom refit (compact, no wall move)
 status: Draft
-rev: "15"
+rev: "16"
 ---
 
 # Bathroom refit — Laem Chabang (compact, no wall move)

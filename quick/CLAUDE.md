@@ -129,7 +129,7 @@ Watch monitors `QUICK_SPECS_DIR`, `QUICK_SCRIPTS_DIR`, and `QUICK_SCRIPTS_DIR/th
 | Task | Layer 1 (mise stamp) | Layer 2 (Rust hash/exists) | Layer 3 (per item) |
 |---|---|---|---|
 | `fonts` | stamp newer than theme.typ → skip | hash + all files present → exit | skip existing .ttf files |
-| `translate` | — | SHA-256 in `.th.md.hash` → skip | — |
+| `translate` | — | per-section BLAKE3 in `.th.md.cache.json` → skip API call for cached chunks | — |
 | `all` | `out/.build-stamp` newer than `.th.md` + `theme.typ` → skip | — | — |
 | `watch` | n/a (watch never exits) | same as fonts + translate | `needs_build_in()` stamp check |
 
@@ -151,11 +151,31 @@ mise run watch           # save an unchanged file — nothing should rebuild
 | `specs/*.md` EN specs | **committed — edit these** | — |
 | `resources/images/` | **committed** | — |
 | `specs/*.th.md` Thai translations | **committed** (so CI builds without claude) | `mise run translate` after editing EN |
-| `specs/*.th.md.hash` | **committed** (idempotency stamps) | `mise run translate` |
+| `specs/*.th.md.cache.json` | **committed** (per-section translation cache) | `mise run translate` |
 | `out/*.pdf` | gitignored — generated | `mise run all` or CI |
 | `resources/fonts/` | gitignored — downloaded | `mise run fonts` |
 
-**After editing an EN spec:** `mise run watch` auto-translates and rebuilds. Commit both the `.md` and the new `.th.md` + `.th.md.hash`.
+**After editing an EN spec:** `mise run watch` auto-translates and rebuilds. Commit the `.md`, the new `.th.md`, and the updated `.th.md.cache.json`.
+
+### Section-granular translation
+
+Translation runs per `## ` section, not per file:
+
+1. Each spec is split on level-2 headings (`chunks::split`).
+2. Each chunk's BLAKE3 hash is the cache key in `<stem>.th.md.cache.json` →
+   `{ "<en-blake3>": "<thai chunk text>" }`.
+3. **Hits** reuse the cached Thai (no API call).
+4. **Misses** translate just that section, store the result.
+5. Final `.th.md` is the concatenation of translated chunks (cached + fresh).
+
+Why this matters:
+- Editing one paragraph re-translates one section, not the whole file.
+- Long specs no longer hit the model's per-call output cap — each section
+  is small.
+- Same architecture supports a future SPA editor where translating-on-section-
+  exit is the natural UX.
+
+**Cache files are committed** so CI builds without burning the API budget.
 
 ---
 
