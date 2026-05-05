@@ -3,4 +3,8 @@
 /**
  * Request body for `POST /translate`.
  */
-export type TranslateRequest = { content: string, };
+export type TranslateRequest = { content: string, 
+/**
+ * Optional — `"spec"` (default) for markdown specs, `"label"` for SVG labels.
+ */
+mode: string | null, };
