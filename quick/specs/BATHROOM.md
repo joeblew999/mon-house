@@ -1,7 +1,7 @@
 ---
 title: Bathroom Layout Change + Retile
 status: Draft
-rev: "7"
+rev: "8"
 ---
 
 # Bathroom Layout Change + Retile - Laem Chabang
@@ -21,6 +21,10 @@ This spec is **Phase 02 only** — see [PHASES](AAA-PHASES.md).
 ![Bathroom — existing condition 3](resources/images/bathroom-existing-03.jpeg)
 
 ![Bathroom — existing condition 4](resources/images/bathroom-existing-04.jpeg)
+
+---
+
+<!-- include: _partials/bathroom-parts.md -->
 
 ---
 
