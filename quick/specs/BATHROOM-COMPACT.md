@@ -1,10 +1,10 @@
 ---
-title: Bathroom retile (compact, no wall move)
+title: Bathroom refit (compact, no wall move)
 status: Draft
-rev: "13"
+rev: "14"
 ---
 
-# Bathroom retile — Laem Chabang (compact, no wall move)
+# Bathroom refit — Laem Chabang (compact, no wall move)
 
 Alternative to [BATHROOM.md](BATHROOM.md). **No walls move.** Existing **1380 × 1950 mm** footprint. Three fixtures along one long wall, with a full-width walk-in shower wet zone at the back.
 
