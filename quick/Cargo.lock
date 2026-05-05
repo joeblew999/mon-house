@@ -1986,6 +1986,7 @@ dependencies = [
  "clap",
  "dirs 5.0.1",
  "glob",
+ "rayon",
  "regex",
  "serde",
  "serde_json",

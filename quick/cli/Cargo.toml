@@ -75,6 +75,11 @@ blake3 = "1"
 # Regex — parse `font: (...)` stack from theme.typ
 regex = "1"
 
+# Work-stealing thread pool — parallel chunk translation in translate.rs.
+# 4-8 chunks fire HTTP at once instead of serial; first-time spec translates
+# go from minutes to seconds. CF Worker handles concurrent requests fine.
+rayon = "1"
+
 # Cross-platform helpers (replace manual shell/Python equivalents):
 glob       = "0.3" # file patterns — replaces bash `for f in [A-Z]*.md`
 urlencoding = "2"  # URL encode GWFH search query

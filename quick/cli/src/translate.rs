@@ -423,7 +423,9 @@ struct ChunkCache {
     #[serde(default = "default_cache_version")]
     version: u32,
     /// `blake3(en_chunk_bytes)` (hex) → translated Thai chunk text.
-    chunks: std::collections::HashMap<String, String>,
+    /// `BTreeMap` so the JSON serialises in stable key order — otherwise
+    /// every save would shuffle the file and look like a diff in git.
+    chunks: std::collections::BTreeMap<String, String>,
 }
 
 fn default_cache_version() -> u32 { 1 }
@@ -438,10 +440,24 @@ fn load_cache(path: &Path) -> ChunkCache {
 
 fn save_cache(path: &Path, cache: &ChunkCache) -> Result<()> {
     let json = serde_json::to_string_pretty(cache).context("serialise cache")?;
+    // Skip the write if disk already has the exact same bytes — otherwise we
+    // bump mtime needlessly (which would force the build step to redo typst).
+    if vfs::read_to_string(path).map(|s| s == json).unwrap_or(false) {
+        return Ok(());
+    }
     vfs::write(path, json.as_bytes())
 }
 
+/// Maximum number of chunks translated in parallel per file. CF Worker
+/// handles concurrent requests fine but more than this risks rate-limit
+/// pushback. Override via `QUICK_TRANSLATE_PARALLEL` if you really need to.
+fn parallel_chunks(cfg: &crate::Config) -> usize {
+    cfg.translate_parallel.unwrap_or(4).max(1)
+}
+
 fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, input: &Path) -> Result<bool> {
+    use rayon::prelude::*;
+
     let name = input.file_stem().and_then(|s| s.to_str()).context("invalid filename")?;
     let output     = input.with_file_name(format!("{name}.th.md"));
     let cache_path = input.with_file_name(format!("{name}.th.md.cache.json"));
@@ -451,25 +467,68 @@ fn translate_file(backend: &mut Option<TranslateBackend>, cfg: &crate::Config, i
     let en_chunks = crate::chunks::split(&content);
     let prev_cache = load_cache(&cache_path);
 
-    let mut next_cache = ChunkCache { version: 1, chunks: std::collections::HashMap::new() };
-    let mut th_chunks = Vec::with_capacity(en_chunks.len());
-    let mut hits = 0u32;
-    let mut misses = 0u32;
-
+    // First pass — classify each chunk as cached or pending. Pending chunks
+    // get a placeholder String we'll fill in via parallel API calls.
+    let mut th_chunks: Vec<String> = Vec::with_capacity(en_chunks.len());
+    let mut chunk_keys: Vec<String> = Vec::with_capacity(en_chunks.len());
+    let mut pending: Vec<usize> = Vec::new();
     for chunk in &en_chunks {
         let key = idempotency::blake3_hex(chunk.as_bytes());
         if let Some(cached) = prev_cache.chunks.get(&key) {
             th_chunks.push(cached.clone());
-            next_cache.chunks.insert(key, cached.clone());
-            hits += 1;
-            continue;
+        } else {
+            th_chunks.push(String::new());
+            pending.push(th_chunks.len() - 1);
         }
+        chunk_keys.push(key);
+    }
+    let hits   = (en_chunks.len() - pending.len()) as u32;
+    let misses = pending.len() as u32;
+
+    if !pending.is_empty() {
+        // Backend is resolved eagerly here so all parallel workers share one
+        // already-initialised reference (no race on lazy init under rayon).
         if backend.is_none() { *backend = Some(TranslateBackend::resolve(cfg)?); }
         let b = backend.as_ref().expect("set above");
-        let translated = b.translate(chunk)?;
-        next_cache.chunks.insert(key, translated.clone());
-        th_chunks.push(translated);
-        misses += 1;
+        let total_misses = pending.len();
+        let total_chunks = en_chunks.len();
+        let counter = std::sync::atomic::AtomicUsize::new(0);
+        let parallel = parallel_chunks(cfg);
+
+        let pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(parallel)
+            .build()
+            .context("rayon pool init")?;
+
+        let translated: Vec<Result<(usize, String)>> = pool.install(|| {
+            pending
+                .par_iter()
+                .map(|&idx| {
+                    let chunk = &en_chunks[idx];
+                    let key   = &chunk_keys[idx];
+                    let n = counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
+                    let preview = chunk.lines().find(|l| l.trim().starts_with("## "))
+                        .map(|l| l.trim().trim_start_matches("## ").to_string())
+                        .unwrap_or_else(|| format!("chunk {} of {}", idx, total_chunks));
+                    println!("    [{n}/{total_misses}] translating: {preview}");
+                    let thai = b.translate(chunk)?;
+                    Ok((idx, thai, key.clone()))
+                        .map(|(i, t, _k)| (i, t))
+                })
+                .collect()
+        });
+
+        // Surface any error from the parallel batch and propagate the rest in order.
+        for r in translated {
+            let (idx, thai) = r?;
+            th_chunks[idx] = thai;
+        }
+    }
+
+    // Rebuild the cache from the final chunk-set (auto-prunes stale entries).
+    let mut next_cache = ChunkCache { version: 1, chunks: std::collections::BTreeMap::new() };
+    for (key, thai) in chunk_keys.iter().zip(th_chunks.iter()) {
+        next_cache.chunks.insert(key.clone(), thai.clone());
     }
 
     let translated_full = crate::chunks::join(&th_chunks);

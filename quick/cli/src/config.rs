@@ -72,6 +72,12 @@ pub struct Config {
     #[arg(long, env = "QUICK_TRANSLATE_URL", global = true)]
     pub translate_url: Option<String>,
 
+    /// How many chunks to translate in parallel per file (rayon pool size).
+    /// Defaults to 4. Higher values speed up first-time spec translates at
+    /// the cost of more concurrent CF Worker calls — bump cautiously if you
+    /// hit rate-limit pushback.
+    #[arg(long, env = "QUICK_TRANSLATE_PARALLEL", global = true)]
+    pub translate_parallel: Option<usize>,
 }
 
 impl Config {
