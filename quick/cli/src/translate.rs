@@ -15,7 +15,10 @@
 ///
 /// ## Idempotency
 ///
-/// Files are skipped when their BLAKE3 hash matches the stored `.th.md.hash`.
+/// Section-granular: each `## ` section's BLAKE3 hash is the cache key in
+/// `<stem>.th.md.cache.json`. Cached chunks skip the API call; only sections
+/// whose source content changed are re-translated. See `translate_file` and
+/// `chunks::split` for details.
 use std::path::{Path, PathBuf};
 
 use anyhow::{bail, Context, Result};

@@ -301,8 +301,8 @@ for any future WASM/Container path (see the WASM spike below).
 
 ### Translation backends (`translate.rs`)
 
-`TranslateBackend` is resolved lazily — only when a file actually needs translating.
-CI with committed `.th.md.hash` stamps works without any key or binary installed.
+`TranslateBackend` is resolved lazily — only when a section actually needs translating.
+CI with committed `.th.md.cache.json` files works without any key or binary installed (every chunk is a cache hit).
 
 | Backend | Selected when | Works on |
 |---|---|---|
@@ -418,7 +418,7 @@ under `specs/_partials/` and pull it in with an HTML-comment directive:
 - The build expander recurses (capped at depth 5).
 - A leading frontmatter block in the partial is auto-stripped.
 - Translate handles partials separately — each `_partials/*.md` gets its
-  own `.th.md` + `.th.md.hash`. After translating a spec that references
+  own `.th.md` + `.th.md.cache.json`. After translating a spec that references
   a partial, the include path is rewritten in the `.th.md` to point at
   the `.th.md` partial, so the Thai PDF stays SSOT.
 - Idempotency: change the partial → only the partial re-translates and

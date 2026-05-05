@@ -67,7 +67,7 @@ enum Commands {
     },
     /// Remove the out/ directory
     Clean,
-    /// Print the BLAKE3 hex hash of a file's bytes (used for `.th.md.hash`)
+    /// Print the BLAKE3 hex hash of a file's bytes (handy for inspecting `.th.md.cache.json` keys)
     Hash {
         /// File to hash
         path: PathBuf,

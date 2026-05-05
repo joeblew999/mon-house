@@ -48,7 +48,7 @@ exclude = [
     "fonts/",
     "out/",
     "*.th.md",
-    "*.th.md.hash",
+    "*.th.md.cache.json",
 ]
 
 [[bin]]
