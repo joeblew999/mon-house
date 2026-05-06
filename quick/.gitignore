@@ -43,3 +43,4 @@ local/node_modules/
 !.dev.vars.example
 .env*
 !.env.example
+.test-fixture/

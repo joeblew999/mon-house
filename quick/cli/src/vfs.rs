@@ -1,9 +1,17 @@
 /// Virtual filesystem — single abstraction layer for all I/O.
 ///
 /// Every filesystem operation in quick-tool goes through this module.
-/// Currently backed by `std::fs`. When targeting Cloudflare Workers
-/// (R2, KV, or a WASM-compatible shim), swap the implementations here —
-/// no other file changes required.
+///
+/// ## Two surfaces, same backend
+///
+/// - **Free functions** (`read_to_string`, `glob`, etc.) are convenience entry
+///   points hardcoded to the local OS filesystem via `std::fs`. Most existing
+///   call sites use these. They will eventually be gated to non-wasm targets.
+/// - **`Vfs` trait** is the pluggable abstraction. New code that needs to
+///   work across deployment targets (CLI, browser via WASM, CF Worker via
+///   Workspace) takes a `&dyn Vfs` and routes through whichever backend is
+///   mounted. `LocalVfs` is the std::fs-backed default; future backends:
+///   `BrowserVfs` (File System Access API), `WorkspaceVfs` (@cloudflare/shell).
 ///
 /// ## What belongs here
 /// - File read/write/delete
@@ -19,6 +27,148 @@ use std::path::{Path, PathBuf};
 use std::time::SystemTime;
 
 use anyhow::{Context, Result};
+
+// ── Trait surface ──────────────────────────────────────────────────────────────
+
+/// Pluggable filesystem interface. Each deployment target provides one impl.
+///
+/// Methods are **async** because the browser File System Access API is
+/// inherently async and we want one trait that works in both native and WASM
+/// contexts. Native impls (`LocalVfs`) return ready futures with zero overhead;
+/// browser impls (`BrowserVfs`) await JS Promises via `wasm-bindgen-futures`.
+///
+/// Sync call sites in the CLI bridge to async via `pollster::block_on`.
+///
+/// Bound on `&self` rather than `&mut self` so multiple call sites can share
+/// one backend without locking.
+#[allow(async_fn_in_trait)]
+pub trait Vfs {
+    async fn read_to_string(&self, path: &Path) -> Result<String>;
+    async fn write(&self, path: &Path, data: &[u8]) -> Result<()>;
+    async fn exists(&self, path: &Path) -> bool;
+    async fn read_dir(&self, path: &Path) -> Result<Vec<PathBuf>>;
+}
+
+/// Default backend: real OS filesystem via `std::fs`.
+///
+/// Zero-sized — instantiate freely. Available everywhere except WASM targets,
+/// where `std::fs` is unimplemented (gate this impl out on wasm32 once the
+/// browser path is the primary one).
+#[cfg(not(target_arch = "wasm32"))]
+#[derive(Clone, Copy, Default, Debug)]
+pub struct LocalVfs;
+
+#[cfg(not(target_arch = "wasm32"))]
+impl Vfs for LocalVfs {
+    async fn read_to_string(&self, path: &Path) -> Result<String> {
+        read_to_string(path)
+    }
+    async fn write(&self, path: &Path, data: &[u8]) -> Result<()> {
+        write(path, data)
+    }
+    async fn exists(&self, path: &Path) -> bool {
+        exists(path)
+    }
+    async fn read_dir(&self, path: &Path) -> Result<Vec<PathBuf>> {
+        read_dir(path)
+    }
+}
+
+// ── Browser backend ───────────────────────────────────────────────────────────
+//
+// `BrowserVfs` is backed by a JS object the host SPA constructs from a
+// `FileSystemDirectoryHandle` (File System Access API). The Rust side calls
+// the JS object's methods via wasm-bindgen; JS does the actual file I/O.
+//
+// The JS-side contract (defined in cf/src/wasm-vfs.ts) is a minimal shape
+// with four async methods matching the trait: readToString, write, exists,
+// readDir. Each returns a Promise; the Rust side awaits via wasm_bindgen_futures.
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+mod browser {
+    use super::*;
+    use wasm_bindgen::prelude::*;
+    use wasm_bindgen_futures::JsFuture;
+
+    #[wasm_bindgen]
+    extern "C" {
+        /// JS-side filesystem handle. Constructed by the SPA from a
+        /// `FileSystemDirectoryHandle` (FS Access API). Methods return Promises.
+        #[derive(Clone)]
+        pub type JsVfs;
+
+        #[wasm_bindgen(method, js_name = "readToString")]
+        fn js_read_to_string(this: &JsVfs, path: &str) -> js_sys::Promise;
+
+        #[wasm_bindgen(method, js_name = "write")]
+        fn js_write(this: &JsVfs, path: &str, data: &[u8]) -> js_sys::Promise;
+
+        #[wasm_bindgen(method, js_name = "exists")]
+        fn js_exists(this: &JsVfs, path: &str) -> js_sys::Promise;
+
+        #[wasm_bindgen(method, js_name = "readDir")]
+        fn js_read_dir(this: &JsVfs, path: &str) -> js_sys::Promise;
+    }
+
+    /// Browser-backed Vfs. Holds a JS handle; clones are cheap (Rc internally).
+    pub struct BrowserVfs {
+        pub(crate) handle: JsVfs,
+    }
+
+    impl BrowserVfs {
+        /// Wrap a JS-side vfs handle. Called from `crate::wasm` when the SPA
+        /// hands a directory handle in.
+        pub fn new(handle: JsVfs) -> Self {
+            Self { handle }
+        }
+    }
+
+    impl Vfs for BrowserVfs {
+        async fn read_to_string(&self, path: &Path) -> Result<String> {
+            let p = path.to_string_lossy().to_string();
+            let val = JsFuture::from(self.handle.js_read_to_string(&p))
+                .await
+                .map_err(|e| anyhow::anyhow!("readToString({p}): {:?}", e))?;
+            val.as_string()
+                .ok_or_else(|| anyhow::anyhow!("readToString({p}) returned non-string"))
+        }
+
+        async fn write(&self, path: &Path, data: &[u8]) -> Result<()> {
+            let p = path.to_string_lossy().to_string();
+            JsFuture::from(self.handle.js_write(&p, data))
+                .await
+                .map_err(|e| anyhow::anyhow!("write({p}): {:?}", e))?;
+            Ok(())
+        }
+
+        async fn exists(&self, path: &Path) -> bool {
+            let p = path.to_string_lossy().to_string();
+            match JsFuture::from(self.handle.js_exists(&p)).await {
+                Ok(v) => v.as_bool().unwrap_or(false),
+                Err(_) => false,
+            }
+        }
+
+        async fn read_dir(&self, path: &Path) -> Result<Vec<PathBuf>> {
+            let p = path.to_string_lossy().to_string();
+            let val = JsFuture::from(self.handle.js_read_dir(&p))
+                .await
+                .map_err(|e| anyhow::anyhow!("readDir({p}): {:?}", e))?;
+            // JS returns an array of strings (relative paths or names).
+            // Convert to PathBuf, joined to the input dir.
+            let arr = js_sys::Array::from(&val);
+            let mut out = Vec::with_capacity(arr.length() as usize);
+            for i in 0..arr.length() {
+                if let Some(s) = arr.get(i).as_string() {
+                    out.push(PathBuf::from(s));
+                }
+            }
+            Ok(out)
+        }
+    }
+}
+
+#[cfg(all(feature = "wasm", target_arch = "wasm32"))]
+pub use browser::{BrowserVfs, JsVfs};
 
 // ── read ───────────────────────────────────────────────────────────────────────
 

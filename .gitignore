@@ -37,3 +37,8 @@ go.work.sum
 
 # Playwright MCP
 .playwright-mcp/
+
+# Claude Code per-user permissions (the .mcp.json file IS committed —
+# it declares the project's MCP servers; settings.local.json is the
+# per-user permission allowlist and stays local).
+.claude/settings.local.json

@@ -23,7 +23,7 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use notify_debouncer_mini::{new_debouncer, notify::RecursiveMode, DebounceEventResult};
 
-use crate::{build, translate, vfs, Config};
+use crate::{build, includes, translate, vfs, Config};
 
 const DEBOUNCE_MS: u64 = 250;
 
@@ -94,6 +94,11 @@ fn handle_burst(cfg: &Config, paths: &[PathBuf]) -> Result<()> {
         println!("[watch]   {}", p.display());
     }
 
+    // For partial changes, surface the dependent specs so the user knows
+    // which derived values (e.g. hand-computed can counts) need a review pass.
+    // Markdown can't auto-recompute these — the notification is the contract.
+    notify_partial_dependents(cfg, &interesting);
+
     // Strategy: translate first (cache makes this fast), then build affected
     // stem if exactly one spec changed; otherwise build everything (mise's
     // mtime check makes a no-op build cheap).
@@ -126,6 +131,65 @@ fn is_interesting(path: &Path) -> bool {
         path.extension().and_then(|s| s.to_str()),
         Some("md") | Some("svg") | Some("typ")
     )
+}
+
+/// For each changed partial in the burst, print the list of top-level specs
+/// that include it so the user knows which dependents to review. Failures
+/// (unreadable specs, broken canonicalization) are silently swallowed —
+/// notification is best-effort and must never abort the watch loop.
+fn notify_partial_dependents(cfg: &Config, paths: &[&Path]) {
+    for path in paths {
+        // notify-debouncer hands us absolute paths; cfg.specs_dir is usually
+        // relative ("specs"). Compare by ancestors having a "_partials" segment
+        // instead of starts_with(specs_dir/_partials), which fails across the
+        // relative/absolute boundary.
+        let is_partial = path
+            .ancestors()
+            .any(|a| a.file_name().and_then(|s| s.to_str()) == Some("_partials"));
+        if !is_partial {
+            continue;
+        }
+        if path.extension().and_then(|s| s.to_str()) != Some("md") {
+            continue;
+        }
+        // Skip our own outputs (.th.md siblings of partials).
+        if path
+            .file_name()
+            .and_then(|s| s.to_str())
+            .is_some_and(|n| n.ends_with(".th.md"))
+        {
+            continue;
+        }
+        match pollster::block_on(includes::find_dependents(
+            &vfs::LocalVfs,
+            &cfg.specs_dir,
+            path,
+        )) {
+            Ok(deps) if deps.is_empty() => {
+                println!(
+                    "[watch] note: {} has no dependents in specs/",
+                    path.display()
+                );
+            }
+            Ok(deps) => {
+                println!(
+                    "[watch] partial changed: {} → review {} dependent spec{}:",
+                    path.display(),
+                    deps.len(),
+                    if deps.len() == 1 { "" } else { "s" },
+                );
+                for d in deps {
+                    println!("[watch]   • {}", d.display());
+                }
+            }
+            Err(err) => {
+                eprintln!(
+                    "[watch] dep-scan failed for {}: {err:#}",
+                    path.display()
+                );
+            }
+        }
+    }
 }
 
 /// If exactly one top-level spec was touched, return its stem so build can

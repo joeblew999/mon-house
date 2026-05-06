@@ -3,6 +3,12 @@ main               = "src/index.ts"
 compatibility_date = "2026-04-05"
 compatibility_flags = ["nodejs_compat"]
 
+# ── Observability ─────────────────────────────────────────────────────────────
+# Streams console.log output + request metadata to Workers Observability.
+# Queryable via the Cloudflare dashboard or the cloudflare-observability MCP.
+[observability]
+enabled = true
+
 # ── Assets (React SPA) ────────────────────────────────────────────────────────
 # Vite builds the React app to .vite/dist/. Wrangler serves it as static assets.
 # SPA mode: unknown paths return index.html (client-side routing).

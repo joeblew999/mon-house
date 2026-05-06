@@ -14,16 +14,20 @@ much work it is to graft onto our `cf/` Worker.
 
 - **`ai-chat`** — base `AIChatAgent` + `useAgentChat` hook.
   - Status: shipped (`cf/src/chat.ts` + `cf/src/client.tsx`).
-  - Note: their example imports their own `@cloudflare/kumo` design system
-    (Button / InputArea / Surface / Empty). We intentionally use Tailwind
-    primitives instead so we control the shell.
+  - Uses **Kumo** for chrome (Button, InputArea, Empty, Text,
+    PoweredByCloudflare) — same as their example. Adopting Kumo means
+    every future SDK pattern we copy from `examples/` lands as
+    copy-paste rather than re-translation. See
+    [project_kumo_adoption.md](../../../.claude/...) memory for context.
 
-- **`playground` Layout/Sidebar** — side-pane shell with Tailwind
-  responsive flex (`flex flex-col md:flex-row`).
-  - Status: shipped (the side-pane chat layout in `cf/src/client.tsx`).
-  - The mobile fold-out hamburger pattern is theirs; we do the simpler
-    "stack on mobile, side-by-side on md+" version because we don't need
-    a route-driven sidebar yet.
+- **`playground` Layout/Sidebar** — responsive shell with mobile
+  fold-out drawer.
+  - Status: shipped (`cf/src/client.tsx` lifts the pattern from
+    `examples/playground/src/layout/Layout.tsx`, mirrored — playground's
+    nav sidebar is on the left, our chat sidebar is on the right).
+  - Mobile: hamburger header → chat slides in as overlay drawer with
+    backdrop. Desktop: chat is a static `w-96` right pane. Main work
+    area becomes the editor + PDF preview when ADR 007 lands.
 
 ---
 

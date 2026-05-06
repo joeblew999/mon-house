@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "/opt/homebrew/bin/mise",
+      "args": [
+        "x",
+        "node@lts",
+        "--",
+        "npx",
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    }
+  }
+}

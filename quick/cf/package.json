@@ -12,9 +12,11 @@
   "dependencies": {
     "@ai-sdk/anthropic": "latest",
     "@cloudflare/ai-chat": "*",
+    "@cloudflare/kumo": "^2.0.3",
     "@cloudflare/shell": "*",
     "@openai/agents": "latest",
     "@openai/agents-extensions": "latest",
+    "@phosphor-icons/react": "^2.1.10",
     "agents": "*",
     "ai": "^6.0.143",
     "hono": "^4.12.2",

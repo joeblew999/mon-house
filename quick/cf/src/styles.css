@@ -1,1 +1,5 @@
+/* Tailwind ignores node_modules, so we @source Kumo so its semantic tokens
+   (bg-kumo-base, text-kumo-default, …) get scanned. */
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
 @import "tailwindcss";
+@import "@cloudflare/kumo/styles/tailwind";

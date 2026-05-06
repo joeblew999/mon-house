@@ -11,7 +11,7 @@
 # prove:secrets|access-policy|deployed — those assume D1, templated wrangler.toml,
 # and the full secrets-mapping flow. quick/ deploys with a single ANTHROPIC_API_KEY
 # secret and a static wrangler.toml.
-includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.12.1"]
+includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.13.1"]
 
 [tools]
 typst                  = "latest"
@@ -21,6 +21,11 @@ node                   = "lts"       # required by wrangler
 "github:nushell/nushell" = "0.112"  # required by .github v0.10.0+ (all shared mise-tasks are nu)
 "cargo:worker-build"   = "0.8.1"     # workers-rs WASM bundler — used by quick-compiler/
 "cargo:cargo-leptos"   = "0.2"       # leptos compound build (SSR Worker + hydrate browser)
+# WASM toolchain for the browser/Tauri build of the Rust core (cli/).
+# Versions MUST match between the cargo crate (cli/Cargo.toml `wasm-bindgen`)
+# and the bindgen CLI here — bindgen errors loudly on mismatch.
+"cargo:wasm-bindgen-cli" = "0.2.120" # JS interop glue generator (must match workspace-locked wasm-bindgen)
+"aqua:WebAssembly/binaryen" = "121"  # wasm-opt — size optimisation (-Oz)
 # watchexec removed — quick-tool watch (notify crate) handles file watching natively
 # uv removed — Python scripts (scripts/fonts.py, scripts/translate_markdown.py) removed;
 #              all functionality is now in the Rust CLI (cli/)
@@ -123,6 +128,37 @@ description = "Compile quick-tool (Rust) — skipped automatically if sources un
 sources  = ["cli/src/**/*.rs", "cli/Cargo.toml", "Cargo.lock"]
 outputs  = ["target/release/quick-tool"]  # Windows: override to quick-tool.exe in mise.local.toml
 run = "cargo build --release --manifest-path cli/Cargo.toml"
+
+[tasks.build-wasm]
+description = "Compile quick-tool engine to WASM for browser/Tauri (cdylib + wasm-bindgen + wasm-opt). Stages artifacts into cf/src/wasm/ so Vite can import them."
+sources  = ["cli/src/**/*.rs", "cli/Cargo.toml", "Cargo.lock"]
+outputs  = [
+  "target/wasm-pkg/quick_tool_bg.wasm",
+  "target/wasm-pkg/quick_tool.js",
+  "{{env.CF_WORKER_DIR}}/src/wasm/quick_tool_bg.wasm",
+  "{{env.CF_WORKER_DIR}}/src/wasm/quick_tool.js",
+]
+# Pipeline: cargo → wasm-bindgen → wasm-opt -Oz
+# 1. cargo build  : compile cdylib for wasm32-unknown-unknown with the `wasm` feature
+# 2. wasm-bindgen : generate JS bindings + .d.ts types into target/wasm-pkg/
+# 3. wasm-opt -Oz : optimise for size (typically halves the artifact)
+# All three tools come from mise (cargo:wasm-bindgen-cli, aqua:WebAssembly/binaryen).
+run = """
+cargo build --manifest-path cli/Cargo.toml --target wasm32-unknown-unknown --release --no-default-features --features wasm
+wasm-bindgen --target web --out-dir target/wasm-pkg target/wasm32-unknown-unknown/release/quick_tool.wasm
+wasm-opt -Oz --strip-debug --strip-producers --vacuum --converge \
+  target/wasm-pkg/quick_tool_bg.wasm -o target/wasm-pkg/quick_tool_bg.wasm.opt
+mv target/wasm-pkg/quick_tool_bg.wasm.opt target/wasm-pkg/quick_tool_bg.wasm
+mkdir -p {{env.CF_WORKER_DIR}}/src/wasm
+cp target/wasm-pkg/quick_tool.js target/wasm-pkg/quick_tool.d.ts target/wasm-pkg/quick_tool_bg.wasm target/wasm-pkg/quick_tool_bg.wasm.d.ts {{env.CF_WORKER_DIR}}/src/wasm/
+echo "✓ WASM bundle:"
+for f in target/wasm-pkg/quick_tool_bg.wasm target/wasm-pkg/quick_tool.js; do
+  raw=$(wc -c < $f | awk '{printf "%.1f KB", $1/1024}')
+  gz=$(gzip -c $f | wc -c | awk '{printf "%.1f KB", $1/1024}')
+  echo "  $(basename $f): $raw raw, gzip $gz"
+done
+echo "✓ Staged into {{env.CF_WORKER_DIR}}/src/wasm/ for Vite import"
+"""
 
 [tasks.fonts]
 description = "Download fonts declared in scripts/theme.typ into fonts/"
@@ -237,10 +273,14 @@ run = "QUICK_TEST_THEME=$1 cargo test --manifest-path cli/Cargo.toml -- --ignore
 
 # ── Cloudflare deploy lifecycle (phase-numbered, matching kv-manager shape) ───
 #
+# All wrangler-using tasks below wrap their command with `fnox exec --` so the
+# CLOUDFLARE_API_TOKEN stored in the OS keychain (via fnox) is injected at the
+# moment wrangler runs. No external wrapper needed; `mise run <task>` Just Works.
+#
 # Fresh-machine setup (one time):
 #   1. fnox set --global -p keychain CLOUDFLARE_API_TOKEN  # one-time per machine
-#   2. mise exec -- wrangler secret put ANTHROPIC_API_KEY  # one-time, in cf/
-#   3. mise run 1-install
+#   2. mise run 1-install
+#   3. mise exec -- wrangler secret put ANTHROPIC_API_KEY  # one-time, in cf/
 #   4. mise run 10-deploy
 #
 # Day-to-day:
@@ -266,30 +306,35 @@ run = "npm run build"
 description = "Full deploy: vite build + wrangler deploy. Validates CF token first."
 depends = ["cf:token-check"]
 dir = "{{env.CF_WORKER_DIR}}"
-run = "npm run deploy"
+# fnox exec injects CLOUDFLARE_API_TOKEN from the OS keychain into the child
+# process env. Without it, wrangler errors with 'Failed to fetch auth token'
+# in non-interactive shells (cf:token-check only validates, doesn't export).
+run = "fnox exec -- npm run deploy"
 
 [tasks."10b-redeploy"]
 description = "Re-deploy without rebuilding (fast iteration after wrangler.toml/secret changes)"
 depends = ["cf:token-check"]
 dir = "{{env.CF_WORKER_DIR}}"
-run = "wrangler deploy"
+run = "fnox exec -- wrangler deploy"
 
 [tasks.dev]
 description = "Run cf/ locally: Vite dev server + miniflare Worker. AI binding calls real CF via remote=true in wrangler.toml."
 dir = "{{env.CF_WORKER_DIR}}"
-run = "npm run dev"
+# fnox exec because remote=true bindings (AI, R2) need a CF token to proxy.
+run = "fnox exec -- npm run dev"
 
 [tasks.tail]
 description = "Tail live logs from the deployed Worker"
+depends = ["cf:token-check"]
 dir = "{{env.CF_WORKER_DIR}}"
-run = "wrangler tail"
+run = "fnox exec -- wrangler tail"
 
 [tasks.whoami]
 description = "Show current Cloudflare auth identity"
-run = "wrangler whoami"
+run = "fnox exec -- wrangler whoami"
 
 [tasks.login]
-description = "Authenticate with Cloudflare (opens browser)"
+description = "Authenticate with Cloudflare (opens browser). Stores OAuth credentials in wrangler's local config — separate from fnox-managed CLOUDFLARE_API_TOKEN. For automation, prefer the fnox-stored token over interactive login."
 run = "wrangler login"
 
 # ── workers-rs (quick-compiler/) — Rust Worker that compiles typst → PDF ─────
@@ -316,16 +361,17 @@ echo -n "  gzipped: " && gzip -c build/index_bg.wasm | wc -c
 
 [tasks."worker:dev"]
 description = "Run quick-compiler locally with wrangler dev"
-run = "cd crates/quick-compiler && wrangler dev"
+run = "cd crates/quick-compiler && fnox exec -- wrangler dev"
 
 [tasks."worker:deploy"]
 description = "Deploy quick-compiler to Cloudflare"
 depends = ["cf:token-check"]
-run = "cd crates/quick-compiler && wrangler deploy"
+run = "cd crates/quick-compiler && fnox exec -- wrangler deploy"
 
 [tasks."worker:tail"]
 description = "Tail logs from deployed quick-compiler"
-run = "cd crates/quick-compiler && wrangler tail"
+depends = ["cf:token-check"]
+run = "cd crates/quick-compiler && fnox exec -- wrangler tail"
 
 [tasks."worker:health"]
 description = "Curl GET /health on the deployed quick-compiler"
@@ -337,8 +383,9 @@ run = "curl -sf https://quick-compiler.gedw99.workers.dev/health && echo"
 # prove:* tasks (secrets/access-policy/deployed) don't apply — quick/ uses
 # only ANTHROPIC_API_KEY, no CF Access, no D1.
 description = "Confirm the deployed Worker's bindings via wrangler --dry-run (no upload)"
+depends = ["cf:token-check"]
 dir = "{{env.CF_WORKER_DIR}}"
-run = "wrangler deploy --dry-run --outdir /tmp/quick-dryrun 2>&1 | grep -E '^Binding|^Total Upload|env\\.|^\\s+env\\.' | head -20"
+run = "fnox exec -- wrangler deploy --dry-run --outdir /tmp/quick-dryrun 2>&1 | grep -E '^Binding|^Total Upload|env\\.|^\\s+env\\.' | head -20"
 
 [tasks."prove:all"]
 description = "Run all applicable prove:* checks. quick/ has no CF Access / fnox / D1, so only prove:bindings runs."
