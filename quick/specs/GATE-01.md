@@ -1,7 +1,7 @@
 ---
 title: Gate — Phase 01
 status: Draft
-rev: "3"
+rev: "7"
 ---
 
 # Gate — Phase 01: Motor on Existing Gate
@@ -61,14 +61,17 @@ Goal: existing gate slides easily and opens by remote so Mon can get her car int
 
 ## Painting (Joe + Mon, after the builder is finished)
 
-After the builder welds in the new bottom chord, Joe and Mon may decide to repaint the whole gate themselves. **This is not in the builder's Phase 01 quote.**
+The old gate is rusted and flaking — repainting **is** part of Phase 01 work, done by Joe + Mon after the builder welds in the new bottom chord. **This is not in the builder's Phase 01 quote** (DIY, not builder labour), but it is happening.
 
-If repainting:
+Procedure:
 
 - **Wire brush** loose rust and flaking paint off the gate first.
-- **Paint:** TOA MD 2IN1 Gloss Black MG999 1/4 GL — combined primer + topcoat. Same product used on the [ROOF](ROOF.md) beams.
-- 2 coats. Dries ~10 minutes, recoat after 1-2 hours.
-- HomePro SKU: [1193569](https://www.homepro.co.th/p/1193569). Approx 4 cans for the full gate (TBC by area).
+- **Paint:** `metal-2in1` — full product details inlined below from the shared catalog partial. Same product used on the [ROOF](ROOF.md) beams. See [PAINT.md](PAINT.md) for the formula and project-wide rollup.
+- 2 coats. Recoat after 1–2 hours.
+- **Paint area:** ~12 m² (both sides of the gate, TBC by direct measurement).
+- **Cans:** `ceil(12 ÷ 3.5)` = **4 cans** (effective coverage 3.5 m²/can). Subtotal ~800 THB.
+
+<!-- include: _partials/paint-metal.md -->
 
 ---
 
@@ -76,7 +79,7 @@ If repainting:
 
 The Phase 01 builder quote must cover **only** the items above (excluding the painting section, which is Joe + Mon DIY). Do not add anything else to the quote. In particular:
 
-- **No painting** in the builder's quote. Joe and Mon will paint if they want, themselves.
+- **No painting** in the builder's quote. Joe and Mon do the painting themselves (DIY), as a confirmed Phase 01 task — see the Painting section above.
 - **No replacing the bottom runner rail.** The existing rail stays.
 - No replacing the gate.
 - No new lock.
@@ -101,4 +104,4 @@ quoting — do not bundle it into Phase 01.
 | Run power to motor + fuse | TBC |
 | Labour | TBC |
 | **GATE PHASE 01 TOTAL (builder)** | **TBC** |
-| Joe + Mon DIY: paint (~4 cans @ ~190 THB ea) | ~764 |
+| Joe + Mon DIY: paint `metal-2in1` (4 cans @ ~200 THB ea — see Painting section) | ~800 |

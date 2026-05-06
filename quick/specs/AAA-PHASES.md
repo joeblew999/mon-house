@@ -1,7 +1,7 @@
 ---
 title: Phases
 status: Draft
-rev: "2"
+rev: "3"
 ---
 
 # Phases
@@ -43,5 +43,6 @@ The bigger work, after Phase 01 is bedded in.
 Joe + Mon work, done whenever convenient. **Not part of any builder quote.**
 
 - **[CONCRETE](CONCRETE.md)** — driveway resurfacing with Crocodile Flex Shield (matte grey, smooths and waterproofs). DIY roll-on, ~55 m².
-- **[ROOF](ROOF.md)** — garage roof + steelwork (~10 years old). Inspect → repair → repaint to gloss black. Same TOA paint that's referenced in [GATE-01](GATE-01.md).
-- **[PAINT](PAINT.md)** — house painting. Joe + Mon do **all** painting across **all** phases. **Never in any builder quote** — every Phase 01 and Phase 02 spec excludes paint and paint labour.
+- **[HOUSE-EXTERIOR](HOUSE-EXTERIOR.md)** — repaint the house: concrete walls, both sides of all four fences, and the timber eaves + fascia boards. Quantities computed from the [PAINT](PAINT.md) catalog.
+- **[ROOF](ROOF.md)** — garage roof + steelwork (~10 years old). Inspect → repair → repaint matt black. Uses the same `metal-2in1` paint referenced in [GATE-01](GATE-01.md), declared in [PAINT](PAINT.md).
+- **[PAINT](PAINT.md)** — paint product catalog (reference only). Coverage, price, SKU per product. **All** painting work-specs reference this; Joe + Mon do **all** painting across **all** phases — never in any builder quote.
