@@ -182,13 +182,26 @@ def pleated_cost [scope curtains windows window_scopes] {
     $item.window_id in $scope.include_window_ids
   })
 
+  let fabric_p = ($curtains | get $scope.fabric_product)
+  let bolt_w = ($fabric_p.bolt_width_cm | default 150)
+  let vert_allow = ($scope | get -o vertical_allowance_cm | default 30)
+
   let win_rows = ($included | each {|item|
     let w = ($windows | get $item.window_id)
     let track_m_per = (($w.size_w_cm + $scope.track_overlap_cm) / 100.0)
-    let fabric_m_per = (($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm) / 100.0)
+    let curtain_w_cm = ($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm)
+    let curtain_width_m_per = ($curtain_w_cm / 100.0)
+    let effective_drop = ($w.size_h_cm + $vert_allow)
+    let fabric_m_per = if $effective_drop > $bolt_w {
+      let panels = (($curtain_w_cm / $bolt_w) | math ceil)
+      (($effective_drop / 100.0) * $panels)
+    } else {
+      $curtain_width_m_per
+    }
     {
       qty: $item.qty
       track_m_per: $track_m_per
+      curtain_width_m_per: $curtain_width_m_per
       fabric_m_per: $fabric_m_per
       track_m: ($track_m_per * $item.qty)
       fabric_m: ($fabric_m_per * $item.qty)
@@ -199,7 +212,6 @@ def pleated_cost [scope curtains windows window_scopes] {
   let fabric_m = ($win_rows | get fabric_m | append 0 | math sum)
 
   let track_p  = ($curtains | get $scope.track_product)
-  let fabric_p = ($curtains | get $scope.fabric_product)
 
   let track_min  = ($track_m  * $track_p.baht_per_metre_min)
   let track_max  = ($track_m  * $track_p.baht_per_metre_max)
@@ -287,7 +299,8 @@ def compute_fitting_qty [fitting win_row] {
     ($per_window * $win_row.qty)
   } else if $pc == "per-curtain-width-metre" {
     let covers = ($fitting.covers_cm_per_unit | default 240)
-    let per_window = (($win_row.fabric_m_per * 100.0 / $covers) | math ceil)
+    let width_m = ($win_row | get -o curtain_width_m_per | default $win_row.fabric_m_per)
+    let per_window = (($width_m * 100.0 / $covers) | math ceil)
     ($per_window * $win_row.qty)
   } else {
     0

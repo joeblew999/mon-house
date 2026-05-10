@@ -113,8 +113,9 @@
       ],
       "fullness": 2.0,
       "track_overlap_cm": 20,
-      "fabric_overlap_cm": 30,
-      "notes": "Pleated-on-track style. Reuses window dimensions from the windows-02 scope. Skips the bathroom window. Track length = window width + overlap; fabric metres = (window width × fullness + overlap) / 100; fittings computed from each fitting's per_calc rule. Cheaper than eyelet IF you DIY-sew the panels."
+      "fabric_overlap_cm": 10,
+      "vertical_allowance_cm": 30,
+      "notes": "Pleated-on-track style. Reuses window dimensions from the windows-02 scope. Skips the bathroom window.\n\nMath:\n  curtain_width = window_width × fullness + fabric_overlap_cm  (side hems both sides)\n  effective_drop = window_height + vertical_allowance_cm        (top heading + bottom hem)\n  IF effective_drop ≤ fabric.bolt_width_cm:\n    Orientation B (drop fits in bolt width):    fabric_m = curtain_width / 100\n  ELSE:\n    Orientation A (must seam multiple drops):   fabric_m = ceil(curtain_width / bolt_width) × effective_drop / 100\n\nFittings (end-brackets, mount-brackets, gliders) computed from each fitting's per_calc rule. Cheaper than eyelet IF you DIY-sew the panels."
     },
     "windows-02-curtains-eyelet": {
       "title": "Window curtains — Phase 02 (Option B: pre-made eyelet on HomePro rod)",

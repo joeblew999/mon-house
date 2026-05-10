@@ -7,9 +7,15 @@
 #
 #   1. "pleated-on-track" — IKEA VIDGA-style. Track + fittings + fabric off
 #      the bolt. Math:
-#        track_m  = (window_w + track_overlap_cm) / 100
-#        fabric_m = (window_w × fullness + fabric_overlap_cm) / 100
-#      Plus fittings whose qty follows their own per_calc rules.
+#        track_m        = (window_w + track_overlap_cm) / 100
+#        curtain_width  = window_w × fullness + fabric_overlap_cm
+#        effective_drop = window_h + vertical_allowance_cm
+#        fabric_m       = (effective_drop ≤ bolt_width)
+#                          ? curtain_width / 100                                   (orient B: drop fits)
+#                          : ceil(curtain_width / bolt_width) × effective_drop/100 (orient A: seam vertical drops)
+#      Plus fittings whose qty follows their own per_calc rules. The
+#      "per-curtain-width-metre" rule reads curtain_width_m_per from the
+#      win_row, NOT fabric_m_per (which now varies by orientation).
 #
 #   2. "eyelet-on-rod" — HomePro-style. Rod + brackets + pre-made eyelet
 #      panels (sold per panel, not per metre). Math:
@@ -66,17 +72,33 @@ def gen_pleated_md [scope curtains windows window_scopes] {
     $item.window_id in $scope.include_window_ids
   })
 
+  let fabric_p = ($curtains | get $scope.fabric_product)
+  let bolt_w = ($fabric_p.bolt_width_cm | default 150)
+  let vert_allow = ($scope | get -o vertical_allowance_cm | default 30)
+
   let win_rows = ($included | each {|item|
     let w = ($windows | get $item.window_id)
     let track_m_per = (($w.size_w_cm + $scope.track_overlap_cm) / 100.0)
-    let fabric_m_per = (($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm) / 100.0)
+    let curtain_w_cm = ($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm)
+    let curtain_width_m_per = ($curtain_w_cm / 100.0)
+    let effective_drop = ($w.size_h_cm + $vert_allow)
+    # Orientation B (drop fits in bolt width) vs Orientation A (seamed vertical drops)
+    let needs_seam = ($effective_drop > $bolt_w)
+    let fabric_m_per = if $needs_seam {
+      let panels = (($curtain_w_cm / $bolt_w) | math ceil)
+      (($effective_drop / 100.0) * $panels)
+    } else {
+      $curtain_width_m_per
+    }
     {
       label: $item.label
       width_cm: $w.size_w_cm
       drop_cm: $w.size_h_cm
       qty: $item.qty
       track_m_per: $track_m_per
+      curtain_width_m_per: $curtain_width_m_per
       fabric_m_per: $fabric_m_per
+      seamed: $needs_seam
       track_m: ($track_m_per * $item.qty | math round --precision 2)
       fabric_m: ($fabric_m_per * $item.qty | math round --precision 2)
     }
@@ -100,7 +122,7 @@ def gen_pleated_md [scope curtains windows window_scopes] {
   })
 
   let track_p  = ($curtains | get $scope.track_product)
-  let fabric_p = ($curtains | get $scope.fabric_product)
+  # fabric_p already resolved at top of function
   let track_min  = ($total_track_m  * $track_p.baht_per_metre_min  | math round | into int)
   let track_max  = ($total_track_m  * $track_p.baht_per_metre_max  | math round | into int)
   let fabric_min = ($total_fabric_m * $fabric_p.baht_per_metre_min | math round | into int)
@@ -114,7 +136,7 @@ def gen_pleated_md [scope curtains windows window_scopes] {
   let win_table = (build_window_table_pleated $win_rows $total_track_m $total_fabric_m)
   let cost_table = (build_cost_table_pleated $track_p $fabric_p $fitting_rows $total_track_m $total_fabric_m $track_min $track_max $fabric_min $fabric_max $total_min $total_max)
 
-  let intro = $"Window dimensions are reused from the `($scope.from_window_scope)` scope in `scope-picks.json` — never duplicated here. Style: **pleated-on-track**. Track length = window width + ($scope.track_overlap_cm) cm overlap; fabric = window width × ($scope.fullness) fullness + ($scope.fabric_overlap_cm) cm overlap, per linear metre off the 280 cm bolt. Fittings follow each product's per_calc rule from `curtains.json`."
+  let intro = $"Window dimensions are reused from the `($scope.from_window_scope)` scope in `scope-picks.json` — never duplicated here. Style: **pleated-on-track**. Track length = window width + ($scope.track_overlap_cm) cm extension. Curtain width = window width × ($scope.fullness) fullness + ($scope.fabric_overlap_cm) cm side-hem allowance. Effective drop = window height + ($vert_allow) cm vertical allowance \(top heading + bottom hem\). Fabric: if effective drop ≤ ($bolt_w) cm bolt width, one horizontal cut \(linear metres = curtain width\); else multiple vertical drops seamed \(metres = ceil\(width / bolt\) × drop\). Fittings follow each product's per_calc rule from `curtains.json`."
 
   wrap_md $scope $intro ($win_table + "\n\n" + $cost_table)
 }
@@ -280,7 +302,12 @@ def compute_fitting_qty [fitting win_row] {
     ($per_window * $win_row.qty)
   } else if $pc == "per-curtain-width-metre" {
     let covers = ($fitting.covers_cm_per_unit | default 240)
-    let per_window = (($win_row.fabric_m_per * 100.0 / $covers) | math ceil)
+    # Prefer curtain_width_m_per (always the hung curtain width, regardless of
+    # fabric orientation). Fall back to fabric_m_per for win_rows that don't
+    # carry the new field (e.g. eyelet style where fabric_m_per is 0 and
+    # there are no curtain-width fittings anyway).
+    let width_m = ($win_row | get -o curtain_width_m_per | default $win_row.fabric_m_per)
+    let per_window = (($width_m * 100.0 / $covers) | math ceil)
     ($per_window * $win_row.qty)
   } else {
     0
