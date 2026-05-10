@@ -50,6 +50,12 @@ pub struct Config {
     #[arg(long, env = "QUICK_SPECS_DIR", default_value = "specs", global = true)]
     pub specs_dir: PathBuf,
 
+    /// Directory containing JSON data catalogues and colocated `.nu` generators
+    /// (e.g. `data/tiles.json`, `data/tiles.nu`). Watch loop monitors this dir
+    /// and runs `quick-tool gen` on changes; gen writes to specs/_partials/.
+    #[arg(long, env = "QUICK_DATA_DIR", default_value = "data", global = true)]
+    pub data_dir: PathBuf,
+
     /// Template file used by `new` to scaffold a spec (defaults to TEMPLATE.md at project root)
     #[arg(long, env = "QUICK_TEMPLATE_FILE", global = true)]
     pub template_file: Option<PathBuf>,

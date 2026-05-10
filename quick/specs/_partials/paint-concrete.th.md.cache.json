@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "chunks": {
+    "50a4fde02e8f37caf8c6a41372f1d68d8b434ce3f5377145cd3314706b426b4e": "---\ntitle: Paint products — concrete (shared partial)\nstatus: Draft\nrev: \"1\"\n---",
+    "6368a30e745cdbe99ac947f81331bf900a433c7c8ff3f7ad7478601b90991ce3": "## สี — คอนกรีต (แคตตาล็อก)\n\nผลิตภัณฑ์สองรายการ: ไพรเมอร์สำหรับฉาบปูนเก่าที่เป็นฝุ่นชอล์ก พร้อมสีทับหน้าชนิด Sheen ที่ทำความสะอาดตัวเองได้\n\n| Product ID | ผลิตภัณฑ์ | HomePro SKU | พื้นที่ครอบคลุม (ตร.ม./กระป๋อง/เที่ยว) | จำนวนเที่ยว | พื้นที่ใช้งานจริง (ตร.ม./กระป๋อง) | ราคาต่อหน่วย (บาท) |\n|---|---|---|---|---|---|---|\n| `concrete-primer` | TOA Contact Primer 1GL | [21139](https://www.homepro.co.th/p/21139) | 30 | 1 | 30 | ~738 |\n| `concrete-topcoat` | TOA SuperShield Sheen 1GL White G100 | [93054](https://www.homepro.co.th/p/93054) | 35 | 2 | 17.5 | ~1,186 |\n\n- `concrete-primer` ใช้สำหรับฉาบปูนเก่าที่เป็นฝุ่นชอล์ก — ยึดเกาะได้ในจุดที่ไพรเมอร์ทั่วไปไม่สามารถยึดเกาะได้\n- `concrete-topcoat` ต้องเป็นสีเนียน **Sheen** เท่านั้น: ไม่ใช่ Semi-Gloss และไม่ใช่ \"SuperShield Advance\""
+  }
+}

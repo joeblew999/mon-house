@@ -6,6 +6,8 @@ on:
     paths:
       - "quick/specs/*.md"
       - "quick/specs/*.th.md"
+      - "quick/specs/_partials/*.md"
+      - "quick/data/**"
       - "quick/scripts/theme.typ"
       - "quick/cli/src/**"
       - "quick/cli/Cargo.toml"
@@ -54,6 +56,25 @@ jobs:
       - name: Download fonts
         working-directory: quick
         run: mise run fonts
+
+      # Drift guard: regenerate the data-driven partials and fail if they're
+      # out of sync with what's committed. This catches contributors who
+      # changed `data/*.json` or `data/*.nu` without running `mise run gen`
+      # locally and committing the regenerated `specs/_partials/tile-quantity-*.md`.
+      #
+      # Gen is fully deterministic — same JSON in, same markdown out — so
+      # this never produces false positives. Unlike translation (auto-committed
+      # below), generated partials must be committed explicitly by the author
+      # so CI is a verification step, not a safety net for forgotten work.
+      - name: Verify generated partials are up-to-date
+        working-directory: quick
+        run: |
+          mise run gen
+          if ! git diff --exit-code -- specs/_partials/tile-quantity-*.md; then
+            echo "::error::Generated partials are out of sync with data/*.json."
+            echo "::error::Run \`mise run gen\` locally and commit the updated specs/_partials/tile-quantity-*.md."
+            exit 1
+          fi
 
       - name: Build PDFs
         working-directory: quick

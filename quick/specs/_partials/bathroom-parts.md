@@ -77,11 +77,4 @@ Both pieces are COTTO white ceramic with **30-year ceramic warranty**, same era 
 - Square stainless grate, fits standard outlet
 - ฿375 THB
 
-**Tiles — COTTO Pemo Beige 30 × 60 cm porcelain (rectified)**
-
-![COTTO Pemo Beige tile](resources/images/bathroom-proposed-part-tile.jpg)
-
-- HomePro SKU 1305197 — [homepro.co.th/p/1305197](https://www.homepro.co.th/p/1305197)
-- Modern beige porcelain, hard-edge rectified, suits both walls and floor
-- **฿599 per box** (~1 m² per box; box count + total tile cost are layout-specific — see the spec that includes this partial)
-- Anti-slip variant for the wet zone: pick from a matching beige range at the showroom if Pemo doesn't stock one (Duragres Celica Beige, Duragres Kalorin Beige, or Tara Lander Beige are close-tone alternatives)
+> **Tile choice lives in [`tiles.md`](tiles.md).** This partial covers fixtures only — pick a tile from the catalog and reference it from each bathroom spec. Don't re-add a tile entry here.

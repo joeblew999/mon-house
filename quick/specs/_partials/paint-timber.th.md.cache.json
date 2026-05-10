@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "chunks": {
+    "3156c2b00ea73c12bda55969ed636f991ebf3b6e3bbf66beb40639e89b84fec7": "## สี — ไม้ (แคตตาล็อก)\n\nผลิตภัณฑ์สองรายการ: สีรองพื้นกันยางไม้ (tannin) พร้อมสีทับหน้าอะคริลิกชนิดยืดหยุ่นสำหรับไม้\n\n| Product ID | ผลิตภัณฑ์ | HomePro SKU | พื้นที่ครอบคลุม (ตร.ม./กระป๋อง/เที่ยว) | จำนวนเที่ยว | พื้นที่ใช้งานจริง (ตร.ม./กระป๋อง) | ราคาต่อหน่วย (บาท) |\n|---|---|---|---|---|---|---|\n| `timber-undercoat` | TOA Undercoat G1600 1GL | [15760](https://www.homepro.co.th/p/15760) | 30 | 1 | 30 | ~812 |\n| `timber-topcoat` | TOA TimberShield 1GL | [176032](https://www.homepro.co.th/p/176032) | 35 | 2 | 17.5 | ~940 |",
+    "d1912e8ac0a549d5bd919c48db927016a4e67b0e91400477a10c832c85ec3b54": "---\ntitle: Paint products — timber (shared partial)\nstatus: Draft\nrev: \"1\"\n---"
+  }
+}

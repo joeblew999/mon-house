@@ -67,6 +67,11 @@ QUICK_SCRIPTS_DIR   = "scripts"
 # Spec source files (EN markdown)
 QUICK_SPECS_DIR     = "specs"
 
+# Quantity-data source — JSON catalogues + colocated `.nu` generators.
+# Watch loop monitors this directory; changes trigger `mise run gen` which
+# regenerates `specs/_partials/tile-quantity-*.md` (and future paint-quantity-*).
+QUICK_DATA_DIR      = "data"
+
 # Template file used by `mise run new` to scaffold a new spec
 QUICK_TEMPLATE_FILE = "TEMPLATE.md"
 
@@ -122,6 +127,18 @@ description = "Generate TypeScript bindings from Rust types (cli/bindings/*.ts)"
 sources  = ["cli/src/translate.rs"]
 outputs  = ["cli/bindings/TranslateRequest.ts", "cli/bindings/TranslateResponse.ts", "cli/bindings/ErrorResponse.ts"]
 run = "cargo test --lib export_bindings --manifest-path cli/Cargo.toml"
+
+[tasks.gen]
+description = "Regenerate quantity-table partials from data/*.json (tile counts, box counts, costs). Idempotent — second run does no work. Runs every *.nu generator in data/ via quick-tool gen, so adding paint.nu / fasteners.nu / etc. needs no mise.toml edit."
+depends = ["build-cli"]
+sources  = ["{{env.QUICK_DATA_DIR}}/*.json", "{{env.QUICK_DATA_DIR}}/*.nu"]
+outputs  = [
+  "{{env.QUICK_SPECS_DIR}}/_partials/tile-quantity-bathroom-basic.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/tile-quantity-bathroom-compact.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/tile-quantity-bathroom-enlarge.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/tile-quantity-house-wide.md",
+]
+run = "{{vars.QUICK_TOOL}} gen"
 
 [tasks.build-cli]
 description = "Compile quick-tool (Rust) — skipped automatically if sources unchanged"

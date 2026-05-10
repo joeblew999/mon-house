@@ -6,6 +6,7 @@ use clap::{Parser, Subcommand};
 mod build;
 mod chunks;
 mod config;
+mod gen;
 mod http;
 mod fonts;
 mod idempotency;
@@ -62,6 +63,10 @@ enum Commands {
         #[arg(long, default_value = "8080")]
         port: u16,
     },
+    /// Run all `data/*.nu` generators to refresh `_partials/*.md` quantity
+    /// tables from `data/*.json`. Idempotent — second run with no input
+    /// change writes zero files. Used by `mise run gen` and by `watch`.
+    Gen,
     /// Create a new spec file from TEMPLATE.md
     New {
         /// Spec name in UPPER CASE (e.g. DECK)
@@ -147,6 +152,7 @@ fn main() {
         }
         #[cfg(feature = "container")]
         Commands::Serve { port } => serve::cmd_serve(&cfg, port),
+        Commands::Gen => gen::cmd_gen(&cfg),
         Commands::New { name } => new::cmd_new(&cfg, &name),
         Commands::Clean => build::cmd_clean(&cfg),
         Commands::Hash { path } => {

@@ -229,29 +229,28 @@ A single large fixed mirror across the basin/toilet wall, **butting hard against
 - Frameless, toughened/safety glass, plain (no LED, no cabinet, not heated).
 - Fixed flat against the new wall tiles behind it.
 
-### New tiles — only on two walls + the whole floor
+### New tiles — two walls + the whole floor
 
-**Tiled walls (full height):**
+**Tiled walls (full height to 2100 mm AFL):**
 
-1. The **shower-area walls** (the wall behind the shower head + the back wall of the wet zone within the shower footprint).
-2. The **basin + toilet wall** — the long wall the basin and toilet sit against, plus the section of the same wall that runs into the shower (so the mirror behind the basin/toilet meets continuous tile, and the shower glass meets continuous tile).
+1. **Fixture wall** — the long wall the basin / toilet / shower sit against (3.0 m × 2.1 m). Tiled across its full length so the mirror behind the basin/toilet meets continuous tile, and the shower glass meets continuous tile.
+2. **Back wall of the wet zone** — the 1.35 m end wall opposite the door, behind the shower.
 
-**Not tiled** — see "Painted walls" below.
+**Not tiled** — cabinet wall (the long wall opposite the fixture wall), entry/door wall, anything above 2100 mm AFL. See "Painted walls" below.
 
 **Floor:** new tiles across **the whole bathroom** — both the wet zone (lower) and the basin/entry zone (50 mm higher).
 
-**One tile range** across the tiled walls + the floor — a single product family, where the floor variant is **anti-slip rated** (R10 minimum, R11 preferred for the wet zone) and the wall variant matches it visually. Most Thai-Watsadu / HomePro tile ranges offer both wall + anti-slip-floor variants in the same range. This keeps shopping simple and the bathroom visually unified.
+**One tile range** across the tiled walls + the floor. Pemo Beige (selected here) is R11 anti-slip everywhere, so no separate wet-zone variant is needed.
 
 **Tile look — modern, low-cost:**
 
-- **Colour: off-white** (warm-white / cream / soft grey-white). Plain. Not pure stark white, not patterned, not floral.
-- **Edge: hard / rectified** — sharp machined edges (not bevelled or "pillow" edges). This is what enables tight grout lines.
-- **Grout gaps: small / tight.** ~2 mm grout lines, not the wider ~5 mm "old-style" gaps. Combined with rectified edges this gives the clean modern look.
-- **Grout colour:** match the tile (off-white), not contrasting dark grout. Keeps the surface reading as continuous.
+- **Colour: beige** (Pemo Beige, glazed porcelain). Plain — not patterned, not floral.
+- **Edge: rectified** — sharp machined edges, enables tight 2 mm grout lines.
+- **Grout colour:** match the tile (beige), not contrasting dark grout.
 
-Re-grout. Re-silicone all wet edges.
+**Tile-to-paint junction: clean seal, no trim.** Clean grout edge + silicone bead — no Schluter / steel / aluminium edge profile.
 
-**Tile-to-paint junction: clean seal, no trim.** Where the tiled walls end and the painted walls begin, finish with a **clean grout edge + silicone bead** — no Schluter / steel / aluminium edge profile. Just a tidy painter's-tape-grade junction line. Same approach where the tiled basin/toilet wall meets the painted opposite wall and the painted entrance wall.
+<!-- include: _partials/tile-quantity-bathroom-enlarge.md -->
 
 ### Painted walls (DIY — Joe + Mon)
 

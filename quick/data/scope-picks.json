@@ -1,0 +1,48 @@
+{
+  "_doc": "Scope picks — which spec uses which tile across which rooms, and the wastage % to apply. Hand-edited. Generators consume this and emit specs/_partials/tile-quantity-<scope-id>.md.",
+  "_scope_id_rule": "scope id is kebab-case; matches the output filename suffix (e.g. 'bathroom-basic' → tile-quantity-bathroom-basic.md).",
+  "scopes": {
+    "bathroom-basic": {
+      "title": "Bathroom — tile quantities (BASIC)",
+      "spec": "BATHROOM_BASIC.md",
+      "rooms": ["bathroom"],
+      "tile_id": "tile-pemo-beige-3060",
+      "wastage_pct": 10,
+      "notes": "Existing bathroom (no wall move). Pemo R11 — wet zone safe."
+    },
+    "bathroom-compact": {
+      "title": "Bathroom — tile quantities (COMPACT)",
+      "spec": "BATHROOM-COMPACT.md",
+      "rooms": ["bathroom"],
+      "wall_surfaces": [
+        {"name": "Shower back wall",  "w_m": 1.380, "h_m": 2.100},
+        {"name": "Shower left side",  "w_m": 0.700, "h_m": 2.100},
+        {"name": "Shower right side", "w_m": 0.700, "h_m": 2.100},
+        {"name": "Basin splashback",  "w_m": 0.500, "h_m": 0.600}
+      ],
+      "tile_id": "tile-pemo-beige-3060",
+      "wastage_pct": 10,
+      "notes": "Existing bathroom (no wall move). Tiled walls = the 3-sided shower box plus a small splashback behind the basin. Same tile as BASIC for cross-spec consistency."
+    },
+    "bathroom-enlarge": {
+      "title": "Bathroom — tile quantities (ENLARGE)",
+      "spec": "BATHROOM_ENLARGE.md",
+      "rooms": ["bathroom-enlarged"],
+      "wall_surfaces": [
+        {"name": "Fixture wall (basin + toilet + shower)", "w_m": 3.000, "h_m": 2.100},
+        {"name": "Back wall (wet zone, behind shower)",    "w_m": 1.350, "h_m": 2.100}
+      ],
+      "tile_id": "tile-pemo-beige-3060",
+      "wastage_pct": 10,
+      "notes": "Bathroom enlarged via wall move; the spec calls for two walls tiled — the long fixture wall (3.0 m, full bathroom length) and the back wall of the wet zone (1.35 m, end wall opposite the door). Cabinet wall and door wall stay painted. Confirm wall heights on site if 2.1 m doesn't match the actual ceiling line."
+    },
+    "house-wide": {
+      "title": "Whole-house floor tiles (excluding bathroom)",
+      "spec": null,
+      "rooms": ["bedroom-1", "bedroom-2", "living", "kitchen"],
+      "tile_id": "tile-marbella-dgdv6001",
+      "wastage_pct": 10,
+      "notes": "Cross-room flooring for the SPA's tiles/SPEC.md (parent repo). Marbella DGDV is glossy — fine on dry floors. Not consumed by any quick/specs/* file yet."
+    }
+  }
+}

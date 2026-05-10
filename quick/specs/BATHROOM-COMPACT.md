@@ -52,19 +52,7 @@ This is **PHASE 02 ONLY** — see [PHASES](AAA-PHASES.md). One builder price for
 
 ## Tiling scope
 
-Less tile than BATHROOM.md — the long wall is **not** tiled full height in this layout.
-
-**Walls that get tiled** (full height to 2100 mm AFL):
-
-1. The wall **behind the shower** — the 1380 mm back wall.
-2. The wall **on the left of the shower** — only the 700 mm section that's inside the wet zone.
-3. The wall **on the right of the shower** — only the 700 mm section that's inside the wet zone.
-
-That's the "shower box" — three sides full height. The fourth side (front) is the glass screen + walk-in opening (no tile, no wall).
-
-**Plus a small tile splashback** (~500 × 600 mm) behind the basin to stop water running down the paint.
-
-**Floor:** tile the whole bathroom — anti-slip variant in the wet zone, regular variant in the dry zone. Waterproof coating under the wet-zone tiles.
+Less tile than [BATHROOM_ENLARGE](BATHROOM_ENLARGE.md) — the long cabinet wall is **not** tiled in this layout. Tiled = the 3-sided shower box (back + 2 sides, full height to 2100 mm AFL) + a small splashback behind the basin + the whole floor.
 
 **Painted (NOT tiled):**
 - Left wall in the dry zone (above and around basin + toilet — except for the basin splashback above)
@@ -72,23 +60,9 @@ That's the "shower box" — three sides full height. The fourth side (front) is 
 - Entry wall (door wall)
 - Anything above 2100 mm AFL
 
-### Tile area + box count
+**Tile look — modern beige, rectified, tight grout.** Single tile range across walls + floor — Pemo Beige is R11 anti-slip everywhere, so no separate wet-zone variant needed. **Hard machined edges**, **small (~2 mm) grout lines**, **beige grout matching the tile**, no edge profiles.
 
-Wall height assumed **2100 mm** (matches mirror top + glass top).
-
-| Surface | W × H (mm) | Area (m²) |
-|---|---|---|
-| Shower back wall | 1380 × 2100 | 2.90 |
-| Shower left side wall | 700 × 2100 | 1.47 |
-| Shower right side wall | 700 × 2100 | 1.47 |
-| Basin splashback | 500 × 600 | 0.30 |
-| **Walls subtotal** | | **6.14** |
-| Floor (whole bathroom) | 1380 × 1950 | 2.69 |
-| **Total tile area** | | **8.83 m²** |
-
-At ~1.08 m² per box (30×60 cm × 6 tiles), **buy 9 boxes** = 9.72 m² (allows ~10% waste for cuts).
-
-**Tile look — modern beige, rectified, tight grout.** Single tile range across walls + floor (anti-slip variant for wet zone). **Hard machined edges**, **small (~2 mm) grout lines**, **beige grout matching the tile**, no edge profiles.
+<!-- include: _partials/tile-quantity-bathroom-compact.md -->
 
 ---
 
@@ -97,9 +71,9 @@ At ~1.08 m² per box (30×60 cm × 6 tiles), **buy 9 boxes** = 9.72 m² (allows 
 **Fixed parts list (excluding tiles, sold by area): ฿7,242**
 basin (850) + drain (429) + trap (205) + mount (99) + tap (439) + toilet (2,290) + bidet (329) + floor drain (375) + cabinet (2,197) + masonry anchors (29).
 
-**Tiles, ~฿5,400** at ~9 boxes for ~6.1 m² walls + 2.7 m² floor.
+**Tiles: ~฿4,193** (7 boxes × ฿599) — see the tile-quantity table above for the full breakdown.
 
-**All-in fittings: ~฿12,642** (parts + tiles, before builder labour).
+**All-in fittings: ~฿11,435** (parts + tiles, before builder labour).
 
 ---
 

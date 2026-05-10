@@ -1,0 +1,44 @@
+{
+  "_doc": "Rooms catalog — measured dimensions for every room across the renovation. Hand-edited. Generators consume this. See data/README.md.",
+  "_dimensions_rule": "width_m × length_m, both in metres. The catalog is dimension-only — what gets tiled is decided per scope in scope-picks.json.",
+  "rooms": {
+    "bathroom": {
+      "name": "Bathroom",
+      "name_th": "ห้องน้ำ",
+      "width_m": 1.380,
+      "length_m": 1.950,
+      "notes": "Existing bathroom footprint, used by BATHROOM_BASIC and BATHROOM-COMPACT (no wall move)."
+    },
+    "bathroom-enlarged": {
+      "name": "Bathroom (enlarged after wall move)",
+      "name_th": "ห้องน้ำ (ขยายหลังย้ายผนัง)",
+      "width_m": 1.350,
+      "length_m": 3.000,
+      "notes": "Used by BATHROOM_ENLARGE only. The new entrance wall sits 1003 mm further out into the living room, flush with the existing living-room wall plane."
+    },
+    "bedroom-1": {
+      "name": "Bedroom 1",
+      "name_th": "ห้องนอน 1",
+      "width_m": 3.0,
+      "length_m": 3.4
+    },
+    "bedroom-2": {
+      "name": "Bedroom 2",
+      "name_th": "ห้องนอน 2",
+      "width_m": 3.0,
+      "length_m": 3.0
+    },
+    "living": {
+      "name": "Living Room",
+      "name_th": "ห้องนั่งเล่น",
+      "width_m": 2.9,
+      "length_m": 6.4
+    },
+    "kitchen": {
+      "name": "Kitchen",
+      "name_th": "ห้องครัว",
+      "width_m": 2.0,
+      "length_m": 3.0
+    }
+  }
+}

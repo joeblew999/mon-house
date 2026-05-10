@@ -1,16 +1,19 @@
-// Local file watcher — re-runs translate + build whenever a relevant file
-// changes on disk. Replaces the TypeScript watcher that used to live in
+// Local file watcher — re-runs gen + translate + build whenever a relevant
+// file changes on disk. Replaces the TypeScript watcher that used to live in
 // quick/local/ and pushed changes to the CF PipelineAgent over WebSocket.
 //
 // What's watched:
 //   * specs_dir (recursive)         — *.md + _partials/*.md
 //   * scripts_dir (recursive)       — theme.typ + themes/*.typ
+//   * data_dir (recursive)          — *.json + *.nu (data layer)
 //   * <project>/resources/images/   — *.svg (translated to .th.svg)
 //
 // Strategy on each event:
 //   1. Drop our own outputs (.th.md / .th.svg / .cache.json) so we don't loop.
-//   2. Run translate (chunk cache hits make this cheap for unchanged sections).
-//   3. Run build for the affected stem if we can identify it; otherwise build
+//   2. If any data/*.json or data/*.nu changed, run `gen` first so the
+//      generated partials in specs/_partials/ are fresh before translate.
+//   3. Run translate (chunk cache hits make this cheap for unchanged sections).
+//   4. Run build for the affected stem if we can identify it; otherwise build
 //      everything. Build is per-file mtime-driven via mise's sources/outputs,
 //      so a "build all" call where nothing changed is a no-op.
 //
@@ -23,7 +26,7 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use notify_debouncer_mini::{new_debouncer, notify::RecursiveMode, DebounceEventResult};
 
-use crate::{build, includes, translate, vfs, Config};
+use crate::{build, gen, includes, translate, vfs, Config};
 
 const DEBOUNCE_MS: u64 = 250;
 
@@ -32,9 +35,10 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
 
     // Friendly intro: what's being watched, and how to stop.
     println!(
-        "[watch] specs    : {}\n[watch] scripts  : {}\n[watch] images   : {}\n[watch] (Ctrl+C to stop)\n",
+        "[watch] specs    : {}\n[watch] scripts  : {}\n[watch] data     : {}\n[watch] images   : {}\n[watch] (Ctrl+C to stop)\n",
         cfg.specs_dir.display(),
         cfg.scripts_dir.display(),
+        cfg.data_dir.display(),
         images_dir.display(),
     );
 
@@ -49,7 +53,7 @@ pub fn cmd_watch(cfg: &Config) -> Result<()> {
     .context("create file-system debouncer")?;
 
     // Each watched root may not exist yet on a fresh checkout — be lenient.
-    for root in [&cfg.specs_dir, &cfg.scripts_dir, &images_dir] {
+    for root in [&cfg.specs_dir, &cfg.scripts_dir, &cfg.data_dir, &images_dir] {
         if !vfs::exists(root) {
             eprintln!("[watch] note: {} does not exist (skipping)", root.display());
             continue;
@@ -99,6 +103,23 @@ fn handle_burst(cfg: &Config, paths: &[PathBuf]) -> Result<()> {
     // Markdown can't auto-recompute these — the notification is the contract.
     notify_partial_dependents(cfg, &interesting);
 
+    // Data-layer step: if any data/*.json or data/*.nu changed in this burst,
+    // run gen first so the generated partials in specs/_partials/ are fresh
+    // before translate reads them. gen is itself idempotent (hash-and-skip
+    // per output) so this costs nothing if nothing relevant changed.
+    let data_dir_name = cfg
+        .data_dir
+        .file_name()
+        .and_then(|s| s.to_str())
+        .unwrap_or("data");
+    let any_data_changed = interesting
+        .iter()
+        .any(|p| is_under_named_dir(p, data_dir_name));
+    if any_data_changed {
+        println!("[watch] data change → running gen");
+        gen::cmd_gen(cfg)?;
+    }
+
     // Strategy: translate first (cache makes this fast), then build affected
     // stem if exactly one spec changed; otherwise build everything (mise's
     // mtime check makes a no-op build cheap).
@@ -107,6 +128,14 @@ fn handle_burst(cfg: &Config, paths: &[PathBuf]) -> Result<()> {
     let single_spec_stem = single_spec_stem(cfg, &interesting);
     build::cmd_build(cfg, single_spec_stem)?;
     Ok(())
+}
+
+/// True if any ancestor directory of `path` has the given name.
+/// Used to detect whether a watched path lives under data/ regardless of
+/// whether the path is absolute (notify) or relative (cfg.data_dir).
+fn is_under_named_dir(path: &Path, dir_name: &str) -> bool {
+    path.ancestors()
+        .any(|a| a.file_name().and_then(|s| s.to_str()) == Some(dir_name))
 }
 
 /// Drop our own outputs and anything outside the watched roots.
@@ -126,10 +155,12 @@ fn is_interesting(path: &Path) -> bool {
     {
         return false;
     }
-    // Only watch files we care about: markdown, SVG, typst.
+    // Only watch files we care about: markdown, SVG, typst, plus the
+    // data-layer pair (JSON catalogues + .nu generators). Translation cache
+    // outputs (*.th.md.cache.json) are filtered above by suffix.
     matches!(
         path.extension().and_then(|s| s.to_str()),
-        Some("md") | Some("svg") | Some("typ")
+        Some("md") | Some("svg") | Some("typ") | Some("json") | Some("nu")
     )
 }
 

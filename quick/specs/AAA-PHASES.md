@@ -26,7 +26,7 @@ Minimal functional fixes. The cheapest path to a comfortable, secure, usable hou
 The bigger work, after Phase 01 is bedded in.
 
 - **[BEDROOM](BEDROOM.md)** — combine the two bedrooms into one larger bedroom: remove the leaf wall (full wall) and the door-and-stub section between the two bedroom doors (forms a single 2 m opening to the living room). Small steel lintel ~1 m below the ceiling line over the opening; ceiling-infill strip where the leaf wall met the ceiling. Relocate the AC head approx 2 m along the same exterior wall so it sits **centred above the new 2 m × 2 m bed**. Bedside electrical: door-side switches stay and still work; new bedside switches in **2-way** with them; new bed-side power outlets fed from the salvaged leaf-wall circuit. Floor patches use the lifted skirting tiles. Future curtain across the 2 m opening + HomePro wall-hung shelves on the bedroom/bathroom wall are **separate scopes** (later, DIY).
-- **[BATHROOM](BATHROOM.md)** — strip and re-tile the bathroom (and the toilet room if it's separate); replace the basin. Toilet pan, shower mixer, plumbing, ceiling, and lighting all stay.
+- **[BATHROOM](BATHROOM_ENLARGE.md)** — strip and re-tile the bathroom (and the toilet room if it's separate); replace the basin. Toilet pan, shower mixer, plumbing, ceiling, and lighting all stay.
 - **[GATE-02](GATE-02.md)** — replace the existing gate with an **ALNEX Prive** 3.5 × 1.5 m Space Black T6 aluminium gate. **Re-mount the Phase 01 motor** on the new gate at the new rack height.
 - **[WINDOWS-02](WINDOWS-02.md)** — full FRAMEX black aluminium replacement: 5 main sliding windows (120 × 110 cm), custom bathroom window, custom sliding door (~170 × 195 cm).
 
