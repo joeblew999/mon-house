@@ -139,6 +139,10 @@ outputs  = [
   "{{env.QUICK_SPECS_DIR}}/_partials/tile-quantity-house-wide.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/paint-quantity-house-exterior-concrete.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/paint-quantity-house-exterior-timber.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-basic.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-compact.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-enlarge.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-house-exterior.md",
 ]
 run = "{{vars.QUICK_TOOL}} gen"
 

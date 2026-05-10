@@ -194,18 +194,19 @@ If the builder finds something during strip-out (hidden leak, broken supply line
 
 ## Cost Summary
 
-<!-- TBC after builder quote and final part-list confirmation. -->
+<!-- include: _partials/cost-summary-bathroom-basic.md -->
+
+Hand-edited line items — fixtures (still in `_partials/bathroom-parts.md`), labour, and TBC entries:
 
 | Category | Est. Cost (THB) |
 |---|---|
 | Strip out (floor tiles, old toilet, old drain unit) | TBC |
 | Floor levels — thin-mortar bed restoring fall to existing drain (no slab work) | TBC |
-| New floor tiles — supply (HomePro anti-slip 30×30, ~35 tiles + adhesive + grey grout) | ~1,300 |
-| New floor tiles — install + grout + silicone | TBC |
+| Floor tile install + grout + silicone (labour) | TBC |
 | New toilet pan + cistern + seat (COTTO C13970, supply) | 2,290 |
 | New stainless bidet sprayer (WSP R-813 SS, supply) | 329 |
 | Toilet + bidet install (re-confirm soil pipe, fit T-valve off cold supply) | TBC |
 | New floor drain — full unit (COTTO CT6404Z2P, supply + fit onto existing outlet) | 375 |
 | New full-width frameless mirror (supply + fix) | TBC |
 | Labour | TBC |
-| **BATHROOM TOTAL** | **TBC** |
+| **BATHROOM TOTAL** | auto-computed materials above + hand-edited rows + TBC |

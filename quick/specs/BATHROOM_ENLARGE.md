@@ -399,7 +399,9 @@ After the builder is done — **DIY by Joe + Mon, not in the builder's quote:**
 
 ## Cost Summary
 
-<!-- TBC after builder quote and tile / basin / toilet / tap selections. -->
+<!-- include: _partials/cost-summary-bathroom-enlarge.md -->
+
+Hand-edited line items — fixtures, builder labour, TBC entries:
 
 | Category | Est. Cost (THB) |
 |---|---|
@@ -411,8 +413,7 @@ After the builder is done — **DIY by Joe + Mon, not in the builder's quote:**
 | Plumbing tidy (chase / re-route exposed pipes; move shower + water heater ~200 mm; relocate toilet + basin runs) | TBC |
 | New floor-drain grate over existing drain location (basic stainless / chrome) | TBC |
 | Cut louvre vent into salvaged door | TBC |
-| New wall + floor tiles (supply, one range, anti-slip floor variant for wet zone) | TBC |
-| Tile install + grout + silicone + adhesive | TBC |
+| Tile install + grout + silicone + adhesive (labour, supply auto-computed above) | TBC |
 | Re-hang salvaged 800 mm bedroom door in new frame | TBC |
 | New shower glass partition (~500 × 2100 mm, frameless, supply + install) | TBC |
 | New toilet pan + cistern + seat (supply + install) | TBC |
@@ -422,4 +423,4 @@ After the builder is done — **DIY by Joe + Mon, not in the builder's quote:**
 | New full-width wall mirror (supply + fix) | TBC |
 | Electrical — relocate light switch inside; add IP-rated power outlet beside basin (RCD/GFCI verified, added if missing); relocate water-heater isolator switch to outside the new entrance wall | TBC |
 | Labour | TBC |
-| **BATHROOM TOTAL** | **TBC** |
+| **BATHROOM TOTAL** | auto-computed materials above + hand-edited rows + TBC |

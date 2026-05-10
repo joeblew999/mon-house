@@ -68,12 +68,12 @@ Less tile than [BATHROOM_ENLARGE](BATHROOM_ENLARGE.md) — the long cabinet wall
 
 <!-- include: _partials/bathroom-parts.md -->
 
-**Fixed parts list (excluding tiles, sold by area): ฿7,242**
+<!-- include: _partials/cost-summary-bathroom-compact.md -->
+
+**Fixed parts list (fixtures, hand-edited — not yet in data layer): ฿7,242**
 basin (850) + drain (429) + trap (205) + mount (99) + tap (439) + toilet (2,290) + bidet (329) + floor drain (375) + cabinet (2,197) + masonry anchors (29).
 
-**Tiles: ~฿4,193** (7 boxes × ฿599) — see the tile-quantity table above for the full breakdown.
-
-**All-in fittings: ~฿11,435** (parts + tiles, before builder labour).
+**All-in fittings: ~฿11,435** (auto-computed materials above + fixed parts list, before builder labour).
 
 ---
 

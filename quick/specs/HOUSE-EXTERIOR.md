@@ -102,9 +102,9 @@ Surface areas + can counts are auto-generated from `data/scope-picks.json` (the 
 
 ## Cost Summary
 
+<!-- include: _partials/cost-summary-house-exterior.md -->
+
 | Category | Est. Cost (THB) |
 |---|---|
-| Concrete materials (house walls + fence) | ~13,178 |
-| Timber materials (eaves + fascia) | ~1,752 |
 | Labour (DIY) | 0 |
-| **HOUSE EXTERIOR PAINT TOTAL** | **~14,930** |
+| **HOUSE EXTERIOR PAINT TOTAL** | **see auto-computed total above (currently ~฿14,930)** |

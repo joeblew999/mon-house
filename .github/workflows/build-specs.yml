@@ -60,7 +60,10 @@ jobs:
       # Drift guard: regenerate the data-driven partials and fail if they're
       # out of sync with what's committed. This catches contributors who
       # changed `data/*.json` or `data/*.nu` without running `mise run gen`
-      # locally and committing the regenerated `specs/_partials/tile-quantity-*.md`.
+      # locally and committing the regenerated partials.
+      #
+      # Covers tile-quantity-*, paint-quantity-*, and cost-summary-* — every
+      # partial emitted by a `data/*.nu` generator.
       #
       # Gen is fully deterministic — same JSON in, same markdown out — so
       # this never produces false positives. Unlike translation (auto-committed
@@ -70,9 +73,12 @@ jobs:
         working-directory: quick
         run: |
           mise run gen
-          if ! git diff --exit-code -- specs/_partials/tile-quantity-*.md; then
+          if ! git diff --exit-code -- \
+                specs/_partials/tile-quantity-*.md \
+                specs/_partials/paint-quantity-*.md \
+                specs/_partials/cost-summary-*.md; then
             echo "::error::Generated partials are out of sync with data/*.json."
-            echo "::error::Run \`mise run gen\` locally and commit the updated specs/_partials/tile-quantity-*.md."
+            echo "::error::Run \`mise run gen\` locally and commit the updated _partials/*.md files."
             exit 1
           fi
 
