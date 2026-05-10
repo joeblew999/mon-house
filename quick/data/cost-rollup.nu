@@ -161,36 +161,76 @@ def window_cost [scope windows] {
 }
 
 # Compute a curtain scope's cost — reuses window dimensions from the
-# referenced window scope. Mirrors curtains.nu math but returns just the
-# bottom-line totals as {min, max}.
+# referenced window scope. Mirrors curtains.nu math (track + fabric per
+# metre + fittings per_calc rules) and returns just the bottom-line totals.
 def curtain_cost [scope curtains windows window_scopes] {
   let win_scope = ($window_scopes | get $scope.from_window_scope)
   let included = ($win_scope.items | where {|item|
     $item.window_id in $scope.include_window_ids
   })
 
-  let track_m = ($included | each {|item|
+  # Build per-window rows (mirrors curtains.nu's win_rows shape).
+  let win_rows = ($included | each {|item|
     let w = ($windows | get $item.window_id)
-    (($w.size_w_cm + $scope.track_overlap_cm) / 100.0) * $item.qty
-  } | append 0 | math sum)
+    let track_m_per = (($w.size_w_cm + $scope.track_overlap_cm) / 100.0)
+    let fabric_m_per = (($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm) / 100.0)
+    {
+      qty: $item.qty
+      track_m_per: $track_m_per
+      fabric_m_per: $fabric_m_per
+      track_m: ($track_m_per * $item.qty)
+      fabric_m: ($fabric_m_per * $item.qty)
+    }
+  })
 
-  let fabric_m = ($included | each {|item|
-    let w = ($windows | get $item.window_id)
-    (($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm) / 100.0) * $item.qty
-  } | append 0 | math sum)
+  let track_m  = ($win_rows | get track_m  | append 0 | math sum)
+  let fabric_m = ($win_rows | get fabric_m | append 0 | math sum)
 
   let track_p  = ($curtains | get $scope.track_product)
   let fabric_p = ($curtains | get $scope.fabric_product)
 
-  let min_total = (
-    ($track_m  * $track_p.baht_per_metre_min) +
-    ($fabric_m * $fabric_p.baht_per_metre_min) | math round | into int
-  )
-  let max_total = (
-    ($track_m  * $track_p.baht_per_metre_max) +
-    ($fabric_m * $fabric_p.baht_per_metre_max) | math round | into int
-  )
-  {min: $min_total, max: $max_total}
+  # Per-metre product costs
+  let track_min  = ($track_m  * $track_p.baht_per_metre_min)
+  let track_max  = ($track_m  * $track_p.baht_per_metre_max)
+  let fabric_min = ($fabric_m * $fabric_p.baht_per_metre_min)
+  let fabric_max = ($fabric_m * $fabric_p.baht_per_metre_max)
+
+  # Fittings — sum across all listed fittings × all windows
+  let fittings = ($scope | get -o fittings | default [])
+  let fittings_min = ($fittings | each {|fid|
+    let f = ($curtains | get $fid)
+    let qty = ($win_rows | each {|wr| compute_fitting_qty $f $wr} | append 0 | math sum)
+    ($qty * $f.baht_per_unit_min)
+  } | append 0 | math sum)
+  let fittings_max = ($fittings | each {|fid|
+    let f = ($curtains | get $fid)
+    let qty = ($win_rows | each {|wr| compute_fitting_qty $f $wr} | append 0 | math sum)
+    ($qty * $f.baht_per_unit_max)
+  } | append 0 | math sum)
+
+  {
+    min: ($track_min + $fabric_min + $fittings_min | math round | into int)
+    max: ($track_max + $fabric_max + $fittings_max | math round | into int)
+  }
+}
+
+# Compute the qty of one fitting needed for one window in scope.
+# Mirrors the function in curtains.nu — kept in sync.
+def compute_fitting_qty [fitting win_row] {
+  let pc = $fitting.per_calc
+  if $pc == "per-window" {
+    $win_row.qty
+  } else if $pc == "per-track-metre" {
+    let interval = ($fitting.interval_cm | default 80)
+    let per_window = (($win_row.track_m_per * 100.0 / $interval) | math ceil)
+    ($per_window * $win_row.qty)
+  } else if $pc == "per-curtain-width-metre" {
+    let covers = ($fitting.covers_cm_per_unit | default 240)
+    let per_window = (($win_row.fabric_m_per * 100.0 / $covers) | math ceil)
+    ($per_window * $win_row.qty)
+  } else {
+    0
+  }
 }
 
 def gen_spec_md [spec rows] {
