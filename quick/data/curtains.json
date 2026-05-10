@@ -5,97 +5,97 @@
   "_sizing_assumption": "Drop fits within the fabric bolt width (typical 280 cm bolt handles up to ~250 cm drop with hem/heading allowance). For taller windows that exceed the bolt, the math under-counts and the spec needs a hand-edit note. Verify in store.",
   "curtains": {
     "ikea-vidga-track": {
-      "name": "IKEA VIDGA single-track curtain rail (140 cm, connectable/cuttable)",
+      "name": "IKEA VIDGA single-track curtain rail (140 cm, includes ceiling fittings)",
       "supplier": "IKEA Thailand",
-      "sku": "704.928.86",
-      "url": "https://www.ikea.com/th/en/p/vidga-single-track-rail-white-70492886/",
+      "sku": "004.929.17",
+      "url": "https://www.ikea.com/th/en/search/?q=00492917",
       "kind": "track",
       "color": "white",
       "stock_or_custom": "stock",
-      "baht_per_metre_min": 175,
-      "baht_per_metre_max": 250,
-      "notes": "Cuttable aluminium rail. Standard length is 140 cm. Price adjusted to reflect per-metre average of the 140cm unit."
+      "baht_per_metre_min": 199,
+      "baht_per_metre_max": 279,
+      "notes": "Cuttable aluminium rail. Standard length is 140 cm. Note: The current Thailand SKU 004.929.17 INCLUDES the ceiling mount fittings, so separate ceiling brackets are no longer necessary."
     },
     "ikea-vidga-end-bracket": {
-      "name": "IKEA VIDGA end-bracket/cap pair",
+      "name": "IKEA VIDGA end closing set",
       "supplier": "IKEA Thailand",
-      "sku": "304.928.07",
-      "url": "https://www.ikea.com/th/en/cat/vidga-system-31804/",
+      "sku": "794.282.59",
+      "url": "https://www.ikea.com/th/en/p/vidga-single-track-end-closing-set-white-s79428259/",
       "kind": "fitting",
       "per_calc": "per-window",
       "stock_or_custom": "stock",
       "baht_per_unit_min": 50,
-      "baht_per_unit_max": 100,
-      "notes": "End caps finish the track ends. Note: The main VIDGA track usually includes standard end caps, but corner pieces or specific end returns are sold separately."
+      "baht_per_unit_max": 150,
+      "notes": "Used to finish and close the track ends or create end returns."
     },
     "ikea-vidga-mount-bracket": {
-      "name": "IKEA VIDGA ceiling bracket (every 80 cm of track)",
+      "name": "IKEA VIDGA wall bracket (6cm or 12cm)",
       "supplier": "IKEA Thailand",
-      "sku": "104.927.90",
-      "url": "https://www.ikea.com/th/en/p/vidga-ceiling-bracket-white-10492790/",
+      "sku": "varies-by-depth",
+      "url": "https://www.ikea.com/th/en/cat/vidga-series-38612/",
       "kind": "fitting",
       "per_calc": "per-track-metre",
       "interval_cm": 80,
       "stock_or_custom": "stock",
-      "baht_per_unit_min": 50,
-      "baht_per_unit_max": 90,
-      "notes": "One bracket per ~80 cm of track. Swap SKU to 504.928.11 if wall-mounting (12 cm projection) is required."
+      "baht_per_unit_min": 129,
+      "baht_per_unit_max": 179,
+      "notes": "ONLY required if wall-mounting (available in 6cm or 12cm projection). If ceiling mounting, brackets are already included in the 004.929.17 track."
     },
     "ikea-vidga-glider-pack": {
       "name": "IKEA VIDGA glider and hook pack (24 pack)",
       "supplier": "IKEA Thailand",
-      "sku": "204.830.02",
-      "url": "https://www.ikea.com/th/en/p/vidga-glider-and-hook-white-20483002/",
+      "sku": "004.830.03",
+      "url": "https://www.ikea.com/th/en/p/vidga-glider-and-hook-white-00483003/",
       "kind": "fitting",
       "per_calc": "per-curtain-width-metre",
       "covers_cm_per_unit": 240,
       "stock_or_custom": "stock",
       "baht_per_unit_min": 99,
-      "baht_per_unit_max": 120,
+      "baht_per_unit_max": 99,
       "notes": "Pack of 24 glider hooks. One pack covers ~2.4 m of finished curtain width (assuming 1 hook every 10cm)."
     },
-    "ikea-fabric-280cm-white": {
-      "name": "IKEA DITTE / MINNA / AINA — white fabric by the metre",
+    "ikea-fabric-by-metre": {
+      "name": "IKEA Fabric by the metre (e.g., DITTE / MINNA)",
       "supplier": "IKEA Thailand",
-      "sku": "303.334.00",
-      "url": "https://www.ikea.com/th/en/cat/fabrics-10655/",
+      "sku": "category-link",
+      "url": "https://www.ikea.com/th/en/cat/sewing-fabrics-14349/",
       "kind": "fabric",
       "color": "white / off-white",
       "bolt_width_cm": 150,
       "stock_or_custom": "stock",
       "baht_per_metre_min": 100,
       "baht_per_metre_max": 350,
-      "notes": "Corrected: IKEA fabrics by the metre (like DITTE) are typically 140-150 cm wide, NOT 280 cm. If 280 cm width is required, look toward standard textile markets (e.g., Pahurat) or specific HomePro blackout rolls. SANELA and RITVA are sold as pre-made panels, not raw bolts."
+      "notes": "Corrected: IKEA fabrics by the metre are typically 140-150 cm wide, NOT 280 cm. If 280 cm width is required, look toward standard textile markets."
     },
     "homepro-rod-generic": {
       "name": "HomePro generic curtain rod (with finials)",
       "supplier": "HomePro",
-      "sku": "1150000",
-      "url": "https://www.homepro.co.th/c/HMD1306",
+      "sku": "category-link",
+      "url": "https://www.homepro.co.th/c/FUR0202",
       "kind": "rod",
       "color": "TBC (black / brushed nickel / wood)",
       "stock_or_custom": "stock",
       "baht_per_metre_min": 250,
       "baht_per_metre_max": 600,
-      "notes": "Adjusted price to reflect standard telescopic or custom-cut metal rods. Confirm exact rod + finial SKU at HomePro. Used by scopes with style=eyelet-on-rod."
+      "notes": "Adjusted price to reflect standard telescopic or custom-cut metal rods. Linked directly to HomePro Curtain Hardware category."
     },
     "homepro-rod-bracket-generic": {
       "name": "HomePro curtain-rod bracket pair (one set per window)",
       "supplier": "HomePro",
-      "sku": "1150001",
-      "url": "https://www.homepro.co.th/c/HMD1306",
+      "sku": "category-link",
+      "url": "https://www.homepro.co.th/c/FUR0202",
       "kind": "fitting",
       "per_calc": "per-window",
       "stock_or_custom": "stock",
       "baht_per_unit_min": 150,
       "baht_per_unit_max": 300,
-      "notes": "One pair of mount brackets per window for the curtain rod. Center bracket added for runs > 200 cm (standard sag threshold)."
+      "notes": "One pair of mount brackets per window for the curtain rod. Linked to HomePro Curtain Hardware category."
     },
     "homepro-panel-eyelet-generic": {
       "name": "HomePro generic eyelet curtain panel (140 cm wide, 250 cm drop)",
       "supplier": "HomePro",
-      "sku": "1200000",
-      "url": "https://www.homepro.co.th/c/HMD1301",
+      "sku": "category-link",
+      "url": "https://www.homepro.co.th/c/FUR0204",
       "kind": "panel-eyelet",
       "color": "TBC (white / off-white / patterned)",
       "panel_width_cm": 140,
@@ -103,7 +103,7 @@
       "stock_or_custom": "stock",
       "baht_per_panel_min": 600,
       "baht_per_panel_max": 1500,
-      "notes": "Pre-made eyelet panel. HomePro standard panels are often 130-140 cm wide. Drop is up to 250 cm. Calc: panels_per_window = ceil(window_width × fullness / panel_width)."
+      "notes": "Pre-made eyelet panel. Linked directly to HomePro Window Curtains category. Calc: panels_per_window = ceil(window_width × fullness / panel_width)."
     }
   }
 }
