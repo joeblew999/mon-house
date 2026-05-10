@@ -18,7 +18,7 @@ def main [] {
 
   let tiles = (open $"($data_dir)/tiles.json" | get tiles)
   let rooms = (open $"($data_dir)/rooms.json" | get rooms)
-  let scopes = (open $"($data_dir)/scope-picks.json" | get scopes)
+  let scopes = (open $"($data_dir)/scope-picks.json" | get tiles)
 
   mut wrote = 0
   mut skipped = 0

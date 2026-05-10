@@ -10,11 +10,7 @@ DIY work, Joe + Mon. **Not part of any builder quote.** Repaint the existing hou
 
 Old concrete plaster house, ~10 years old. Existing paint on all surfaces, dusty/chalky in places. Small cans preferred for easier handling.
 
-Paint product metadata (coverage, price, SKU) is included inline below from the shared catalog partials. Cans are then computed for this spec's surface areas using `cans = ceil(area ÷ effective_m²_per_can)` — see [PAINT.md](PAINT.md) for the formula and project-wide rollup.
-
-<!-- include: _partials/paint-concrete.md -->
-
-<!-- include: _partials/paint-timber.md -->
+Paint products (coverage, price, SKU) and computed can counts are bundled together in the auto-generated quantity partials below — see "Paint Quantities". The shared catalog partials at [`paint-concrete.md`](_partials/paint-concrete.md) / [`paint-timber.md`](_partials/paint-timber.md) remain for ROOF.md and GATE-01.md but are no longer needed inline here. Project-wide formula and rollup: [PAINT.md](PAINT.md).
 
 ---
 
@@ -78,27 +74,11 @@ Out of scope: roof metalwork (see [ROOF.md](ROOF.md)), gate metalwork (see [GATE
 
 ## Paint Quantities
 
-Catalog rows are included above; can counts below are derived using `cans = ceil(area ÷ effective_m²_per_can)`.
+Surface areas + can counts are auto-generated from `data/scope-picks.json` (the per-spec surface inventory) and `data/paints.json` (the product catalog). Edit either source and run `mise run gen` to regenerate; never edit the included partials by hand.
 
-### Concrete walls + fence
+<!-- include: _partials/paint-quantity-house-exterior-concrete.md -->
 
-Area = **132.9 m²**.
-
-| Catalog ID | Calc | Cans | Subtotal (THB) |
-|---|---|---|---|
-| `concrete-primer` | ceil(132.9 ÷ 30) | 5 | ~3,690 |
-| `concrete-topcoat` | ceil(132.9 ÷ 17.5) | 8 | ~9,488 |
-| **Concrete subtotal** | | **13** | **~13,178** |
-
-### Timber eaves + fascia
-
-Area = **10 m²**.
-
-| Catalog ID | Calc | Cans | Subtotal (THB) |
-|---|---|---|---|
-| `timber-undercoat` | ceil(10 ÷ 30) | 1 | ~812 |
-| `timber-topcoat` | ceil(10 ÷ 17.5) | 1 | ~940 |
-| **Timber subtotal** | | **2** | **~1,752** |
+<!-- include: _partials/paint-quantity-house-exterior-timber.md -->
 
 ---
 

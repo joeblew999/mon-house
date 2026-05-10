@@ -1,7 +1,7 @@
 {
-  "_doc": "Scope picks — which spec uses which tile across which rooms, and the wastage % to apply. Hand-edited. Generators consume this and emit specs/_partials/tile-quantity-<scope-id>.md.",
-  "_scope_id_rule": "scope id is kebab-case; matches the output filename suffix (e.g. 'bathroom-basic' → tile-quantity-bathroom-basic.md).",
-  "scopes": {
+  "_doc": "Scope picks — namespaced by data type. Each generator reads its own namespace: tiles.nu reads .tiles, paint.nu reads .paints, etc. Hand-edited. Generators emit specs/_partials/<type>-quantity-<scope-id>.md.",
+  "_scope_id_rule": "scope id is kebab-case; matches the output filename suffix (e.g. 'bathroom-basic' → tile-quantity-bathroom-basic.md, 'house-exterior-concrete' → paint-quantity-house-exterior-concrete.md).",
+  "tiles": {
     "bathroom-basic": {
       "title": "Bathroom — tile quantities (BASIC)",
       "spec": "BATHROOM_BASIC.md",
@@ -43,6 +43,28 @@
       "tile_id": "tile-marbella-dgdv6001",
       "wastage_pct": 10,
       "notes": "Cross-room flooring for the SPA's tiles/SPEC.md (parent repo). Marbella DGDV is glossy — fine on dry floors. Not consumed by any quick/specs/* file yet."
+    }
+  },
+  "paints": {
+    "house-exterior-concrete": {
+      "title": "House exterior concrete — paint quantities",
+      "spec": "HOUSE-EXTERIOR.md",
+      "surfaces": [
+        {"name": "House walls (minus windows + sliding door)", "area_m2": 49.6},
+        {"name": "Fence (4× 7m × 1.5m × 2 sides)",             "area_m2": 84.0}
+      ],
+      "products": ["concrete-primer", "concrete-topcoat"],
+      "notes": "Existing house plaster + perimeter fence. Old house, dusty/chalky in places — primer designed for this."
+    },
+    "house-exterior-timber": {
+      "title": "House exterior timber — paint quantities",
+      "spec": "HOUSE-EXTERIOR.md",
+      "surfaces": [
+        {"name": "Eaves (4 sides × 5 m × 0.3 m)",          "area_m2": 6.0},
+        {"name": "Fascia boards (4 sides × 5 m × 0.2 m)",  "area_m2": 4.0}
+      ],
+      "products": ["timber-undercoat", "timber-topcoat"],
+      "notes": "Eaves + fascia around the roof line."
     }
   }
 }

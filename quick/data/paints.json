@@ -1,0 +1,71 @@
+{
+  "_doc": "Paint product catalog. Hand-edited single source of truth for every paint product the project uses. Generators consume this and emit specs/_partials/paint-quantity-<scope-id>.md.",
+  "_pricing_rule": "All paint is sold by the can (1 GL ≈ 3.78 L, 1/4 GL ≈ 0.95 L). Pricing is per can — quantities round up to whole cans. coverage_m2_per_can_per_coat is the manufacturer's spec for fresh paint on prepared substrate; in practice add a margin via the spec's notes.",
+  "paints": {
+    "concrete-primer": {
+      "name": "TOA Contact Primer 1GL",
+      "supplier": "HomePro",
+      "sku": "21139",
+      "url": "https://www.homepro.co.th/p/21139",
+      "size_label": "1 GL",
+      "coverage_m2_per_can_per_coat": 30,
+      "default_coats": 1,
+      "baht_per_can": 738,
+      "substrate": "concrete",
+      "role": "primer",
+      "notes": "For chalky old plaster — bonds where standard primer would not."
+    },
+    "concrete-topcoat": {
+      "name": "TOA SuperShield Sheen 1GL White G100",
+      "supplier": "HomePro",
+      "sku": "93054",
+      "url": "https://www.homepro.co.th/p/93054",
+      "size_label": "1 GL",
+      "coverage_m2_per_can_per_coat": 35,
+      "default_coats": 2,
+      "baht_per_can": 1186,
+      "substrate": "concrete",
+      "role": "topcoat",
+      "notes": "Must be Sheen finish — not Semi-Gloss, not SuperShield Advance."
+    },
+    "metal-2in1": {
+      "name": "TOA GLIPTON 2IN1 GF888 Matt Black 1/4 GL",
+      "supplier": "HomePro",
+      "sku": "1228159",
+      "url": "https://www.homepro.co.th/p/1228159",
+      "size_label": "1/4 GL",
+      "coverage_m2_per_can_per_coat": 7,
+      "default_coats": 2,
+      "baht_per_can": 200,
+      "substrate": "metal",
+      "role": "2in1",
+      "notes": "Combined primer + topcoat. Applies directly to wire-brushed surface rust. Supersedes the older TOA MD 2IN1 MG999 (HomePro 1193569). Use for ALL project metalwork."
+    },
+    "timber-undercoat": {
+      "name": "TOA Undercoat G1600 1GL",
+      "supplier": "HomePro",
+      "sku": "15760",
+      "url": "https://www.homepro.co.th/p/15760",
+      "size_label": "1 GL",
+      "coverage_m2_per_can_per_coat": 30,
+      "default_coats": 1,
+      "baht_per_can": 812,
+      "substrate": "timber",
+      "role": "undercoat",
+      "notes": "Tannin-blocking undercoat for wood."
+    },
+    "timber-topcoat": {
+      "name": "TOA TimberShield 1GL",
+      "supplier": "HomePro",
+      "sku": "176032",
+      "url": "https://www.homepro.co.th/p/176032",
+      "size_label": "1 GL",
+      "coverage_m2_per_can_per_coat": 35,
+      "default_coats": 2,
+      "baht_per_can": 940,
+      "substrate": "timber",
+      "role": "topcoat",
+      "notes": "Flexible acrylic topcoat for wood."
+    }
+  }
+}
