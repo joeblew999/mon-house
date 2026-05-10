@@ -46,6 +46,8 @@ def main [] {
     let style = ($scope | get -o style | default "pleated-on-track")
     let md = if $style == "eyelet-on-rod" {
       gen_eyelet_md $scope $curtains $windows $picks.windows
+    } else if $style == "rod-only" {
+      gen_rod_only_md $scope $curtains $windows $picks.windows
     } else {
       gen_pleated_md $scope $curtains $windows $picks.windows
     }
@@ -265,6 +267,86 @@ def build_cost_table_eyelet [rod_p panel_p fitting_rows total_rod_m total_panels
   let total_row = $"| **Total** | | | **(price_label $total_min $total_max)** |"
 
   ($h ++ [$rod_row] ++ $fitting_body ++ [$panel_row] ++ [$total_row]) | str join "\n"
+}
+
+# ── rod-only ──────────────────────────────────────────────────────────────────
+# For when you already have curtain panels and only need to buy rod + brackets
+# to hang them on new windows. No fabric, no panels.
+
+def gen_rod_only_md [scope curtains windows window_scopes] {
+  let win_scope = ($window_scopes | get $scope.from_window_scope)
+  let included = ($win_scope.items | where {|item|
+    $item.window_id in $scope.include_window_ids
+  })
+
+  let win_rows = ($included | each {|item|
+    let w = ($windows | get $item.window_id)
+    let rod_m_per = (($w.size_w_cm + $scope.rod_overlap_cm) / 100.0)
+    {
+      label: $item.label
+      width_cm: $w.size_w_cm
+      drop_cm: $w.size_h_cm
+      qty: $item.qty
+      rod_m_per: $rod_m_per
+      track_m_per: $rod_m_per   # alias so per-track-metre fittings still work
+      fabric_m_per: 0           # no fabric
+      curtain_width_m_per: 0    # no curtain to width-bind fittings against
+      rod_m: ($rod_m_per * $item.qty | math round --precision 2)
+    }
+  })
+
+  let total_rod_m = ($win_rows | get rod_m | math sum | math round --precision 2)
+
+  let fitting_rows = ($scope.fittings | each {|fid|
+    let f = ($curtains | get $fid)
+    let qty = ($win_rows | each {|wr| compute_fitting_qty $f $wr} | append 0 | math sum | into int)
+    {
+      name: $f.name
+      url: $f.url
+      qty: $qty
+      unit_min: $f.baht_per_unit_min
+      unit_max: $f.baht_per_unit_max
+      cost_min: ($qty * $f.baht_per_unit_min | into int)
+      cost_max: ($qty * $f.baht_per_unit_max | into int)
+    }
+  })
+
+  let rod_p = ($curtains | get $scope.rod_product)
+  let rod_min = ($total_rod_m * $rod_p.baht_per_metre_min | math round | into int)
+  let rod_max = ($total_rod_m * $rod_p.baht_per_metre_max | math round | into int)
+  let fittings_min = ($fitting_rows | get cost_min | append 0 | math sum | into int)
+  let fittings_max = ($fitting_rows | get cost_max | append 0 | math sum | into int)
+  let total_min = ($rod_min + $fittings_min)
+  let total_max = ($rod_max + $fittings_max)
+
+  # Per-window table (just rod metres — no fabric/panels)
+  let win_h = [
+    "| Window | Frame size \(W × H cm\) | Qty | Rod \(m\) |"
+    "|---|---|---|---|"
+  ]
+  let win_body = ($win_rows | each {|r|
+    $"| ($r.label) | ($r.width_cm) × ($r.drop_cm) | ($r.qty) | ($r.rod_m) |"
+  })
+  let win_total = $"| **Total** | | | **($total_rod_m)** |"
+  let win_table = ($win_h ++ $win_body ++ [$win_total]) | str join "\n"
+
+  # Per-product cost table — rod + fittings (no panels)
+  let cost_h = [
+    "| Product | Qty | Unit price | Subtotal |"
+    "|---|---|---|---|"
+  ]
+  let rod_link = if $rod_p.url != null { $"[($rod_p.name)]\(($rod_p.url)\)" } else { $rod_p.name }
+  let rod_row = $"| ($rod_link) | ($total_rod_m) m | (price_label_per_m $rod_p.baht_per_metre_min $rod_p.baht_per_metre_max) | (price_label $rod_min $rod_max) |"
+  let fitting_body = ($fitting_rows | each {|r|
+    let link = if $r.url != null { $"[($r.name)]\(($r.url)\)" } else { $r.name }
+    $"| ($link) | ($r.qty) | (price_label $r.unit_min $r.unit_max)/ea | (price_label $r.cost_min $r.cost_max) |"
+  })
+  let cost_total = $"| **Total** | | | **(price_label $total_min $total_max)** |"
+  let cost_table = ($cost_h ++ [$rod_row] ++ $fitting_body ++ [$cost_total]) | str join "\n"
+
+  let intro = $"Window dimensions are reused from the `($scope.from_window_scope)` scope in `scope-picks.json` — never duplicated here. Style: **rod-only** \(existing curtain panels are reused; only rod + brackets need buying\). Rod length = window width + ($scope.rod_overlap_cm) cm overlap. No fabric, no panels."
+
+  wrap_md $scope $intro ($win_table + "\n\n" + $cost_table)
 }
 
 # ── shared ────────────────────────────────────────────────────────────────────

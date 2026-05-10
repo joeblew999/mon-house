@@ -171,6 +171,8 @@ def curtain_cost [scope curtains windows window_scopes] {
   let style = ($scope | get -o style | default "pleated-on-track")
   if $style == "eyelet-on-rod" {
     eyelet_cost $scope $curtains $windows $window_scopes
+  } else if $style == "rod-only" {
+    rod_only_cost $scope $curtains $windows $window_scopes
   } else {
     pleated_cost $scope $curtains $windows $window_scopes
   }
@@ -284,6 +286,48 @@ def eyelet_cost [scope curtains windows window_scopes] {
   {
     min: ($rod_min + $panels_min + $fittings_min | math round | into int)
     max: ($rod_max + $panels_max + $fittings_max | math round | into int)
+  }
+}
+
+def rod_only_cost [scope curtains windows window_scopes] {
+  let win_scope = ($window_scopes | get $scope.from_window_scope)
+  let included = ($win_scope.items | where {|item|
+    $item.window_id in $scope.include_window_ids
+  })
+
+  let win_rows = ($included | each {|item|
+    let w = ($windows | get $item.window_id)
+    let rod_m_per = (($w.size_w_cm + $scope.rod_overlap_cm) / 100.0)
+    {
+      qty: $item.qty
+      rod_m_per: $rod_m_per
+      track_m_per: $rod_m_per
+      fabric_m_per: 0
+      curtain_width_m_per: 0
+      rod_m: ($rod_m_per * $item.qty)
+    }
+  })
+
+  let rod_m = ($win_rows | get rod_m | append 0 | math sum)
+  let rod_p = ($curtains | get $scope.rod_product)
+  let rod_min = ($rod_m * $rod_p.baht_per_metre_min)
+  let rod_max = ($rod_m * $rod_p.baht_per_metre_max)
+
+  let fittings = ($scope | get -o fittings | default [])
+  let fittings_min = ($fittings | each {|fid|
+    let f = ($curtains | get $fid)
+    let qty = ($win_rows | each {|wr| compute_fitting_qty $f $wr} | append 0 | math sum)
+    ($qty * $f.baht_per_unit_min)
+  } | append 0 | math sum)
+  let fittings_max = ($fittings | each {|fid|
+    let f = ($curtains | get $fid)
+    let qty = ($win_rows | each {|wr| compute_fitting_qty $f $wr} | append 0 | math sum)
+    ($qty * $f.baht_per_unit_max)
+  } | append 0 | math sum)
+
+  {
+    min: ($rod_min + $fittings_min | math round | into int)
+    max: ($rod_max + $fittings_max | math round | into int)
   }
 }
 

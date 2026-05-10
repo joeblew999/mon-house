@@ -26,19 +26,13 @@ Auto-generated from `data/windows.json` + `data/scope-picks.json`. Edit either s
 
 ---
 
-## Curtains (DIY — Joe + Mon, not in builder quote)
+## Curtains — existing panels, new hardware
 
-Window dimensions reused from above (no duplication). Skips the bathroom (frosted glass / no curtain).
+The existing eyelet curtain *panels* stay (they fit the new openings). What needs buying is the **rod + brackets** to re-hang them on the new windows — old hardware doesn't transfer.
 
-**Two options — pick one when shopping.** The cost rollup uses Option A (pleated, the primary). Option B is shown for comparison but excluded from the project total.
+<!-- include: _partials/curtain-quantity-windows-02-curtain-hardware.md -->
 
-#### Option A — Pleated curtains on IKEA VIDGA track (DIY-sewn fabric)
-
-<!-- include: _partials/curtain-quantity-windows-02-curtains.md -->
-
-#### Option B — Pre-made eyelet curtains on HomePro rod (zero sewing)
-
-<!-- include: _partials/curtain-quantity-windows-02-curtains-eyelet.md -->
+*Two more reusable curtain templates exist in `data/curtains.{json,nu}` and `data/scope-picks.json[curtains]` for projects that need new fabric or pre-made panels — pleated-on-track (IKEA VIDGA) and eyelet-on-rod (HomePro) styles, with drop-aware fabric math. Both have spec=null so they don't render here.*
 
 ---
 

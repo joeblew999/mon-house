@@ -96,8 +96,9 @@
   },
   "curtains": {
     "windows-02-curtains": {
+      "_reuse_note": "Curtains already exist in this house (eyelet). Scope kept as a reusable pattern + worked example for other projects; spec=null so cost-rollup ignores it and the WINDOWS-02 spec doesn't include the partial. Future projects: copy this scope shape, change include_window_ids, set spec to your spec filename.",
       "title": "Window curtains — Phase 02 (Option A: pleated on IKEA VIDGA track)",
-      "spec": "WINDOWS-02.md",
+      "spec": null,
       "from_window_scope": "windows-02",
       "include_window_ids": [
         "framex-sliding-120x110-black",
@@ -117,9 +118,26 @@
       "vertical_allowance_cm": 30,
       "notes": "Pleated-on-track style. Reuses window dimensions from the windows-02 scope. Skips the bathroom window.\n\nMath:\n  curtain_width = window_width × fullness + fabric_overlap_cm  (side hems both sides)\n  effective_drop = window_height + vertical_allowance_cm        (top heading + bottom hem)\n  IF effective_drop ≤ fabric.bolt_width_cm:\n    Orientation B (drop fits in bolt width):    fabric_m = curtain_width / 100\n  ELSE:\n    Orientation A (must seam multiple drops):   fabric_m = ceil(curtain_width / bolt_width) × effective_drop / 100\n\nFittings (end-brackets, mount-brackets, gliders) computed from each fitting's per_calc rule. Cheaper than eyelet IF you DIY-sew the panels."
     },
-    "windows-02-curtains-eyelet": {
-      "title": "Window curtains — Phase 02 (Option B: pre-made eyelet on HomePro rod)",
+    "windows-02-curtain-hardware": {
+      "title": "Curtain hardware — Phase 02 (rod + brackets to re-hang existing eyelet panels)",
       "spec": "WINDOWS-02.md",
+      "from_window_scope": "windows-02",
+      "include_window_ids": [
+        "framex-sliding-120x110-black",
+        "framex-sliding-door-170x195-black-custom"
+      ],
+      "style": "rod-only",
+      "rod_product": "homepro-rod-generic",
+      "fittings": [
+        "homepro-rod-bracket-generic"
+      ],
+      "rod_overlap_cm": 20,
+      "notes": "House already has eyelet curtain PANELS — only the rod + mount brackets need buying for the new windows. No fabric, no panels, no track, no gliders. Math: rod_m = (window_w + rod_overlap_cm) / 100; brackets per fitting per_calc rule."
+    },
+    "windows-02-curtains-eyelet": {
+      "_reuse_note": "Same as the pleated scope above — kept as a reusable pattern for projects that need eyelet panels. spec=null so this house's PDF doesn't render it.",
+      "title": "Window curtains — Phase 02 (Option B: pre-made eyelet on HomePro rod)",
+      "spec": null,
       "from_window_scope": "windows-02",
       "include_window_ids": [
         "framex-sliding-120x110-black",
