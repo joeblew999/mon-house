@@ -96,13 +96,14 @@
   },
   "curtains": {
     "windows-02-curtains": {
-      "title": "Window curtains — Phase 02",
+      "title": "Window curtains — Phase 02 (Option A: pleated on IKEA VIDGA track)",
       "spec": "WINDOWS-02.md",
       "from_window_scope": "windows-02",
       "include_window_ids": [
         "framex-sliding-120x110-black",
         "framex-sliding-door-170x195-black-custom"
       ],
+      "style": "pleated-on-track",
       "track_product": "ikea-vidga-track",
       "fabric_product": "ikea-fabric-280cm-white",
       "fittings": [
@@ -113,7 +114,26 @@
       "fullness": 2.0,
       "track_overlap_cm": 20,
       "fabric_overlap_cm": 30,
-      "notes": "Reuses window dimensions from the windows-02 scope — never duplicate. Skips the bathroom window (frosted glass / no curtain by convention). For each covered window: track length = window width + overlap; fabric metres = (window width × fullness + overlap) / 100; fittings (end-brackets, mount-brackets, gliders) computed from each fitting's per_calc rule in curtains.json. Assumes drop fits within the 280 cm bolt width."
+      "notes": "Pleated-on-track style. Reuses window dimensions from the windows-02 scope. Skips the bathroom window. Track length = window width + overlap; fabric metres = (window width × fullness + overlap) / 100; fittings computed from each fitting's per_calc rule. Cheaper than eyelet IF you DIY-sew the panels."
+    },
+    "windows-02-curtains-eyelet": {
+      "title": "Window curtains — Phase 02 (Option B: pre-made eyelet on HomePro rod)",
+      "spec": "WINDOWS-02.md",
+      "from_window_scope": "windows-02",
+      "include_window_ids": [
+        "framex-sliding-120x110-black",
+        "framex-sliding-door-170x195-black-custom"
+      ],
+      "style": "eyelet-on-rod",
+      "rod_product": "homepro-rod-generic",
+      "panel_product": "homepro-panel-eyelet-generic",
+      "fittings": [
+        "homepro-rod-bracket-generic"
+      ],
+      "fullness": 2.0,
+      "rod_overlap_cm": 20,
+      "is_alternative_to": "windows-02-curtains",
+      "notes": "Eyelet-on-rod alternative. No sewing required — pre-made panels with metal eyelets thread onto the rod. More expensive than DIY-sewn panels but zero labour. panels_per_window = ceil(window width × fullness / panel_width). The PDF shows both Option A and Option B side by side; pick one when shopping."
     }
   }
 }

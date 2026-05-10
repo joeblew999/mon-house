@@ -141,6 +141,7 @@ outputs  = [
   "{{env.QUICK_SPECS_DIR}}/_partials/paint-quantity-house-exterior-timber.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/window-quantity-windows-02.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/curtain-quantity-windows-02-curtains.md",
+  "{{env.QUICK_SPECS_DIR}}/_partials/curtain-quantity-windows-02-curtains-eyelet.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-basic.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-compact.md",
   "{{env.QUICK_SPECS_DIR}}/_partials/cost-summary-bathroom-enlarge.md",

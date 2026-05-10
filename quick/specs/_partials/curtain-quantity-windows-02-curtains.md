@@ -1,13 +1,13 @@
 ---
-title: Window curtains — Phase 02
+title: Window curtains — Phase 02 (Option A: pleated on IKEA VIDGA track)
 status: Draft
 rev: "1"
 generated: true
 ---
 
-### Window curtains — Phase 02
+### Window curtains — Phase 02 (Option A: pleated on IKEA VIDGA track)
 
-Window dimensions are reused from the `windows-02` scope in `scope-picks.json` — never duplicated here. Curtain math: track length = window width + 20 cm overlap; fabric = window width × 2.0 fullness + 30 cm overlap, per linear metre off the 280 cm bolt. Fittings (end-brackets, mount-brackets, gliders) follow each product's per_calc rule from `curtains.json`.
+Window dimensions are reused from the `windows-02` scope in `scope-picks.json` — never duplicated here. Style: **pleated-on-track**. Track length = window width + 20 cm overlap; fabric = window width × 2.0 fullness + 30 cm overlap, per linear metre off the 280 cm bolt. Fittings follow each product's per_calc rule from `curtains.json`.
 
 | Window | Frame size (W × H cm) | Qty | Track (m) | Fabric (m) |
 |---|---|---|---|---|

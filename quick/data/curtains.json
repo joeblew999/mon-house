@@ -66,6 +66,44 @@
       "baht_per_metre_min": 200,
       "baht_per_metre_max": 400,
       "notes": "Placeholder — replace with the actual fabric (SANELA blackout, RITVA cotton, or HomePro alternative) after shopping. The 280 cm bolt is wide enough that drop fits horizontally for any window under ~250 cm height."
+    },
+    "homepro-rod-generic": {
+      "name": "HomePro generic curtain rod (per metre, with finials)",
+      "supplier": "HomePro",
+      "sku": null,
+      "url": "https://www.homepro.co.th/c/FUR0204",
+      "kind": "rod",
+      "color": "TBC (black / brushed nickel / wood)",
+      "stock_or_custom": "stock",
+      "baht_per_metre_min": 150,
+      "baht_per_metre_max": 300,
+      "notes": "Placeholder for the eyelet-on-rod alternative. Confirm exact rod + finial SKU at HomePro. Used by scopes with style=eyelet-on-rod."
+    },
+    "homepro-rod-bracket-generic": {
+      "name": "HomePro curtain-rod bracket pair (one set per window)",
+      "supplier": "HomePro",
+      "sku": null,
+      "url": "https://www.homepro.co.th/c/FUR0204",
+      "kind": "fitting",
+      "per_calc": "per-window",
+      "stock_or_custom": "stock",
+      "baht_per_unit_min": 100,
+      "baht_per_unit_max": 200,
+      "notes": "One pair of mount brackets per window for the curtain rod. Center bracket added for runs > 240 cm — not modelled here, add per-rod-metre fitting later if needed."
+    },
+    "homepro-panel-eyelet-generic": {
+      "name": "HomePro generic eyelet curtain panel (145 cm wide, ~250 cm drop)",
+      "supplier": "HomePro",
+      "sku": null,
+      "url": "https://www.homepro.co.th/c/FUR0204",
+      "kind": "panel-eyelet",
+      "color": "TBC (white / off-white / patterned)",
+      "panel_width_cm": 145,
+      "panel_drop_cm": 250,
+      "stock_or_custom": "stock",
+      "baht_per_panel_min": 800,
+      "baht_per_panel_max": 1500,
+      "notes": "Pre-made eyelet panel — typical HomePro stock dimensions. Drop is 250 cm; for shorter windows the panel is hemmed up. Calc: panels_per_window = ceil(window_width × fullness / panel_width)."
     }
   }
 }

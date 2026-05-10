@@ -28,9 +28,17 @@ Auto-generated from `data/windows.json` + `data/scope-picks.json`. Edit either s
 
 ## Curtains (DIY — Joe + Mon, not in builder quote)
 
-Window dimensions reused from above (no duplication). Skips the bathroom (frosted glass / no curtain). Generic IKEA placeholders for now — confirm exact products on a shopping trip and update `data/curtains.json`.
+Window dimensions reused from above (no duplication). Skips the bathroom (frosted glass / no curtain).
+
+**Two options — pick one when shopping.** The cost rollup uses Option A (pleated, the primary). Option B is shown for comparison but excluded from the project total.
+
+#### Option A — Pleated curtains on IKEA VIDGA track (DIY-sewn fabric)
 
 <!-- include: _partials/curtain-quantity-windows-02-curtains.md -->
+
+#### Option B — Pre-made eyelet curtains on HomePro rod (zero sewing)
+
+<!-- include: _partials/curtain-quantity-windows-02-curtains-eyelet.md -->
 
 ---
 
