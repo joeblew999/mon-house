@@ -7,7 +7,7 @@ generated: true
 
 ### Auto-computed materials cost
 
-Aggregated from `data/scope-picks.json` by `data/cost-rollup.nu`. Covers tile and paint quantities only — fixtures, labour, and TBC items live in this spec's `## Cost Summary` table below.
+Aggregated from `data/scope-picks.json` by `data/cost-rollup.nu`. Covers tile, paint, and window quantities only — fixtures, labour, and TBC items live in this spec's `## Cost Summary` table below. Range values (฿X-Y) reflect supplier-quote variance for custom-order items.
 
 | Source | Type | Subtotal (THB) |
 |---|---|---|

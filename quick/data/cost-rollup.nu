@@ -1,11 +1,16 @@
 #!/usr/bin/env nu
 
 # data/cost-rollup.nu — aggregates per-spec material costs from all data-layer
-# scopes (tiles + paints) into specs/_partials/cost-summary-<spec-stem>.md.
+# scopes (tiles + paints + windows) into specs/_partials/cost-summary-<spec-stem>.md.
 #
-# Reads tiles.json + paints.json + rooms.json + scope-picks.json. For each
-# unique `spec` field across tile and paint scopes, emits one rollup partial
+# Reads tiles.json + paints.json + windows.json + rooms.json + scope-picks.json.
+# For each unique `spec` field across all scope types, emits one rollup partial
 # listing the contributing scopes and their subtotals plus a grand total.
+#
+# Cost model: every row contributes (cost_min, cost_max). Point estimates
+# (tile, paint) set min == max. Range estimates (windows) set them apart.
+# The total per spec sums min and max separately and renders as either
+# "฿X" (point) or "฿X-Y" (range).
 #
 # Hand-edited line items (fixtures, labour, TBC entries) are NOT in scope —
 # they live in each spec's `## Cost Summary` table. This partial complements
@@ -16,20 +21,22 @@ def main [] {
   let specs_dir = ($env.QUICK_SPECS_DIR? | default "specs")
   let partials_dir = $"($specs_dir)/_partials"
 
-  let tiles  = (open $"($data_dir)/tiles.json"  | get tiles)
-  let rooms  = (open $"($data_dir)/rooms.json"  | get rooms)
-  let paints = (open $"($data_dir)/paints.json" | get paints)
-  let picks  = (open $"($data_dir)/scope-picks.json")
+  let tiles   = (open $"($data_dir)/tiles.json"   | get tiles)
+  let rooms   = (open $"($data_dir)/rooms.json"   | get rooms)
+  let paints  = (open $"($data_dir)/paints.json"  | get paints)
+  let windows = (open $"($data_dir)/windows.json" | get windows)
+  let picks   = (open $"($data_dir)/scope-picks.json")
 
-  # Compute every scope's subtotal up front (one row per scope), tagged by spec.
   let tile_rows = ($picks.tiles | columns | each {|sid|
     let s = ($picks.tiles | get $sid)
     if $s.spec == null { null } else {
+      let cost = (tile_cost $s $tiles $rooms)
       {
         spec: $s.spec
         type: "Tile"
         label: $"($s.title) — ($sid)"
-        cost: (tile_cost $s $tiles $rooms)
+        min: $cost
+        max: $cost
       }
     }
   } | where {|r| $r != null })
@@ -37,18 +44,32 @@ def main [] {
   let paint_rows = ($picks.paints | columns | each {|sid|
     let s = ($picks.paints | get $sid)
     if $s.spec == null { null } else {
+      let cost = (paint_cost $s $paints)
       {
         spec: $s.spec
         type: "Paint"
         label: $"($s.title) — ($sid)"
-        cost: (paint_cost $s $paints)
+        min: $cost
+        max: $cost
       }
     }
   } | where {|r| $r != null })
 
-  let all_rows = ($tile_rows ++ $paint_rows)
+  let window_rows = ($picks.windows | columns | each {|sid|
+    let s = ($picks.windows | get $sid)
+    if $s.spec == null { null } else {
+      let cost = (window_cost $s $windows)
+      {
+        spec: $s.spec
+        type: "Windows"
+        label: $"($s.title) — ($sid)"
+        min: $cost.min
+        max: $cost.max
+      }
+    }
+  } | where {|r| $r != null })
 
-  # Group by spec, emit one partial per spec.
+  let all_rows = ($tile_rows ++ $paint_rows ++ $window_rows)
   let specs = ($all_rows | get spec | uniq)
 
   mut wrote = 0
@@ -85,7 +106,6 @@ def tile_cost [scope tiles rooms] {
   } | math sum)
 
   let wall_surfaces_raw = ($scope | get -o wall_surfaces | default [])
-  # Prepend 0 so `math sum` works when there are no wall surfaces (it errors on empty input).
   let wall_area = ($wall_surfaces_raw | each {|w| $w.w_m * $w.h_m} | append 0 | math sum)
 
   let total_area = ($floor_area + $wall_area)
@@ -112,17 +132,31 @@ def paint_cost [scope paints] {
   } | math sum
 }
 
+# Compute a window scope's cost — returns {min, max} since prices are ranges.
+def window_cost [scope windows] {
+  let mins = ($scope.items | each {|item|
+    let w = ($windows | get $item.window_id)
+    ($item.qty * $w.baht_per_unit_min)
+  } | append 0 | math sum | into int)
+  let maxs = ($scope.items | each {|item|
+    let w = ($windows | get $item.window_id)
+    ($item.qty * $w.baht_per_unit_max)
+  } | append 0 | math sum | into int)
+  {min: $mins, max: $maxs}
+}
+
 def gen_spec_md [spec rows] {
-  let total = ($rows | get cost | math sum | into int)
+  let total_min = ($rows | get min | math sum | into int)
+  let total_max = ($rows | get max | math sum | into int)
 
   let header_rows = [
     "| Source | Type | Subtotal \(THB\) |"
     "|---|---|---|"
   ]
   let body_rows = ($rows | each {|r|
-    $"| ($r.label) | ($r.type) | ฿($r.cost) |"
+    $"| ($r.label) | ($r.type) | (price_label $r.min $r.max) |"
   })
-  let total_row = $"| **Total \(data-layer materials\)** | | **฿($total)** |"
+  let total_row = $"| **Total \(data-layer materials\)** | | **(price_label $total_min $total_max)** |"
   let table = ($header_rows ++ $body_rows ++ [$total_row]) | str join "\n"
 
   let frontmatter = $"---
@@ -136,7 +170,7 @@ generated: true
 
   let header = $"### Auto-computed materials cost
 
-Aggregated from `data/scope-picks.json` by `data/cost-rollup.nu`. Covers tile and paint quantities only — fixtures, labour, and TBC items live in this spec's `## Cost Summary` table below.
+Aggregated from `data/scope-picks.json` by `data/cost-rollup.nu`. Covers tile, paint, and window quantities only — fixtures, labour, and TBC items live in this spec's `## Cost Summary` table below. Range values \(฿X-Y\) reflect supplier-quote variance for custom-order items.
 
 "
 
@@ -146,4 +180,13 @@ Aggregated from `data/scope-picks.json` by `data/cost-rollup.nu`. Covers tile an
 "
 
   $frontmatter + $header + $table + $footer
+}
+
+# Format a price as a range "฿X-Y" if min != max, else "฿X".
+def price_label [min max] {
+  if $min == $max {
+    $"฿($min)"
+  } else {
+    $"฿($min)-($max)"
+  }
 }

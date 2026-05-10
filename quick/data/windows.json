@@ -1,0 +1,50 @@
+{
+  "_doc": "Window + door product catalog. Hand-edited single source of truth. Generators consume this and emit specs/_partials/window-quantity-<scope-id>.md.",
+  "_pricing_rule": "Windows + doors are quoted as RANGES (custom orders, supplier variance). Each entry has baht_per_unit_min and baht_per_unit_max. Cost rollup sums min and max separately and renders the result as a range. Stock items where the price is firm: set min == max.",
+  "_size_convention": "size_w_cm × size_h_cm = the window FRAME size (the glass + frame as supplied). Brick-to-brick opening sizes (the actual hole in the wall) are 10–20 mm larger and live in scope-picks.json so each scope can document its specific opening.",
+  "windows": {
+    "framex-sliding-120x110-black": {
+      "name": "FRAMEX sliding window + screen, black",
+      "supplier": "Thai Watsadu",
+      "sku": "60277555",
+      "url": "https://www.thaiwatsadu.com/en/product/%E0%B8%AB%E0%B8%99%E0%B9%89%E0%B8%B2%E0%B8%95%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B8%AD%E0%B8%B0%E0%B8%A5%E0%B8%B9%E0%B8%A1%E0%B8%B4%E0%B9%80%E0%B8%99%E0%B8%B5%E0%B8%A2%E0%B8%A1%E0%B8%9A%E0%B8%B2%E0%B8%99%E0%B9%80%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%99-FRAMEX-%E0%B8%A3%E0%B8%B8%E0%B9%88%E0%B8%99-2-%E0%B8%9A%E0%B8%B2%E0%B8%99%E0%B8%A1%E0%B8%B8%E0%B9%89%E0%B8%87-SS-%E0%B8%82%E0%B8%99%E0%B8%B2%E0%B8%94-120-x-110-%E0%B8%8B%E0%B8%A1-%E0%B8%AA%E0%B8%B5%E0%B8%94%E0%B8%B3-60277555",
+      "size_w_cm": 120,
+      "size_h_cm": 110,
+      "type": "Aluminium sliding + fly screen",
+      "color": "black",
+      "stock_or_custom": "stock",
+      "baht_per_unit_min": 1500,
+      "baht_per_unit_max": 2500,
+      "notes": "Standard Thai Watsadu stock size — no custom order needed for the 5 main windows."
+    },
+    "framex-awning-bathroom-custom-40x40": {
+      "name": "FRAMEX awning window + screen, black (custom 40×40 cm for bathroom)",
+      "supplier": "Window Asia",
+      "sku": null,
+      "url": "https://windowasia.com/en/product/aluminum-awning-window-black-80x50-en/",
+      "size_w_cm": 40,
+      "size_h_cm": 40,
+      "type": "Aluminium awning + fly screen",
+      "color": "black",
+      "stock_or_custom": "custom",
+      "based_on_stock_product": "FRAMEX awning 80×50 black",
+      "baht_per_unit_min": 1000,
+      "baht_per_unit_max": 2000,
+      "notes": "No standard awning that small — custom order. Reference link points at the 80×50 stock variant for the product family."
+    },
+    "framex-sliding-door-170x195-black-custom": {
+      "name": "FRAMEX sliding door + screen, black (custom ~170×195 cm)",
+      "supplier": "Window Asia / Thai Watsadu",
+      "sku": null,
+      "url": "https://windowasia.com/en/home-en/",
+      "size_w_cm": 170,
+      "size_h_cm": 195,
+      "type": "Aluminium sliding door + fly screen",
+      "color": "black",
+      "stock_or_custom": "custom",
+      "baht_per_unit_min": 8000,
+      "baht_per_unit_max": 12000,
+      "notes": "No standard size fits this opening — custom order (สั่งตัด)."
+    }
+  }
+}

@@ -62,8 +62,8 @@ jobs:
       # changed `data/*.json` or `data/*.nu` without running `mise run gen`
       # locally and committing the regenerated partials.
       #
-      # Covers tile-quantity-*, paint-quantity-*, and cost-summary-* — every
-      # partial emitted by a `data/*.nu` generator.
+      # Covers tile-quantity-*, paint-quantity-*, window-quantity-*, and
+      # cost-summary-* — every partial emitted by a `data/*.nu` generator.
       #
       # Gen is fully deterministic — same JSON in, same markdown out — so
       # this never produces false positives. Unlike translation (auto-committed
@@ -76,6 +76,7 @@ jobs:
           if ! git diff --exit-code -- \
                 specs/_partials/tile-quantity-*.md \
                 specs/_partials/paint-quantity-*.md \
+                specs/_partials/window-quantity-*.md \
                 specs/_partials/cost-summary-*.md; then
             echo "::error::Generated partials are out of sync with data/*.json."
             echo "::error::Run \`mise run gen\` locally and commit the updated _partials/*.md files."

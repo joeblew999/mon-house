@@ -66,5 +66,32 @@
       "products": ["timber-undercoat", "timber-topcoat"],
       "notes": "Eaves + fascia around the roof line."
     }
+  },
+  "windows": {
+    "windows-02": {
+      "title": "Windows & Door — Phase 02 quantities",
+      "spec": "WINDOWS-02.md",
+      "items": [
+        {
+          "label": "Main windows",
+          "window_id": "framex-sliding-120x110-black",
+          "qty": 5,
+          "opening_size_cm": "1290 × 1060 brick-to-brick"
+        },
+        {
+          "label": "Bathroom window",
+          "window_id": "framex-awning-bathroom-custom-40x40",
+          "qty": 1,
+          "opening_size_cm": "600 × 400 brick-to-brick"
+        },
+        {
+          "label": "Sliding door",
+          "window_id": "framex-sliding-door-170x195-black-custom",
+          "qty": 1,
+          "opening_size_cm": "1725 × 1980 brick-to-brick"
+        }
+      ],
+      "notes": "Phase 02 — full FRAMEX black aluminium replacement. Frames are 10–20 mm smaller than the brick-to-brick opening; gap filled with foam/silicone."
+    }
   }
 }
