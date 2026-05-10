@@ -26,6 +26,14 @@ Auto-generated from `data/windows.json` + `data/scope-picks.json`. Edit either s
 
 ---
 
+## Curtains (DIY — Joe + Mon, not in builder quote)
+
+Window dimensions reused from above (no duplication). Skips the bathroom (frosted glass / no curtain). Generic IKEA placeholders for now — confirm exact products on a shopping trip and update `data/curtains.json`.
+
+<!-- include: _partials/curtain-quantity-windows-02-curtains.md -->
+
+---
+
 ## Cost Summary
 
 <!-- include: _partials/cost-summary-windows-02.md -->

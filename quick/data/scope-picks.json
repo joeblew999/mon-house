@@ -93,5 +93,22 @@
       ],
       "notes": "Phase 02 — full FRAMEX black aluminium replacement. Frames are 10–20 mm smaller than the brick-to-brick opening; gap filled with foam/silicone."
     }
+  },
+  "curtains": {
+    "windows-02-curtains": {
+      "title": "Window curtains — Phase 02",
+      "spec": "WINDOWS-02.md",
+      "from_window_scope": "windows-02",
+      "include_window_ids": [
+        "framex-sliding-120x110-black",
+        "framex-sliding-door-170x195-black-custom"
+      ],
+      "fabric_product": "ikea-fabric-280cm-white",
+      "track_product": "ikea-vidga-track-generic",
+      "fullness": 2.0,
+      "track_overlap_cm": 20,
+      "fabric_overlap_cm": 30,
+      "notes": "Reuses window dimensions from the windows-02 scope — never duplicate. Skips the bathroom window (frosted glass / no curtain by convention). For each covered window: track length = window width + overlap; fabric metres = (window width × fullness + overlap) / 100, multiplied by qty. Assumes drop fits within the 280 cm bolt width."
+    }
   }
 }

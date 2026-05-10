@@ -1,0 +1,32 @@
+{
+  "_doc": "Curtain product catalog — fabric (priced per linear metre off the bolt) and track (priced per linear metre). Hand-edited. Generators consume this and emit specs/_partials/curtain-quantity-<scope-id>.md.",
+  "_pricing_rule": "All curtain products priced per linear metre as ranges (fabric/colour/quality variance). Cost rollup sums min and max separately. Stock products with firm prices: set min == max.",
+  "_sizing_assumption": "Drop fits within the fabric bolt width (typical 280 cm bolt handles up to ~250 cm drop with hem/heading allowance). For taller windows that exceed the bolt, the math under-counts and the spec needs a hand-edit note. Verify in store.",
+  "curtains": {
+    "ikea-vidga-track-generic": {
+      "name": "IKEA VIDGA single-track curtain rail (generic length)",
+      "supplier": "IKEA Thailand",
+      "sku": null,
+      "url": "https://www.ikea.com/th/en/cat/curtain-rails-rods-poles-19173/",
+      "kind": "track",
+      "color": "white",
+      "stock_or_custom": "stock",
+      "baht_per_metre_min": 200,
+      "baht_per_metre_max": 300,
+      "notes": "Placeholder — confirm exact VIDGA SKU + price on visit. Cuttable rail, ceiling- or wall-mounted. Add brackets + connector pieces separately if needed."
+    },
+    "ikea-fabric-280cm-white": {
+      "name": "IKEA SANELA / RITVA / similar — white curtain fabric, 280 cm bolt",
+      "supplier": "IKEA Thailand",
+      "sku": null,
+      "url": "https://www.ikea.com/th/en/cat/curtains-blinds-16284/",
+      "kind": "fabric",
+      "color": "white / off-white",
+      "bolt_width_cm": 280,
+      "stock_or_custom": "stock",
+      "baht_per_metre_min": 200,
+      "baht_per_metre_max": 400,
+      "notes": "Placeholder — replace with the actual fabric (SANELA blackout, RITVA cotton, or HomePro alternative) after shopping. The 280 cm bolt is wide enough that drop fits horizontally for any window under ~250 cm height."
+    }
+  }
+}

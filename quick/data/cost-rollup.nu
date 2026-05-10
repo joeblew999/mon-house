@@ -21,11 +21,12 @@ def main [] {
   let specs_dir = ($env.QUICK_SPECS_DIR? | default "specs")
   let partials_dir = $"($specs_dir)/_partials"
 
-  let tiles   = (open $"($data_dir)/tiles.json"   | get tiles)
-  let rooms   = (open $"($data_dir)/rooms.json"   | get rooms)
-  let paints  = (open $"($data_dir)/paints.json"  | get paints)
-  let windows = (open $"($data_dir)/windows.json" | get windows)
-  let picks   = (open $"($data_dir)/scope-picks.json")
+  let tiles    = (open $"($data_dir)/tiles.json"    | get tiles)
+  let rooms    = (open $"($data_dir)/rooms.json"    | get rooms)
+  let paints   = (open $"($data_dir)/paints.json"   | get paints)
+  let windows  = (open $"($data_dir)/windows.json"  | get windows)
+  let curtains = (open $"($data_dir)/curtains.json" | get curtains)
+  let picks    = (open $"($data_dir)/scope-picks.json")
 
   let tile_rows = ($picks.tiles | columns | each {|sid|
     let s = ($picks.tiles | get $sid)
@@ -69,7 +70,21 @@ def main [] {
     }
   } | where {|r| $r != null })
 
-  let all_rows = ($tile_rows ++ $paint_rows ++ $window_rows)
+  let curtain_rows = ($picks.curtains | columns | each {|sid|
+    let s = ($picks.curtains | get $sid)
+    if $s.spec == null { null } else {
+      let cost = (curtain_cost $s $curtains $windows $picks.windows)
+      {
+        spec: $s.spec
+        type: "Curtains"
+        label: $"($s.title) — ($sid)"
+        min: $cost.min
+        max: $cost.max
+      }
+    }
+  } | where {|r| $r != null })
+
+  let all_rows = ($tile_rows ++ $paint_rows ++ $window_rows ++ $curtain_rows)
   let specs = ($all_rows | get spec | uniq)
 
   mut wrote = 0
@@ -143,6 +158,39 @@ def window_cost [scope windows] {
     ($item.qty * $w.baht_per_unit_max)
   } | append 0 | math sum | into int)
   {min: $mins, max: $maxs}
+}
+
+# Compute a curtain scope's cost — reuses window dimensions from the
+# referenced window scope. Mirrors curtains.nu math but returns just the
+# bottom-line totals as {min, max}.
+def curtain_cost [scope curtains windows window_scopes] {
+  let win_scope = ($window_scopes | get $scope.from_window_scope)
+  let included = ($win_scope.items | where {|item|
+    $item.window_id in $scope.include_window_ids
+  })
+
+  let track_m = ($included | each {|item|
+    let w = ($windows | get $item.window_id)
+    (($w.size_w_cm + $scope.track_overlap_cm) / 100.0) * $item.qty
+  } | append 0 | math sum)
+
+  let fabric_m = ($included | each {|item|
+    let w = ($windows | get $item.window_id)
+    (($w.size_w_cm * $scope.fullness + $scope.fabric_overlap_cm) / 100.0) * $item.qty
+  } | append 0 | math sum)
+
+  let track_p  = ($curtains | get $scope.track_product)
+  let fabric_p = ($curtains | get $scope.fabric_product)
+
+  let min_total = (
+    ($track_m  * $track_p.baht_per_metre_min) +
+    ($fabric_m * $fabric_p.baht_per_metre_min) | math round | into int
+  )
+  let max_total = (
+    ($track_m  * $track_p.baht_per_metre_max) +
+    ($fabric_m * $fabric_p.baht_per_metre_max) | math round | into int
+  )
+  {min: $min_total, max: $max_total}
 }
 
 def gen_spec_md [spec rows] {

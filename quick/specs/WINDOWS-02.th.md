@@ -20,6 +20,12 @@ rev: "3"
 
 <!-- include: _partials/window-quantity-windows-02.th.md -->
 
+---## ผ้าม่าน (DIY — โจ + มล, ไม่รวมในใบเสนอราคาผู้รับเหมา)
+
+ขนาดหน้าต่างนำมาใช้ซ้ำจากด้านบน (ไม่ทำซ้ำ) ไม่รวมห้องน้ำ (กระจกฝ้า / ไม่ต้องใช้ผ้าม่าน) ใช้สินค้า IKEA ทั่วไปเป็นตัวแทนชั่วคราว — ยืนยันสินค้าที่แน่นอนระหว่างไปซื้อของและอัปเดต `data/curtains.json`
+
+<!-- include: _partials/curtain-quantity-windows-02-curtains.th.md -->
+
 ---## สรุปค่าใช้จ่าย
 
 <!-- include: _partials/cost-summary-windows-02.th.md -->
