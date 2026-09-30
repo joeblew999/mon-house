@@ -19,7 +19,7 @@ includes = ["git::https://github.com/joeblew999/.github.git//mise-tasks?ref=v0.2
 
 [tools]
 typst                  = "latest"
-node                   = "lts"       # required by wrangler
+node                   = "24.19.0"       # required by wrangler
 "npm:wrangler"         = "4.87.0"    # Cloudflare Workers CLI
 "github:jdx/fnox"      = "1.23"      # secret retrieval (used by cf:token-check via shared mise-tasks)
 "github:nushell/nushell" = "0.112"  # required by .github v0.10.0+ (all shared mise-tasks are nu)
